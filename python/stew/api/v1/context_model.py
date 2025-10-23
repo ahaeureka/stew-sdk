@@ -1,0 +1,63 @@
+# !/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@File    :   context_model.py
+@Time    :   2025-10-22 08:37:13
+@Desc    :   Generated Pydantic models from protobuf definitions
+"""
+
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Any, Dict, List, Optional, Type
+
+
+class Tenant(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    sub: Optional[str] = _Field(default="")
+    name: Optional[str] = _Field(default="")
+    tenant_id: Optional[str] = _Field(default="")
+    roles: Optional[List[str]] = _Field(default="")
+    permissions: Optional[List[str]] = _Field(default="")
+    departments: Optional[List[str]] = _Field(default="")
+    attributes: Optional[Dict[str, Any]] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.Tenant")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "Tenant":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class ClientContext(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    ip: Optional[str] = _Field(default="")
+    device: Optional[str] = _Field(default="")
+    location: Optional[str] = _Field(default="")
+    token: Optional[str] = _Field(default="")
+    tenant: Optional[Tenant] = _Field(default=None)
+    ua: Optional[str] = _Field(default="")
+    referer: Optional[str] = _Field(default="")
+    origin: Optional[str] = _Field(default="")
+    host: Optional[str] = _Field(default="")
+    browser: Optional[str] = _Field(default="")
+    os: Optional[str] = _Field(default="")
+    country: Optional[str] = _Field(default="")
+    region: Optional[str] = _Field(default="")
+    additional: Optional[Dict[str, Any]] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ClientContext")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "ClientContext":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)

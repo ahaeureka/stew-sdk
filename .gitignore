@@ -1,0 +1,13 @@
+/target
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.log
+.zsh_history
+node_moudles
+.pnpm-store/
+node_modules
+.devcontainer/.zsh_history
+.venv

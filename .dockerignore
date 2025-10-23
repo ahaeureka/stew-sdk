@@ -1,0 +1,12 @@
+target
+**/target
+.git
+.gitmodules
+.vscode
+.idea
+logs
+*.log
+node_modules
+tests/tmp
+!.dockerignore
+!/docker/

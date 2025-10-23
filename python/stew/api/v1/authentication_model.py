@@ -1,0 +1,218 @@
+# !/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@File    :   authentication_model.py
+@Time    :   2025-10-22 08:37:13
+@Desc    :   Generated Pydantic models from protobuf definitions
+"""
+
+from .user_model import User
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Optional, Type
+
+
+class OpenIDConnectCallbackRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    code: Optional[str] = _Field(default="")
+    state: Optional[str] = _Field(default="")
+    nonce: Optional[str] = _Field(default="")
+    callback: Optional[str] = _Field(default="")
+    session_id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.OpenIDConnectCallbackRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "OpenIDConnectCallbackRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    callback: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.LoginRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "LoginRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class LoginCallbackResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    user: Optional[User] = _Field(default=None)
+    token: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.LoginCallbackResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "LoginCallbackResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class LogoutRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    callback: Optional[str] = _Field(default="")
+    token: Optional[str] = _Field(default="")
+    session_id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.LogoutRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "LogoutRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class LogoutCallbackRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    state: Optional[str] = _Field(default="")
+    callback: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.LogoutCallbackRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "LogoutCallbackRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class AuthServiceUris(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    login_url: Optional[str] = _Field(default="")
+    logout_url: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.AuthServiceUris")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "AuthServiceUris":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class GetCurrentUserRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.GetCurrentUserRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "GetCurrentUserRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class CurrentUserResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    user: Optional[User] = _Field(default=None)
+    session_id: Optional[str] = _Field(default="")
+    expires_at: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.CurrentUserResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "CurrentUserResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class ValidateSessionRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    session_id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ValidateSessionRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "ValidateSessionRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class ValidateSessionResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    valid: Optional[bool] = _Field(default=False)
+    user_id: Optional[str] = _Field(default="")
+    expires_at: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ValidateSessionResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "ValidateSessionResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class RefreshTokenRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    session_id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RefreshTokenRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "RefreshTokenRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class RefreshTokenResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    access_token: Optional[str] = _Field(default="")
+    expires_in: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RefreshTokenResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "RefreshTokenResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)

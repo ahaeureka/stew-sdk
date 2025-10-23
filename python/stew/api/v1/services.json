@@ -1,0 +1,654 @@
+{
+    "ApiKeyService": {
+        "CreateApiKey": {
+            "input_type": ".stew.api.v1.CreateApiKeyRequest",
+            "output_type": ".stew.api.v1.CreateApiKeyResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/CreateApiKey",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/apikeys",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/apikeys",
+                "body": "*"
+            }
+        },
+        "ListApiKeys": {
+            "input_type": ".stew.api.v1.ListApiKeysRequest",
+            "output_type": ".stew.api.v1.ListApiKeysResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/ListApiKeys",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/apikeys"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/apikeys"
+            }
+        },
+        "GetApiKey": {
+            "input_type": ".stew.api.v1.GetApiKeyRequest",
+            "output_type": ".stew.api.v1.ApiKey",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/GetApiKey",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/apikeys/{id}"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/apikeys/{id}"
+            }
+        },
+        "UpdateApiKey": {
+            "input_type": ".stew.api.v1.UpdateApiKeyRequest",
+            "output_type": ".stew.api.v1.ApiKey",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/UpdateApiKey",
+            "options": {
+                "[google.api.http]": {
+                    "put": "/api/v1/apikeys/{id}",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "PUT",
+                "path": "/api/v1/apikeys/{id}",
+                "body": "*"
+            }
+        },
+        "DeleteApiKey": {
+            "input_type": ".stew.api.v1.DeleteApiKeyRequest",
+            "output_type": ".google.protobuf.Empty",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/DeleteApiKey",
+            "options": {
+                "[google.api.http]": {
+                    "delete": "/api/v1/apikeys/{id}"
+                }
+            },
+            "http": {
+                "method": "DELETE",
+                "path": "/api/v1/apikeys/{id}"
+            }
+        },
+        "ValidateApiKey": {
+            "input_type": ".stew.api.v1.ValidateApiKeyRequest",
+            "output_type": ".stew.api.v1.ValidateApiKeyResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ApiKeyService/ValidateApiKey",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/apikeys/validate",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/apikeys/validate",
+                "body": "*"
+            }
+        }
+    },
+    "AuditService": {
+        "GetAuditLogs": {
+            "input_type": ".stew.api.v1.GetAuditLogsRequest",
+            "output_type": ".stew.api.v1.GetAuditLogsResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuditService/GetAuditLogs",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/audit/logs"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/audit/logs"
+            }
+        },
+        "GetAuditStatistics": {
+            "input_type": ".stew.api.v1.GetAuditStatisticsRequest",
+            "output_type": ".stew.api.v1.GetAuditStatisticsResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuditService/GetAuditStatistics",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/audit/statistics"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/audit/statistics"
+            }
+        }
+    },
+    "UserService": {
+        "Get": {
+            "input_type": ".google.protobuf.Empty",
+            "output_type": ".stew.api.v1.User",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.UserService/Get",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/user"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/user"
+            }
+        }
+    },
+    "AuthService": {
+        "Callback": {
+            "input_type": ".stew.api.v1.OpenIDConnectCallbackRequest",
+            "output_type": ".stew.api.v1.RedirectResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/Callback",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/callback"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/callback"
+            }
+        },
+        "Login": {
+            "input_type": ".stew.api.v1.LoginRequest",
+            "output_type": ".stew.api.v1.RedirectResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/Login",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/login"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/login"
+            }
+        },
+        "Context": {
+            "input_type": ".stew.api.v1.ClientContext",
+            "output_type": ".google.protobuf.Empty",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/Context",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/auth/context",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/auth/context",
+                "body": "*"
+            }
+        },
+        "Logout": {
+            "input_type": ".stew.api.v1.LogoutRequest",
+            "output_type": ".stew.api.v1.RedirectResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/Logout",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/logout"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/logout"
+            }
+        },
+        "LogoutCallback": {
+            "input_type": ".stew.api.v1.OpenIDConnectCallbackRequest",
+            "output_type": ".stew.api.v1.RedirectResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/LogoutCallback",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/logout/callback"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/logout/callback"
+            }
+        },
+        "GetCurrentUser": {
+            "input_type": ".stew.api.v1.GetCurrentUserRequest",
+            "output_type": ".stew.api.v1.CurrentUserResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/GetCurrentUser",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/auth/me"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/auth/me"
+            }
+        },
+        "ValidateSession": {
+            "input_type": ".stew.api.v1.ValidateSessionRequest",
+            "output_type": ".stew.api.v1.ValidateSessionResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/ValidateSession",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/auth/session/validate",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/auth/session/validate",
+                "body": "*"
+            }
+        },
+        "RefreshToken": {
+            "input_type": ".stew.api.v1.RefreshTokenRequest",
+            "output_type": ".stew.api.v1.RefreshTokenResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthService/RefreshToken",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/auth/token/refresh",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/auth/token/refresh",
+                "body": "*"
+            }
+        }
+    },
+    "AuthorizationService": {
+        "CheckAuthorization": {
+            "input_type": ".stew.api.v1.AuthorizationRequest",
+            "output_type": ".stew.api.v1.AuthorizationResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/CheckAuthorization",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/authz/v1/check",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/authz/v1/check",
+                "body": "*"
+            }
+        },
+        "BatchCheckAuthorization": {
+            "input_type": ".stew.api.v1.BatchAuthorizationRequest",
+            "output_type": ".stew.api.v1.BatchAuthorizationResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/BatchCheckAuthorization",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/authz/v1/batch-check",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/authz/v1/batch-check",
+                "body": "*"
+            }
+        },
+        "SyncPolicy": {
+            "input_type": ".stew.api.v1.SyncPolicyRequest",
+            "output_type": ".stew.api.v1.SyncPolicyResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/SyncPolicy",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/authz/v1/policy/sync",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/authz/v1/policy/sync",
+                "body": "*"
+            }
+        },
+        "GetPolicy": {
+            "input_type": ".stew.api.v1.GetPolicyRequest",
+            "output_type": ".stew.api.v1.GetPolicyResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/GetPolicy",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/authz/v1/policy"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/authz/v1/policy"
+            }
+        },
+        "AddPolicy": {
+            "input_type": ".stew.api.v1.AddPolicyRequest",
+            "output_type": ".stew.api.v1.PolicyOperationResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/AddPolicy",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/authz/v1/policy/add",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/authz/v1/policy/add",
+                "body": "*"
+            }
+        },
+        "RemovePolicy": {
+            "input_type": ".stew.api.v1.RemovePolicyRequest",
+            "output_type": ".stew.api.v1.PolicyOperationResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/RemovePolicy",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/authz/v1/policy/remove",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/authz/v1/policy/remove",
+                "body": "*"
+            }
+        },
+        "QueryAuditLogs": {
+            "input_type": ".stew.api.v1.QueryAuditLogsRequest",
+            "output_type": ".stew.api.v1.QueryAuditLogsResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/QueryAuditLogs",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/authz/v1/audit/logs"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/authz/v1/audit/logs"
+            }
+        },
+        "HealthCheck": {
+            "input_type": ".stew.api.v1.HealthCheckRequest",
+            "output_type": ".stew.api.v1.HealthCheckResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.AuthorizationService/HealthCheck",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/authz/v1/health"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/authz/v1/health"
+            }
+        }
+    },
+    "Greeter": {
+        "SayHello": {
+            "input_type": ".helloworld.HelloRequest",
+            "output_type": ".helloworld.HelloReply",
+            "streaming_type": "unary",
+            "method_full_name": "/helloworld.Greeter/SayHello",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/example/post",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/example/post",
+                "body": "*"
+            }
+        },
+        "BidiStream": {
+            "input_type": ".helloworld.HelloRequest",
+            "output_type": ".helloworld.HelloReply",
+            "streaming_type": "bidirectional_streaming",
+            "method_full_name": "/helloworld.Greeter/BidiStream",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/example/stream",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/example/stream",
+                "body": "*"
+            }
+        },
+        "ClientStream": {
+            "input_type": ".helloworld.HelloRequest",
+            "output_type": ".helloworld.HelloReply",
+            "streaming_type": "client_streaming",
+            "method_full_name": "/helloworld.Greeter/ClientStream",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/example/client_stream",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/example/client_stream",
+                "body": "*"
+            }
+        },
+        "ServerStream": {
+            "input_type": ".helloworld.HelloRequest",
+            "output_type": ".helloworld.HelloReply",
+            "streaming_type": "server_streaming",
+            "method_full_name": "/helloworld.Greeter/ServerStream",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/example/server_stream"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/example/server_stream"
+            }
+        }
+    },
+    "ServiceDiscoveryService": {
+        "RegisterService": {
+            "input_type": ".stew.api.v1.RegisterServiceRequest",
+            "output_type": ".stew.api.v1.RegisterServiceResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/RegisterService",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/discovery/services/register",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/discovery/services/register",
+                "body": "*"
+            }
+        },
+        "DeregisterService": {
+            "input_type": ".stew.api.v1.DeregisterServiceRequest",
+            "output_type": ".stew.api.v1.DeregisterServiceResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/DeregisterService",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/discovery/services/deregister",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/discovery/services/deregister",
+                "body": "*"
+            }
+        },
+        "GetServiceInstances": {
+            "input_type": ".stew.api.v1.GetServiceInstancesRequest",
+            "output_type": ".stew.api.v1.GetServiceInstancesResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/GetServiceInstances",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/services/{service_name}/instances"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/services/{service_name}/instances"
+            }
+        },
+        "ListServices": {
+            "input_type": ".stew.api.v1.ListServicesRequest",
+            "output_type": ".stew.api.v1.ListServicesResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/ListServices",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/services"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/services"
+            }
+        },
+        "UpdateServiceHealth": {
+            "input_type": ".stew.api.v1.UpdateServiceHealthRequest",
+            "output_type": ".stew.api.v1.UpdateServiceHealthResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/UpdateServiceHealth",
+            "options": {
+                "[google.api.http]": {
+                    "put": "/api/v1/discovery/services/{service_name}/instances/{instance_id}/health",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "PUT",
+                "path": "/api/v1/discovery/services/{service_name}/instances/{instance_id}/health",
+                "body": "*"
+            }
+        },
+        "ServiceHealthCheck": {
+            "input_type": ".stew.api.v1.ServiceHealthCheckRequest",
+            "output_type": ".stew.api.v1.ServiceHealthCheckResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/ServiceHealthCheck",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/services/{service_name}/health"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/services/{service_name}/health"
+            }
+        },
+        "UploadServiceConfig": {
+            "input_type": ".stew.api.v1.UploadServiceConfigRequest",
+            "output_type": ".stew.api.v1.UploadServiceConfigResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/UploadServiceConfig",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/discovery/services/{service_name}/config",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/discovery/services/{service_name}/config",
+                "body": "*"
+            }
+        },
+        "GetServiceConfig": {
+            "input_type": ".stew.api.v1.GetServiceConfigRequest",
+            "output_type": ".stew.api.v1.GetServiceConfigResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/GetServiceConfig",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/services/{service_name}/config"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/services/{service_name}/config"
+            }
+        },
+        "UploadProtobufDescriptor": {
+            "input_type": ".stew.api.v1.UploadProtobufDescriptorRequest",
+            "output_type": ".stew.api.v1.UploadProtobufDescriptorResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/UploadProtobufDescriptor",
+            "options": {
+                "[google.api.http]": {
+                    "post": "/api/v1/discovery/descriptors/{service_name}/upload",
+                    "body": "*"
+                }
+            },
+            "http": {
+                "method": "POST",
+                "path": "/api/v1/discovery/descriptors/{service_name}/upload",
+                "body": "*"
+            }
+        },
+        "GetProtobufDescriptor": {
+            "input_type": ".stew.api.v1.GetProtobufDescriptorRequest",
+            "output_type": ".stew.api.v1.GetProtobufDescriptorResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/GetProtobufDescriptor",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/descriptors/{service_name}"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/descriptors/{service_name}"
+            }
+        },
+        "ListProtobufDescriptors": {
+            "input_type": ".stew.api.v1.ListProtobufDescriptorsRequest",
+            "output_type": ".stew.api.v1.ListProtobufDescriptorsResponse",
+            "streaming_type": "unary",
+            "method_full_name": "/stew.api.v1.ServiceDiscoveryService/ListProtobufDescriptors",
+            "options": {
+                "[google.api.http]": {
+                    "get": "/api/v1/discovery/descriptors"
+                }
+            },
+            "http": {
+                "method": "GET",
+                "path": "/api/v1/discovery/descriptors"
+            }
+        }
+    }
+}

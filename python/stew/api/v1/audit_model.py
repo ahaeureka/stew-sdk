@@ -1,0 +1,147 @@
+# !/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@File    :   audit_model.py
+@Time    :   2025-10-22 08:37:13
+@Desc    :   Generated Pydantic models from protobuf definitions
+"""
+
+import datetime
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Dict, List, Optional, Type
+
+
+class AuditLogEntry(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    id: Optional[str] = _Field(default="")
+    trace_id: Optional[str] = _Field(default="")
+    user_id: Optional[str] = _Field(default="")
+    api_key_id: Optional[str] = _Field(default="")
+    session_id: Optional[str] = _Field(default="")
+    action: Optional[str] = _Field(default="")
+    resource: Optional[str] = _Field(default="")
+    domain: Optional[str] = _Field(default="")
+    ip_address: Optional[str] = _Field(default="")
+    user_agent: Optional[str] = _Field(default="")
+    success: Optional[bool] = _Field(default=False)
+    decision_source: Optional[str] = _Field(default="")
+    reason: Optional[str] = _Field(default="")
+    error_message: Optional[str] = _Field(default="")
+    request_size: Optional[int] = _Field(default=0)
+    response_size: Optional[int] = _Field(default=0)
+    duration_ms: Optional[int] = _Field(default=0)
+    metadata: Optional[Dict[str, str]] = _Field(default=None)
+    created_at: Optional[datetime.datetime] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.AuditLogEntry")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "AuditLogEntry":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class GetAuditLogsRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    trace_id: Optional[str] = _Field(default="")
+    user_id: Optional[str] = _Field(default="")
+    api_key_id: Optional[str] = _Field(default="")
+    session_id: Optional[str] = _Field(default="")
+    action: Optional[str] = _Field(default="")
+    resource: Optional[str] = _Field(default="")
+    domain: Optional[str] = _Field(default="")
+    success_filter: Optional[int] = _Field(default=0)
+    decision_source: Optional[str] = _Field(default="")
+    start_time: Optional[datetime.datetime] = _Field(default=None)
+    end_time: Optional[datetime.datetime] = _Field(default=None)
+    page: Optional[int] = _Field(default=0)
+    limit: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.GetAuditLogsRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditLogsRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class GetAuditLogsResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    logs: Optional[List[AuditLogEntry]] = _Field(default=None)
+    total: Optional[int] = _Field(default=0)
+    page: Optional[int] = _Field(default=0)
+    limit: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.GetAuditLogsResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditLogsResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class GetAuditStatisticsRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    start_time: Optional[datetime.datetime] = _Field(default=None)
+    end_time: Optional[datetime.datetime] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.GetAuditStatisticsRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditStatisticsRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class ActionStatistic(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    action: Optional[str] = _Field(default="")
+    count: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ActionStatistic")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "ActionStatistic":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class GetAuditStatisticsResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    total_count: Optional[int] = _Field(default=0)
+    success_count: Optional[int] = _Field(default=0)
+    failure_count: Optional[int] = _Field(default=0)
+    action_stats: Optional[List[ActionStatistic]] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.GetAuditStatisticsResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditStatisticsResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)

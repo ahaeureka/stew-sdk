@@ -1,0 +1,35 @@
+# !/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@File    :   resource_model.py
+@Time    :   2025-10-22 08:37:13
+@Desc    :   Generated Pydantic models from protobuf definitions
+"""
+
+import datetime
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Optional, Type
+
+
+class Resource(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    ID: Optional[int] = _Field(default=0)
+    ResourceKey: Optional[str] = _Field(default="")
+    ResourceName: Optional[str] = _Field(default="")
+    ResourceTable: Optional[str] = _Field(default="")
+    uid: Optional[str] = _Field(default="")
+    created_at: Optional[datetime.datetime] = _Field(default=None)
+    updated_at: Optional[datetime.datetime] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.Resource")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "Resource":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)

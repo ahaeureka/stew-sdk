@@ -1,0 +1,163 @@
+# !/usr/bin/env python
+# -*- encoding: utf-8 -*-
+"""
+@File    :   web_model.py
+@Time    :   2025-10-22 08:37:12
+@Desc    :   Generated Pydantic models from protobuf definitions
+"""
+
+from enum import Enum as _Enum
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Optional, Type
+
+
+class Code(_Enum):
+    UNKNOWN = 0
+    OK = 2000
+    PARAMS_ERROR = 4000
+    AUTH_ERROR = 4001
+    PREMISSION_DENIED = 4003
+    NOT_FOUND = 4004
+    TOKEN_NOT_FOUND = 4006
+    RESOURCE_EXHAUSTED = 4008
+    INTERNAL_ERROR = 5000
+    NOT_IMPLEMENTED = 5001
+    TIMEOUT_ERROR = 5004
+    METADATA_MISSING = 4007
+    CONFLICT = 4009
+
+
+class APIResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    message: Optional[str] = _Field(default="")
+    code: Optional[float] = _Field(default=0.0)
+    response_type: Optional[str] = _Field(default="")
+    data: Optional[bytes] = _Field(default=b"")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.APIResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "APIResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class HttpResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    message: Optional[str] = _Field(default="")
+    code: Optional[int] = _Field(default=0)
+    data: Optional[Struct] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.HttpResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "HttpResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class EventStreamResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    event: Optional[str] = _Field(default="")
+    data: Optional[str] = _Field(default="")
+    id: Optional[int] = _Field(default=0)
+    retry: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.EventStreamResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "EventStreamResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class RedirectResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    url: Optional[str] = _Field(default="")
+    code: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RedirectResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "RedirectResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class Errors(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    code: Optional[int] = _Field(default=0)
+    message: Optional[str] = _Field(default="")
+    action: Optional[str] = _Field(default="")
+    file: Optional[str] = _Field(default="")
+    line: Optional[int] = _Field(default=0)
+    fn: Optional[str] = _Field(default="")
+    stack: Optional[str] = _Field(default="")
+    to_client_message: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.Errors")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "Errors":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class Headers(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    Uid: Optional[str] = _Field(default="")
+    authentication: Optional[str] = _Field(default="")
+    filename: Optional[str] = _Field(default="")
+    token: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.Headers")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "Headers":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class EventStream(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    event: Optional[str] = _Field(default="")
+    data: Optional[str] = _Field(default="")
+    id: Optional[int] = _Field(default=0)
+    retry: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.EventStream")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "EventStream":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
