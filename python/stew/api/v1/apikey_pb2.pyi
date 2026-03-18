@@ -154,3 +154,17 @@ class ValidateApiKeyResponse(_message.Message):
     api_key: ApiKey
     error_message: str
     def __init__(self, is_valid: bool = ..., api_key: _Optional[_Union[ApiKey, _Mapping]] = ..., error_message: _Optional[str] = ...) -> None: ...
+
+class RotateApiKeyRequest(_message.Message):
+    __slots__ = ("id",)
+    ID_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    def __init__(self, id: _Optional[str] = ...) -> None: ...
+
+class RotateApiKeyResponse(_message.Message):
+    __slots__ = ("api_key", "raw_key")
+    API_KEY_FIELD_NUMBER: _ClassVar[int]
+    RAW_KEY_FIELD_NUMBER: _ClassVar[int]
+    api_key: ApiKey
+    raw_key: str
+    def __init__(self, api_key: _Optional[_Union[ApiKey, _Mapping]] = ..., raw_key: _Optional[str] = ...) -> None: ...

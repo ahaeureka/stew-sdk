@@ -27,7 +27,7 @@ from stew.api.v1 import options_pb2 as stew_dot_api_dot_v1_dot_options__pb2
 from stew.api.v1 import web_pb2 as stew_dot_api_dot_v1_dot_web__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10helloworld.proto\x12\nhelloworld\x1a\x1cgoogle/api/annotations.proto\x1a\x19stew/api/v1/options.proto\x1a\x15stew/api/v1/web.proto\")\n\x0cHelloRequest\x12\x0b\n\x03msg\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"+\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\xce\x03\n\x07Greeter\x12]\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x1f\x82\xd3\xe4\x93\x02\x19\"\x14/api/v1/example/post:\x01*\x12\x65\n\nBidiStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/api/v1/example/stream:\x01*(\x01\x30\x01\x12p\n\x0c\x43lientStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\",\xd0\xb7\x18\x01\x82\xd3\xe4\x93\x02\"\"\x1d/api/v1/example/client_stream:\x01*(\x01\x12i\n\x0cServerStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/example/server_stream0\x01\x1a \x88\xb7\x18\x00\xb2\xb7\x18\x18stew.api.v1.HttpResponseB%Z#github.com/stew-org/stew/example/pbb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10helloworld.proto\x12\nhelloworld\x1a\x1cgoogle/api/annotations.proto\x1a\x19stew/api/v1/options.proto\x1a\x15stew/api/v1/web.proto\")\n\x0cHelloRequest\x12\x0b\n\x03msg\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"+\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t2\xcf\x03\n\x07Greeter\x12^\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\" \x82\xd3\xe4\x93\x02\x1a\"\x15/api/v1/example/hello:\x01*\x12\x65\n\nBidiStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/api/v1/example/stream:\x01*(\x01\x30\x01\x12p\n\x0c\x43lientStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\",\xd0\xb7\x18\x01\x82\xd3\xe4\x93\x02\"\"\x1d/api/v1/example/client_stream:\x01*(\x01\x12i\n\x0cServerStream\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/example/server_stream0\x01\x1a \x88\xb7\x18\x00\xb2\xb7\x18\x18stew.api.v1.HttpResponseB%Z#github.com/stew-org/stew/example/pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,7 +38,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GREETER']._loaded_options = None
   _globals['_GREETER']._serialized_options = b'\210\267\030\000\262\267\030\030stew.api.v1.HttpResponse'
   _globals['_GREETER'].methods_by_name['SayHello']._loaded_options = None
-  _globals['_GREETER'].methods_by_name['SayHello']._serialized_options = b'\202\323\344\223\002\031\"\024/api/v1/example/post:\001*'
+  _globals['_GREETER'].methods_by_name['SayHello']._serialized_options = b'\202\323\344\223\002\032\"\025/api/v1/example/hello:\001*'
   _globals['_GREETER'].methods_by_name['BidiStream']._loaded_options = None
   _globals['_GREETER'].methods_by_name['BidiStream']._serialized_options = b'\202\323\344\223\002\033\"\026/api/v1/example/stream:\001*'
   _globals['_GREETER'].methods_by_name['ClientStream']._loaded_options = None
@@ -50,5 +50,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_HELLOREPLY']._serialized_start=155
   _globals['_HELLOREPLY']._serialized_end=198
   _globals['_GREETER']._serialized_start=201
-  _globals['_GREETER']._serialized_end=663
+  _globals['_GREETER']._serialized_end=664
 # @@protoc_insertion_point(module_scope)

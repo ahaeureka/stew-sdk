@@ -84,8 +84,118 @@ class HealthCheckConfig(_message.Message):
     enabled: bool
     def __init__(self, grpc_method: _Optional[str] = ..., http_path: _Optional[str] = ..., interval_seconds: _Optional[int] = ..., timeout_seconds: _Optional[int] = ..., healthy_threshold: _Optional[int] = ..., unhealthy_threshold: _Optional[int] = ..., enabled: bool = ...) -> None: ...
 
+class ServiceCorsConfig(_message.Message):
+    __slots__ = ("enabled", "allow_origins", "allow_methods", "allow_headers", "expose_headers", "allow_credentials", "max_age_secs")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_ORIGINS_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_METHODS_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_HEADERS_FIELD_NUMBER: _ClassVar[int]
+    EXPOSE_HEADERS_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_CREDENTIALS_FIELD_NUMBER: _ClassVar[int]
+    MAX_AGE_SECS_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    allow_origins: _containers.RepeatedScalarFieldContainer[str]
+    allow_methods: _containers.RepeatedScalarFieldContainer[str]
+    allow_headers: _containers.RepeatedScalarFieldContainer[str]
+    expose_headers: _containers.RepeatedScalarFieldContainer[str]
+    allow_credentials: bool
+    max_age_secs: int
+    def __init__(self, enabled: bool = ..., allow_origins: _Optional[_Iterable[str]] = ..., allow_methods: _Optional[_Iterable[str]] = ..., allow_headers: _Optional[_Iterable[str]] = ..., expose_headers: _Optional[_Iterable[str]] = ..., allow_credentials: bool = ..., max_age_secs: _Optional[int] = ...) -> None: ...
+
+class ServiceRiskRuleConfig(_message.Message):
+    __slots__ = ("name", "enabled", "path_prefixes", "countries", "proxy", "tor", "datacenter", "min_bot_score", "max_bot_score", "action")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    PATH_PREFIXES_FIELD_NUMBER: _ClassVar[int]
+    COUNTRIES_FIELD_NUMBER: _ClassVar[int]
+    PROXY_FIELD_NUMBER: _ClassVar[int]
+    TOR_FIELD_NUMBER: _ClassVar[int]
+    DATACENTER_FIELD_NUMBER: _ClassVar[int]
+    MIN_BOT_SCORE_FIELD_NUMBER: _ClassVar[int]
+    MAX_BOT_SCORE_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    enabled: bool
+    path_prefixes: _containers.RepeatedScalarFieldContainer[str]
+    countries: _containers.RepeatedScalarFieldContainer[str]
+    proxy: bool
+    tor: bool
+    datacenter: bool
+    min_bot_score: int
+    max_bot_score: int
+    action: str
+    def __init__(self, name: _Optional[str] = ..., enabled: bool = ..., path_prefixes: _Optional[_Iterable[str]] = ..., countries: _Optional[_Iterable[str]] = ..., proxy: bool = ..., tor: bool = ..., datacenter: bool = ..., min_bot_score: _Optional[int] = ..., max_bot_score: _Optional[int] = ..., action: _Optional[str] = ...) -> None: ...
+
+class ServiceRiskConfig(_message.Message):
+    __slots__ = ("enabled", "mode", "default_action", "challenge_paths", "block_paths", "observe_only_paths", "high_risk_countries", "challenge_proxy_traffic", "block_datacenter_traffic", "allow_tor_exit_nodes", "bot_score_threshold", "proxy_score_threshold", "action_overrides")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_ACTION_FIELD_NUMBER: _ClassVar[int]
+    CHALLENGE_PATHS_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_PATHS_FIELD_NUMBER: _ClassVar[int]
+    OBSERVE_ONLY_PATHS_FIELD_NUMBER: _ClassVar[int]
+    HIGH_RISK_COUNTRIES_FIELD_NUMBER: _ClassVar[int]
+    CHALLENGE_PROXY_TRAFFIC_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_DATACENTER_TRAFFIC_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_TOR_EXIT_NODES_FIELD_NUMBER: _ClassVar[int]
+    BOT_SCORE_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
+    PROXY_SCORE_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
+    ACTION_OVERRIDES_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    mode: str
+    default_action: str
+    challenge_paths: _containers.RepeatedScalarFieldContainer[str]
+    block_paths: _containers.RepeatedScalarFieldContainer[str]
+    observe_only_paths: _containers.RepeatedScalarFieldContainer[str]
+    high_risk_countries: _containers.RepeatedScalarFieldContainer[str]
+    challenge_proxy_traffic: bool
+    block_datacenter_traffic: bool
+    allow_tor_exit_nodes: bool
+    bot_score_threshold: int
+    proxy_score_threshold: int
+    action_overrides: _containers.RepeatedCompositeFieldContainer[ServiceRiskRuleConfig]
+    def __init__(self, enabled: bool = ..., mode: _Optional[str] = ..., default_action: _Optional[str] = ..., challenge_paths: _Optional[_Iterable[str]] = ..., block_paths: _Optional[_Iterable[str]] = ..., observe_only_paths: _Optional[_Iterable[str]] = ..., high_risk_countries: _Optional[_Iterable[str]] = ..., challenge_proxy_traffic: bool = ..., block_datacenter_traffic: bool = ..., allow_tor_exit_nodes: bool = ..., bot_score_threshold: _Optional[int] = ..., proxy_score_threshold: _Optional[int] = ..., action_overrides: _Optional[_Iterable[_Union[ServiceRiskRuleConfig, _Mapping]]] = ...) -> None: ...
+
+class ServiceTurnstileConfig(_message.Message):
+    __slots__ = ("enabled", "required_paths", "skip_paths", "expected_action", "expected_hostname", "enforce_on_risk_challenge")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    REQUIRED_PATHS_FIELD_NUMBER: _ClassVar[int]
+    SKIP_PATHS_FIELD_NUMBER: _ClassVar[int]
+    EXPECTED_ACTION_FIELD_NUMBER: _ClassVar[int]
+    EXPECTED_HOSTNAME_FIELD_NUMBER: _ClassVar[int]
+    ENFORCE_ON_RISK_CHALLENGE_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    required_paths: _containers.RepeatedScalarFieldContainer[str]
+    skip_paths: _containers.RepeatedScalarFieldContainer[str]
+    expected_action: str
+    expected_hostname: str
+    enforce_on_risk_challenge: bool
+    def __init__(self, enabled: bool = ..., required_paths: _Optional[_Iterable[str]] = ..., skip_paths: _Optional[_Iterable[str]] = ..., expected_action: _Optional[str] = ..., expected_hostname: _Optional[str] = ..., enforce_on_risk_challenge: bool = ...) -> None: ...
+
+class ServiceMiddlewareConfig(_message.Message):
+    __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile")
+    RATE_LIMIT_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    RATE_LIMIT_RPM_FIELD_NUMBER: _ClassVar[int]
+    RATE_LIMIT_USER_RPM_FIELD_NUMBER: _ClassVar[int]
+    CORS_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    CORS_FIELD_NUMBER: _ClassVar[int]
+    RISK_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    RISK_FIELD_NUMBER: _ClassVar[int]
+    TURNSTILE_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    TURNSTILE_FIELD_NUMBER: _ClassVar[int]
+    rate_limit_enabled: bool
+    rate_limit_rpm: int
+    rate_limit_user_rpm: int
+    cors_enabled: bool
+    cors: ServiceCorsConfig
+    risk_enabled: bool
+    risk: ServiceRiskConfig
+    turnstile_enabled: bool
+    turnstile: ServiceTurnstileConfig
+    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ...) -> None: ...
+
 class ServiceInstance(_message.Message):
-    __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor")
+    __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")
     class TagsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -107,6 +217,7 @@ class ServiceInstance(_message.Message):
     PROTOCOL_FIELD_NUMBER: _ClassVar[int]
     TLS_ENABLED_FIELD_NUMBER: _ClassVar[int]
     PROTOBUF_DESCRIPTOR_FIELD_NUMBER: _ClassVar[int]
+    MIDDLEWARE_CONFIG_FIELD_NUMBER: _ClassVar[int]
     service_name: str
     instance_id: str
     lb: LoadBalancer
@@ -121,7 +232,8 @@ class ServiceInstance(_message.Message):
     protocol: str
     tls_enabled: bool
     protobuf_descriptor: bytes
-    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ...) -> None: ...
+    middleware_config: ServiceMiddlewareConfig
+    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ..., middleware_config: _Optional[_Union[ServiceMiddlewareConfig, _Mapping]] = ...) -> None: ...
 
 class RegisterServiceRequest(_message.Message):
     __slots__ = ("service", "ttl")
@@ -156,6 +268,38 @@ class DeregisterServiceResponse(_message.Message):
     success: bool
     message: str
     def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
+class DeleteServiceRecordRequest(_message.Message):
+    __slots__ = ("service_name", "instance_id")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    INSTANCE_ID_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    instance_id: str
+    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ...) -> None: ...
+
+class DeleteServiceRecordResponse(_message.Message):
+    __slots__ = ("success", "message")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
+class UpdateServiceInstanceRequest(_message.Message):
+    __slots__ = ("service",)
+    SERVICE_FIELD_NUMBER: _ClassVar[int]
+    service: ServiceInstance
+    def __init__(self, service: _Optional[_Union[ServiceInstance, _Mapping]] = ...) -> None: ...
+
+class UpdateServiceInstanceResponse(_message.Message):
+    __slots__ = ("success", "message", "updated_service")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_SERVICE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    updated_service: ServiceInstance
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., updated_service: _Optional[_Union[ServiceInstance, _Mapping]] = ...) -> None: ...
 
 class GetServiceInstancesRequest(_message.Message):
     __slots__ = ("service_name", "tag_filters", "healthy_only")
@@ -306,28 +450,40 @@ class GetServiceConfigResponse(_message.Message):
     def __init__(self, config_data: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., config_version: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ...) -> None: ...
 
 class UploadProtobufDescriptorRequest(_message.Message):
-    __slots__ = ("service_name", "descriptor_version", "descriptor_data", "description")
+    __slots__ = ("service_name", "descriptor_version", "descriptor_data", "description", "signature", "force", "previous_version")
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTOR_VERSION_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTOR_DATA_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SIGNATURE_FIELD_NUMBER: _ClassVar[int]
+    FORCE_FIELD_NUMBER: _ClassVar[int]
+    PREVIOUS_VERSION_FIELD_NUMBER: _ClassVar[int]
     service_name: str
     descriptor_version: str
     descriptor_data: bytes
     description: str
-    def __init__(self, service_name: _Optional[str] = ..., descriptor_version: _Optional[str] = ..., descriptor_data: _Optional[bytes] = ..., description: _Optional[str] = ...) -> None: ...
+    signature: str
+    force: bool
+    previous_version: str
+    def __init__(self, service_name: _Optional[str] = ..., descriptor_version: _Optional[str] = ..., descriptor_data: _Optional[bytes] = ..., description: _Optional[str] = ..., signature: _Optional[str] = ..., force: bool = ..., previous_version: _Optional[str] = ...) -> None: ...
 
 class UploadProtobufDescriptorResponse(_message.Message):
-    __slots__ = ("success", "message", "descriptor_key", "discovered_services")
+    __slots__ = ("success", "message", "descriptor_key", "discovered_services", "compatibility_warnings", "applied_version", "descriptor_hash")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTOR_KEY_FIELD_NUMBER: _ClassVar[int]
     DISCOVERED_SERVICES_FIELD_NUMBER: _ClassVar[int]
+    COMPATIBILITY_WARNINGS_FIELD_NUMBER: _ClassVar[int]
+    APPLIED_VERSION_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTOR_HASH_FIELD_NUMBER: _ClassVar[int]
     success: bool
     message: str
     descriptor_key: str
     discovered_services: _containers.RepeatedScalarFieldContainer[str]
-    def __init__(self, success: bool = ..., message: _Optional[str] = ..., descriptor_key: _Optional[str] = ..., discovered_services: _Optional[_Iterable[str]] = ...) -> None: ...
+    compatibility_warnings: _containers.RepeatedScalarFieldContainer[str]
+    applied_version: str
+    descriptor_hash: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., descriptor_key: _Optional[str] = ..., discovered_services: _Optional[_Iterable[str]] = ..., compatibility_warnings: _Optional[_Iterable[str]] = ..., applied_version: _Optional[str] = ..., descriptor_hash: _Optional[str] = ...) -> None: ...
 
 class GetProtobufDescriptorRequest(_message.Message):
     __slots__ = ("service_name", "descriptor_version")
@@ -364,17 +520,73 @@ class ListProtobufDescriptorsResponse(_message.Message):
     def __init__(self, descriptors: _Optional[_Iterable[_Union[ProtobufDescriptorInfo, _Mapping]]] = ...) -> None: ...
 
 class ProtobufDescriptorInfo(_message.Message):
-    __slots__ = ("service_name", "descriptor_version", "updated_at", "description", "services", "size_bytes")
+    __slots__ = ("service_name", "descriptor_version", "updated_at", "description", "services", "size_bytes", "descriptor_hash", "is_active")
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTOR_VERSION_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     SERVICES_FIELD_NUMBER: _ClassVar[int]
     SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTOR_HASH_FIELD_NUMBER: _ClassVar[int]
+    IS_ACTIVE_FIELD_NUMBER: _ClassVar[int]
     service_name: str
     descriptor_version: str
     updated_at: _timestamp_pb2.Timestamp
     description: str
     services: _containers.RepeatedScalarFieldContainer[str]
     size_bytes: int
-    def __init__(self, service_name: _Optional[str] = ..., descriptor_version: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ..., services: _Optional[_Iterable[str]] = ..., size_bytes: _Optional[int] = ...) -> None: ...
+    descriptor_hash: str
+    is_active: bool
+    def __init__(self, service_name: _Optional[str] = ..., descriptor_version: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ..., services: _Optional[_Iterable[str]] = ..., size_bytes: _Optional[int] = ..., descriptor_hash: _Optional[str] = ..., is_active: bool = ...) -> None: ...
+
+class DescriptorVersionInfo(_message.Message):
+    __slots__ = ("version", "descriptor_hash", "created_at", "description", "services", "size_bytes", "is_active")
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTOR_HASH_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    SERVICES_FIELD_NUMBER: _ClassVar[int]
+    SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
+    IS_ACTIVE_FIELD_NUMBER: _ClassVar[int]
+    version: str
+    descriptor_hash: str
+    created_at: _timestamp_pb2.Timestamp
+    description: str
+    services: _containers.RepeatedScalarFieldContainer[str]
+    size_bytes: int
+    is_active: bool
+    def __init__(self, version: _Optional[str] = ..., descriptor_hash: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ..., services: _Optional[_Iterable[str]] = ..., size_bytes: _Optional[int] = ..., is_active: bool = ...) -> None: ...
+
+class RollbackDescriptorRequest(_message.Message):
+    __slots__ = ("service_name", "target_version")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    TARGET_VERSION_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    target_version: str
+    def __init__(self, service_name: _Optional[str] = ..., target_version: _Optional[str] = ...) -> None: ...
+
+class RollbackDescriptorResponse(_message.Message):
+    __slots__ = ("success", "message", "active_version", "discovered_services")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    ACTIVE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    DISCOVERED_SERVICES_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    active_version: str
+    discovered_services: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., active_version: _Optional[str] = ..., discovered_services: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ListDescriptorVersionsRequest(_message.Message):
+    __slots__ = ("service_name",)
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    def __init__(self, service_name: _Optional[str] = ...) -> None: ...
+
+class ListDescriptorVersionsResponse(_message.Message):
+    __slots__ = ("versions", "active_version")
+    VERSIONS_FIELD_NUMBER: _ClassVar[int]
+    ACTIVE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    versions: _containers.RepeatedCompositeFieldContainer[DescriptorVersionInfo]
+    active_version: str
+    def __init__(self, versions: _Optional[_Iterable[_Union[DescriptorVersionInfo, _Mapping]]] = ..., active_version: _Optional[str] = ...) -> None: ...

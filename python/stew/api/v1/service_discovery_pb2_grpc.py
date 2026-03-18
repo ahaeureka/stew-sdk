@@ -47,6 +47,16 @@ class ServiceDiscoveryServiceStub(object):
                 request_serializer=service__discovery__pb2.DeregisterServiceRequest.SerializeToString,
                 response_deserializer=service__discovery__pb2.DeregisterServiceResponse.FromString,
                 _registered_method=True)
+        self.DeleteServiceRecord = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/DeleteServiceRecord',
+                request_serializer=service__discovery__pb2.DeleteServiceRecordRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.DeleteServiceRecordResponse.FromString,
+                _registered_method=True)
+        self.UpdateServiceInstance = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/UpdateServiceInstance',
+                request_serializer=service__discovery__pb2.UpdateServiceInstanceRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.ServiceInstance.FromString,
+                _registered_method=True)
         self.GetServiceInstances = channel.unary_unary(
                 '/stew.api.v1.ServiceDiscoveryService/GetServiceInstances',
                 request_serializer=service__discovery__pb2.GetServiceInstancesRequest.SerializeToString,
@@ -92,6 +102,16 @@ class ServiceDiscoveryServiceStub(object):
                 request_serializer=service__discovery__pb2.ListProtobufDescriptorsRequest.SerializeToString,
                 response_deserializer=service__discovery__pb2.ListProtobufDescriptorsResponse.FromString,
                 _registered_method=True)
+        self.RollbackDescriptor = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/RollbackDescriptor',
+                request_serializer=service__discovery__pb2.RollbackDescriptorRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.RollbackDescriptorResponse.FromString,
+                _registered_method=True)
+        self.ListDescriptorVersions = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/ListDescriptorVersions',
+                request_serializer=service__discovery__pb2.ListDescriptorVersionsRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.ListDescriptorVersionsResponse.FromString,
+                _registered_method=True)
 
 
 class ServiceDiscoveryServiceServicer(object):
@@ -109,6 +129,20 @@ class ServiceDiscoveryServiceServicer(object):
 
     def DeregisterService(self, request, context):
         """注销服务实例
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteServiceRecord(self, request, context):
+        """删除持久化服务记录
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateServiceInstance(self, request, context):
+        """更新服务实例
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -177,6 +211,20 @@ class ServiceDiscoveryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RollbackDescriptor(self, request, context):
+        """回滚描述符到指定版本
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListDescriptorVersions(self, request, context):
+        """列出描述符版本历史
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -189,6 +237,16 @@ def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
                     servicer.DeregisterService,
                     request_deserializer=service__discovery__pb2.DeregisterServiceRequest.FromString,
                     response_serializer=service__discovery__pb2.DeregisterServiceResponse.SerializeToString,
+            ),
+            'DeleteServiceRecord': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteServiceRecord,
+                    request_deserializer=service__discovery__pb2.DeleteServiceRecordRequest.FromString,
+                    response_serializer=service__discovery__pb2.DeleteServiceRecordResponse.SerializeToString,
+            ),
+            'UpdateServiceInstance': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateServiceInstance,
+                    request_deserializer=service__discovery__pb2.UpdateServiceInstanceRequest.FromString,
+                    response_serializer=service__discovery__pb2.ServiceInstance.SerializeToString,
             ),
             'GetServiceInstances': grpc.unary_unary_rpc_method_handler(
                     servicer.GetServiceInstances,
@@ -234,6 +292,16 @@ def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
                     servicer.ListProtobufDescriptors,
                     request_deserializer=service__discovery__pb2.ListProtobufDescriptorsRequest.FromString,
                     response_serializer=service__discovery__pb2.ListProtobufDescriptorsResponse.SerializeToString,
+            ),
+            'RollbackDescriptor': grpc.unary_unary_rpc_method_handler(
+                    servicer.RollbackDescriptor,
+                    request_deserializer=service__discovery__pb2.RollbackDescriptorRequest.FromString,
+                    response_serializer=service__discovery__pb2.RollbackDescriptorResponse.SerializeToString,
+            ),
+            'ListDescriptorVersions': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListDescriptorVersions,
+                    request_deserializer=service__discovery__pb2.ListDescriptorVersionsRequest.FromString,
+                    response_serializer=service__discovery__pb2.ListDescriptorVersionsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -293,6 +361,60 @@ class ServiceDiscoveryService(object):
             '/stew.api.v1.ServiceDiscoveryService/DeregisterService',
             service__discovery__pb2.DeregisterServiceRequest.SerializeToString,
             service__discovery__pb2.DeregisterServiceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteServiceRecord(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/DeleteServiceRecord',
+            service__discovery__pb2.DeleteServiceRecordRequest.SerializeToString,
+            service__discovery__pb2.DeleteServiceRecordResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateServiceInstance(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/UpdateServiceInstance',
+            service__discovery__pb2.UpdateServiceInstanceRequest.SerializeToString,
+            service__discovery__pb2.ServiceInstance.FromString,
             options,
             channel_credentials,
             insecure,
@@ -536,6 +658,60 @@ class ServiceDiscoveryService(object):
             '/stew.api.v1.ServiceDiscoveryService/ListProtobufDescriptors',
             service__discovery__pb2.ListProtobufDescriptorsRequest.SerializeToString,
             service__discovery__pb2.ListProtobufDescriptorsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RollbackDescriptor(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/RollbackDescriptor',
+            service__discovery__pb2.RollbackDescriptorRequest.SerializeToString,
+            service__discovery__pb2.RollbackDescriptorResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListDescriptorVersions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/ListDescriptorVersions',
+            service__discovery__pb2.ListDescriptorVersionsRequest.SerializeToString,
+            service__discovery__pb2.ListDescriptorVersionsResponse.FromString,
             options,
             channel_credentials,
             insecure,

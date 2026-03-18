@@ -78,7 +78,7 @@ class Address(_message.Message):
     def __init__(self, formatted: _Optional[str] = ..., street_address: _Optional[str] = ..., locality: _Optional[str] = ..., region: _Optional[str] = ..., postal_code: _Optional[str] = ..., country: _Optional[str] = ...) -> None: ...
 
 class User(_message.Message):
-    __slots__ = ("sub", "name", "given_name", "family_name", "middle_name", "nickname", "preferred_username", "profile", "picture", "website", "email", "email_verified", "gender", "birthdate", "zoneinfo", "locale", "phone_number", "phone_number_verified", "address", "updated_at", "id", "owner", "type", "password", "password_salt", "password_type", "display_name", "first_name", "last_name", "avatar", "avatar_type", "permanent_avatar", "properties")
+    __slots__ = ("sub", "name", "given_name", "family_name", "middle_name", "nickname", "preferred_username", "profile", "picture", "website", "email", "email_verified", "gender", "birthdate", "zoneinfo", "locale", "phone_number", "phone_number_verified", "address", "updated_at", "id", "owner", "type", "password", "password_salt", "password_type", "display_name", "first_name", "last_name", "avatar", "avatar_type", "permanent_avatar", "is_admin", "properties")
     class PropertiesEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -118,6 +118,7 @@ class User(_message.Message):
     AVATAR_FIELD_NUMBER: _ClassVar[int]
     AVATAR_TYPE_FIELD_NUMBER: _ClassVar[int]
     PERMANENT_AVATAR_FIELD_NUMBER: _ClassVar[int]
+    IS_ADMIN_FIELD_NUMBER: _ClassVar[int]
     PROPERTIES_FIELD_NUMBER: _ClassVar[int]
     sub: str
     name: str
@@ -151,8 +152,9 @@ class User(_message.Message):
     avatar: str
     avatar_type: str
     permanent_avatar: str
+    is_admin: bool
     properties: _containers.MessageMap[str, _any_pb2.Any]
-    def __init__(self, sub: _Optional[str] = ..., name: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., middle_name: _Optional[str] = ..., nickname: _Optional[str] = ..., preferred_username: _Optional[str] = ..., profile: _Optional[str] = ..., picture: _Optional[str] = ..., website: _Optional[str] = ..., email: _Optional[str] = ..., email_verified: bool = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., locale: _Optional[str] = ..., phone_number: _Optional[str] = ..., phone_number_verified: bool = ..., address: _Optional[_Iterable[_Union[Address, _Mapping]]] = ..., updated_at: _Optional[int] = ..., id: _Optional[str] = ..., owner: _Optional[str] = ..., type: _Optional[str] = ..., password: _Optional[str] = ..., password_salt: _Optional[str] = ..., password_type: _Optional[str] = ..., display_name: _Optional[str] = ..., first_name: _Optional[str] = ..., last_name: _Optional[str] = ..., avatar: _Optional[str] = ..., avatar_type: _Optional[str] = ..., permanent_avatar: _Optional[str] = ..., properties: _Optional[_Mapping[str, _any_pb2.Any]] = ...) -> None: ...
+    def __init__(self, sub: _Optional[str] = ..., name: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., middle_name: _Optional[str] = ..., nickname: _Optional[str] = ..., preferred_username: _Optional[str] = ..., profile: _Optional[str] = ..., picture: _Optional[str] = ..., website: _Optional[str] = ..., email: _Optional[str] = ..., email_verified: bool = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., locale: _Optional[str] = ..., phone_number: _Optional[str] = ..., phone_number_verified: bool = ..., address: _Optional[_Iterable[_Union[Address, _Mapping]]] = ..., updated_at: _Optional[int] = ..., id: _Optional[str] = ..., owner: _Optional[str] = ..., type: _Optional[str] = ..., password: _Optional[str] = ..., password_salt: _Optional[str] = ..., password_type: _Optional[str] = ..., display_name: _Optional[str] = ..., first_name: _Optional[str] = ..., last_name: _Optional[str] = ..., avatar: _Optional[str] = ..., avatar_type: _Optional[str] = ..., permanent_avatar: _Optional[str] = ..., is_admin: bool = ..., properties: _Optional[_Mapping[str, _any_pb2.Any]] = ...) -> None: ...
 
 class BasicAuth(_message.Message):
     __slots__ = ("uid", "name", "role", "audience", "issuer", "not_before", "expiration", "issued_at", "is_keep_login", "token")
@@ -247,3 +249,43 @@ class PatchUserRequest(_message.Message):
     avatar: str
     update_mask: _field_mask_pb2.FieldMask
     def __init__(self, uid: _Optional[str] = ..., name: _Optional[str] = ..., password: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., status: _Optional[_Union[USER_STATUS, str]] = ..., dept: _Optional[str] = ..., owner: _Optional[str] = ..., avatar: _Optional[str] = ..., update_mask: _Optional[_Union[_field_mask_pb2.FieldMask, _Mapping]] = ...) -> None: ...
+
+class UpdateUserRequest(_message.Message):
+    __slots__ = ("display_name", "preferred_username", "locale", "zoneinfo", "website", "picture", "given_name", "family_name", "nickname", "gender", "birthdate")
+    DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    PREFERRED_USERNAME_FIELD_NUMBER: _ClassVar[int]
+    LOCALE_FIELD_NUMBER: _ClassVar[int]
+    ZONEINFO_FIELD_NUMBER: _ClassVar[int]
+    WEBSITE_FIELD_NUMBER: _ClassVar[int]
+    PICTURE_FIELD_NUMBER: _ClassVar[int]
+    GIVEN_NAME_FIELD_NUMBER: _ClassVar[int]
+    FAMILY_NAME_FIELD_NUMBER: _ClassVar[int]
+    NICKNAME_FIELD_NUMBER: _ClassVar[int]
+    GENDER_FIELD_NUMBER: _ClassVar[int]
+    BIRTHDATE_FIELD_NUMBER: _ClassVar[int]
+    display_name: str
+    preferred_username: str
+    locale: str
+    zoneinfo: str
+    website: str
+    picture: str
+    given_name: str
+    family_name: str
+    nickname: str
+    gender: str
+    birthdate: str
+    def __init__(self, display_name: _Optional[str] = ..., preferred_username: _Optional[str] = ..., locale: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., website: _Optional[str] = ..., picture: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., nickname: _Optional[str] = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ...) -> None: ...
+
+class UploadAvatarRequest(_message.Message):
+    __slots__ = ("avatar_data", "filename")
+    AVATAR_DATA_FIELD_NUMBER: _ClassVar[int]
+    FILENAME_FIELD_NUMBER: _ClassVar[int]
+    avatar_data: bytes
+    filename: str
+    def __init__(self, avatar_data: _Optional[bytes] = ..., filename: _Optional[str] = ...) -> None: ...
+
+class UploadAvatarResponse(_message.Message):
+    __slots__ = ("avatar_url",)
+    AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
+    avatar_url: str
+    def __init__(self, avatar_url: _Optional[str] = ...) -> None: ...

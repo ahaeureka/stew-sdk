@@ -66,6 +66,11 @@ class ApiKeyServiceStub(object):
                 request_serializer=apikey__pb2.ValidateApiKeyRequest.SerializeToString,
                 response_deserializer=apikey__pb2.ValidateApiKeyResponse.FromString,
                 _registered_method=True)
+        self.RotateApiKey = channel.unary_unary(
+                '/stew.api.v1.ApiKeyService/RotateApiKey',
+                request_serializer=apikey__pb2.RotateApiKeyRequest.SerializeToString,
+                response_deserializer=apikey__pb2.RotateApiKeyResponse.FromString,
+                _registered_method=True)
 
 
 class ApiKeyServiceServicer(object):
@@ -114,6 +119,13 @@ class ApiKeyServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RotateApiKey(self, request, context):
+        """轮换 API Key（生成新密钥值，停用旧密钥）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ApiKeyServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -146,6 +158,11 @@ def add_ApiKeyServiceServicer_to_server(servicer, server):
                     servicer.ValidateApiKey,
                     request_deserializer=apikey__pb2.ValidateApiKeyRequest.FromString,
                     response_serializer=apikey__pb2.ValidateApiKeyResponse.SerializeToString,
+            ),
+            'RotateApiKey': grpc.unary_unary_rpc_method_handler(
+                    servicer.RotateApiKey,
+                    request_deserializer=apikey__pb2.RotateApiKeyRequest.FromString,
+                    response_serializer=apikey__pb2.RotateApiKeyResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -311,6 +328,33 @@ class ApiKeyService(object):
             '/stew.api.v1.ApiKeyService/ValidateApiKey',
             apikey__pb2.ValidateApiKeyRequest.SerializeToString,
             apikey__pb2.ValidateApiKeyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RotateApiKey(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ApiKeyService/RotateApiKey',
+            apikey__pb2.RotateApiKeyRequest.SerializeToString,
+            apikey__pb2.RotateApiKeyResponse.FromString,
             options,
             channel_credentials,
             insecure,

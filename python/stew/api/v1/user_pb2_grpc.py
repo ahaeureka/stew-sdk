@@ -40,6 +40,16 @@ class UserServiceStub(object):
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=user__pb2.User.FromString,
                 _registered_method=True)
+        self.Update = channel.unary_unary(
+                '/stew.api.v1.UserService/Update',
+                request_serializer=user__pb2.UpdateUserRequest.SerializeToString,
+                response_deserializer=user__pb2.User.FromString,
+                _registered_method=True)
+        self.UploadAvatar = channel.unary_unary(
+                '/stew.api.v1.UserService/UploadAvatar',
+                request_serializer=user__pb2.UploadAvatarRequest.SerializeToString,
+                response_deserializer=user__pb2.UploadAvatarResponse.FromString,
+                _registered_method=True)
 
 
 class UserServiceServicer(object):
@@ -62,6 +72,20 @@ class UserServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Update(self, request, context):
+        """更新当前用户信息
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UploadAvatar(self, request, context):
+        """上传并更新用户头像
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_UserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -69,6 +93,16 @@ def add_UserServiceServicer_to_server(servicer, server):
                     servicer.Get,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=user__pb2.User.SerializeToString,
+            ),
+            'Update': grpc.unary_unary_rpc_method_handler(
+                    servicer.Update,
+                    request_deserializer=user__pb2.UpdateUserRequest.FromString,
+                    response_serializer=user__pb2.User.SerializeToString,
+            ),
+            'UploadAvatar': grpc.unary_unary_rpc_method_handler(
+                    servicer.UploadAvatar,
+                    request_deserializer=user__pb2.UploadAvatarRequest.FromString,
+                    response_serializer=user__pb2.UploadAvatarResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -98,6 +132,60 @@ class UserService(object):
             '/stew.api.v1.UserService/Get',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             user__pb2.User.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Update(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.UserService/Update',
+            user__pb2.UpdateUserRequest.SerializeToString,
+            user__pb2.User.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UploadAvatar(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.UserService/UploadAvatar',
+            user__pb2.UploadAvatarRequest.SerializeToString,
+            user__pb2.UploadAvatarResponse.FromString,
             options,
             channel_credentials,
             insecure,
