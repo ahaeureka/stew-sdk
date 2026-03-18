@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
 from google.protobuf import descriptor_pb2 as google_dot_protobuf_dot_descriptor__pb2
-import user_pb2 as user__pb2
+from . import user_pb2 as user__pb2
 from stew.api.v1 import options_pb2 as stew_dot_api_dot_v1_dot_options__pb2
 from stew.api.v1 import web_pb2 as stew_dot_api_dot_v1_dot_web__pb2
 from stew.api.v1 import context_pb2 as stew_dot_api_dot_v1_dot_context__pb2

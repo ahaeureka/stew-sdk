@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import authentication_pb2 as authentication__pb2
+from . import authentication_pb2 as authentication__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from stew.api.v1 import context_pb2 as stew_dot_api_dot_v1_dot_context__pb2
 from stew.api.v1 import web_pb2 as stew_dot_api_dot_v1_dot_web__pb2

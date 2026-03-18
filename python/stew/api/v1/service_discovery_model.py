@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 '''
 @File    :   service_discovery_model.py
-@Time    :   2026-03-18 12:59:41
+@Time    :   2026-03-18 13:08:00
 @Desc    :   Generated Pydantic models from protobuf definitions
 '''
 import datetime
