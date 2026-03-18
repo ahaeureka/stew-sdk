@@ -244,14 +244,16 @@ class RegisterServiceRequest(_message.Message):
     def __init__(self, service: _Optional[_Union[ServiceInstance, _Mapping]] = ..., ttl: _Optional[int] = ...) -> None: ...
 
 class RegisterServiceResponse(_message.Message):
-    __slots__ = ("success", "message", "lease_id")
+    __slots__ = ("success", "message", "lease_id", "instance_id")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     LEASE_ID_FIELD_NUMBER: _ClassVar[int]
+    INSTANCE_ID_FIELD_NUMBER: _ClassVar[int]
     success: bool
     message: str
     lease_id: str
-    def __init__(self, success: bool = ..., message: _Optional[str] = ..., lease_id: _Optional[str] = ...) -> None: ...
+    instance_id: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., lease_id: _Optional[str] = ..., instance_id: _Optional[str] = ...) -> None: ...
 
 class DeregisterServiceRequest(_message.Message):
     __slots__ = ("service_name", "instance_id")

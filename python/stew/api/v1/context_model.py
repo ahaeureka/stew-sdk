@@ -1,11 +1,10 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-"""
+'''
 @File    :   context_model.py
-@Time    :   2025-10-22 08:37:13
+@Time    :   2026-03-18 11:13:54
 @Desc    :   Generated Pydantic models from protobuf definitions
-"""
-
+'''
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
@@ -29,10 +28,9 @@ class Tenant(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "Tenant":
+    def from_protobuf(cls, src: _message.Message) -> 'Tenant':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ClientContext(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -58,6 +56,7 @@ class ClientContext(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ClientContext":
+    def from_protobuf(cls, src: _message.Message) -> 'ClientContext':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+

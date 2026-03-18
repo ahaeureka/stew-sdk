@@ -1,11 +1,10 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-"""
+'''
 @File    :   apikey_model.py
-@Time    :   2025-10-22 08:37:12
+@Time    :   2026-03-18 11:13:53
 @Desc    :   Generated Pydantic models from protobuf definitions
-"""
-
+'''
 import datetime
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
@@ -34,10 +33,9 @@ class ApiKey(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ApiKey":
+    def from_protobuf(cls, src: _message.Message) -> 'ApiKey':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class CreateApiKeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -55,10 +53,9 @@ class CreateApiKeyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "CreateApiKeyRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'CreateApiKeyRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class CreateApiKeyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -72,10 +69,9 @@ class CreateApiKeyResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "CreateApiKeyResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'CreateApiKeyResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListApiKeysRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -91,10 +87,9 @@ class ListApiKeysRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListApiKeysRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'ListApiKeysRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListApiKeysResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -110,10 +105,9 @@ class ListApiKeysResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListApiKeysResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'ListApiKeysResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class GetApiKeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -126,10 +120,9 @@ class GetApiKeyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetApiKeyRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'GetApiKeyRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UpdateApiKeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -147,10 +140,9 @@ class UpdateApiKeyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UpdateApiKeyRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'UpdateApiKeyRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class DeleteApiKeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -163,10 +155,9 @@ class DeleteApiKeyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "DeleteApiKeyRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'DeleteApiKeyRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ValidateApiKeyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -180,10 +171,9 @@ class ValidateApiKeyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ValidateApiKeyRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'ValidateApiKeyRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ValidateApiKeyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -198,6 +188,38 @@ class ValidateApiKeyResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ValidateApiKeyResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'ValidateApiKeyResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
+class RotateApiKeyRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RotateApiKeyRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'RotateApiKeyRequest':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class RotateApiKeyResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    api_key: Optional[ApiKey] = _Field(default=None)
+    raw_key: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RotateApiKeyResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'RotateApiKeyResponse':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+

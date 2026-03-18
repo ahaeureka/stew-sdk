@@ -1,18 +1,16 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-"""
+'''
 @File    :   service_discovery_model.py
-@Time    :   2025-10-22 08:37:13
+@Time    :   2026-03-18 11:13:53
 @Desc    :   Generated Pydantic models from protobuf definitions
-"""
-
+'''
 import datetime
 from enum import Enum as _Enum
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
 from typing import Dict, List, Optional, Type
-
 
 class BalanceType(_Enum):
     BALANCE_TYPE_UNKNOWN = 0
@@ -23,7 +21,6 @@ class BalanceType(_Enum):
     BALANCE_TYPE_SED = 5
     BALANCE_TYPE_WEIGHTED_LEAST_CONNECTIONS = 6
     BALANCE_TYPE_NEVER_QUEUE = 7
-
 
 class ServiceStatus(_Enum):
     SERVICE_STATUS_UNKNOWN = 0
@@ -46,10 +43,9 @@ class Endpoint(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "Endpoint":
+    def from_protobuf(cls, src: _message.Message) -> 'Endpoint':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class LoadBalancer(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -63,10 +59,9 @@ class LoadBalancer(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "LoadBalancer":
+    def from_protobuf(cls, src: _message.Message) -> 'LoadBalancer':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class HealthCheckConfig(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -85,10 +80,124 @@ class HealthCheckConfig(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "HealthCheckConfig":
+    def from_protobuf(cls, src: _message.Message) -> 'HealthCheckConfig':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 
+class ServiceCorsConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    enabled: Optional[bool] = _Field(default=False)
+    allow_origins: Optional[List[str]] = _Field(default="")
+    allow_methods: Optional[List[str]] = _Field(default="")
+    allow_headers: Optional[List[str]] = _Field(default="")
+    expose_headers: Optional[List[str]] = _Field(default="")
+    allow_credentials: Optional[bool] = _Field(default=False)
+    max_age_secs: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ServiceCorsConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceCorsConfig':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ServiceRiskRuleConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    name: Optional[str] = _Field(default="")
+    enabled: Optional[bool] = _Field(default=False)
+    path_prefixes: Optional[List[str]] = _Field(default="")
+    countries: Optional[List[str]] = _Field(default="")
+    proxy: Optional[bool] = _Field(default=False)
+    tor: Optional[bool] = _Field(default=False)
+    datacenter: Optional[bool] = _Field(default=False)
+    min_bot_score: Optional[int] = _Field(default=0)
+    max_bot_score: Optional[int] = _Field(default=0)
+    action: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ServiceRiskRuleConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceRiskRuleConfig':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ServiceRiskConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    enabled: Optional[bool] = _Field(default=False)
+    mode: Optional[str] = _Field(default="")
+    default_action: Optional[str] = _Field(default="")
+    challenge_paths: Optional[List[str]] = _Field(default="")
+    block_paths: Optional[List[str]] = _Field(default="")
+    observe_only_paths: Optional[List[str]] = _Field(default="")
+    high_risk_countries: Optional[List[str]] = _Field(default="")
+    challenge_proxy_traffic: Optional[bool] = _Field(default=False)
+    block_datacenter_traffic: Optional[bool] = _Field(default=False)
+    allow_tor_exit_nodes: Optional[bool] = _Field(default=False)
+    bot_score_threshold: Optional[int] = _Field(default=0)
+    proxy_score_threshold: Optional[int] = _Field(default=0)
+    action_overrides: Optional[List[ServiceRiskRuleConfig]] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ServiceRiskConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceRiskConfig':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ServiceTurnstileConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    enabled: Optional[bool] = _Field(default=False)
+    required_paths: Optional[List[str]] = _Field(default="")
+    skip_paths: Optional[List[str]] = _Field(default="")
+    expected_action: Optional[str] = _Field(default="")
+    expected_hostname: Optional[str] = _Field(default="")
+    enforce_on_risk_challenge: Optional[bool] = _Field(default=False)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ServiceTurnstileConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceTurnstileConfig':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ServiceMiddlewareConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    rate_limit_enabled: Optional[bool] = _Field(default=False)
+    rate_limit_rpm: Optional[int] = _Field(default=0)
+    rate_limit_user_rpm: Optional[int] = _Field(default=0)
+    cors_enabled: Optional[bool] = _Field(default=False)
+    cors: Optional[ServiceCorsConfig] = _Field(default=None)
+    risk_enabled: Optional[bool] = _Field(default=False)
+    risk: Optional[ServiceRiskConfig] = _Field(default=None)
+    turnstile_enabled: Optional[bool] = _Field(default=False)
+    turnstile: Optional[ServiceTurnstileConfig] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ServiceMiddlewareConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceMiddlewareConfig':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
 
 class ServiceInstance(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -105,7 +214,8 @@ class ServiceInstance(BaseModel):
     tags: Optional[Dict[str, str]] = _Field(default=None)
     protocol: Optional[str] = _Field(default="")
     tls_enabled: Optional[bool] = _Field(default=False)
-    protobuf_descriptor: Optional[bytes] = _Field(default=b"")
+    protobuf_descriptor: Optional[bytes] = _Field(default=b'')
+    middleware_config: Optional[ServiceMiddlewareConfig] = _Field(default=None)
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -114,10 +224,9 @@ class ServiceInstance(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ServiceInstance":
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceInstance':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class RegisterServiceRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -131,16 +240,16 @@ class RegisterServiceRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "RegisterServiceRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'RegisterServiceRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class RegisterServiceResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     success: Optional[bool] = _Field(default=False)
     message: Optional[str] = _Field(default="")
     lease_id: Optional[str] = _Field(default="")
+    instance_id: Optional[str] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -149,10 +258,9 @@ class RegisterServiceResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "RegisterServiceResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'RegisterServiceResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class DeregisterServiceRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -166,10 +274,9 @@ class DeregisterServiceRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "DeregisterServiceRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'DeregisterServiceRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class DeregisterServiceResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -183,10 +290,73 @@ class DeregisterServiceResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "DeregisterServiceResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'DeregisterServiceResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 
+class DeleteServiceRecordRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    service_name: Optional[str] = _Field(default="")
+    instance_id: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.DeleteServiceRecordRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'DeleteServiceRecordRequest':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class DeleteServiceRecordResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    success: Optional[bool] = _Field(default=False)
+    message: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.DeleteServiceRecordResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'DeleteServiceRecordResponse':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class UpdateServiceInstanceRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    service: Optional[ServiceInstance] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.UpdateServiceInstanceRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'UpdateServiceInstanceRequest':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class UpdateServiceInstanceResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    success: Optional[bool] = _Field(default=False)
+    message: Optional[str] = _Field(default="")
+    updated_service: Optional[ServiceInstance] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.UpdateServiceInstanceResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'UpdateServiceInstanceResponse':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
 
 class GetServiceInstancesRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -201,10 +371,9 @@ class GetServiceInstancesRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetServiceInstancesRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'GetServiceInstancesRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class GetServiceInstancesResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -218,10 +387,9 @@ class GetServiceInstancesResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetServiceInstancesResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'GetServiceInstancesResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListServicesRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -235,10 +403,9 @@ class ListServicesRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListServicesRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'ListServicesRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListServicesResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -252,10 +419,9 @@ class ListServicesResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListServicesResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'ListServicesResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ServiceSummary(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -271,10 +437,9 @@ class ServiceSummary(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ServiceSummary":
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceSummary':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UpdateServiceHealthRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -290,10 +455,9 @@ class UpdateServiceHealthRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UpdateServiceHealthRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'UpdateServiceHealthRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UpdateServiceHealthResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -307,10 +471,9 @@ class UpdateServiceHealthResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UpdateServiceHealthResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'UpdateServiceHealthResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ServiceHealthCheckRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -324,10 +487,9 @@ class ServiceHealthCheckRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ServiceHealthCheckRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceHealthCheckRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ServiceHealthCheckResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -340,10 +502,9 @@ class ServiceHealthCheckResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ServiceHealthCheckResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceHealthCheckResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ServiceInstanceHealth(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -359,10 +520,9 @@ class ServiceInstanceHealth(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ServiceInstanceHealth":
+    def from_protobuf(cls, src: _message.Message) -> 'ServiceInstanceHealth':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UploadServiceConfigRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -378,10 +538,9 @@ class UploadServiceConfigRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UploadServiceConfigRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'UploadServiceConfigRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UploadServiceConfigResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -396,10 +555,9 @@ class UploadServiceConfigResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UploadServiceConfigResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'UploadServiceConfigResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class GetServiceConfigRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -413,10 +571,9 @@ class GetServiceConfigRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetServiceConfigRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'GetServiceConfigRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class GetServiceConfigResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -432,31 +589,30 @@ class GetServiceConfigResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetServiceConfigResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'GetServiceConfigResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UploadProtobufDescriptorRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     service_name: Optional[str] = _Field(default="")
     descriptor_version: Optional[str] = _Field(default="")
-    descriptor_data: Optional[bytes] = _Field(default=b"")
+    descriptor_data: Optional[bytes] = _Field(default=b'')
     description: Optional[str] = _Field(default="")
+    signature: Optional[str] = _Field(default="")
+    force: Optional[bool] = _Field(default=False)
+    previous_version: Optional[str] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
-        _proto = pool.FindMessageTypeByName(
-            "stew.api.v1.UploadProtobufDescriptorRequest"
-        )
+        _proto = pool.FindMessageTypeByName("stew.api.v1.UploadProtobufDescriptorRequest")
         _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UploadProtobufDescriptorRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'UploadProtobufDescriptorRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class UploadProtobufDescriptorResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -464,20 +620,20 @@ class UploadProtobufDescriptorResponse(BaseModel):
     message: Optional[str] = _Field(default="")
     descriptor_key: Optional[str] = _Field(default="")
     discovered_services: Optional[List[str]] = _Field(default="")
+    compatibility_warnings: Optional[List[str]] = _Field(default="")
+    applied_version: Optional[str] = _Field(default="")
+    descriptor_hash: Optional[str] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
-        _proto = pool.FindMessageTypeByName(
-            "stew.api.v1.UploadProtobufDescriptorResponse"
-        )
+        _proto = pool.FindMessageTypeByName("stew.api.v1.UploadProtobufDescriptorResponse")
         _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "UploadProtobufDescriptorResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'UploadProtobufDescriptorResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class GetProtobufDescriptorRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -491,14 +647,13 @@ class GetProtobufDescriptorRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetProtobufDescriptorRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'GetProtobufDescriptorRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 
-
 class GetProtobufDescriptorResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
-    descriptor_data: Optional[bytes] = _Field(default=b"")
+    descriptor_data: Optional[bytes] = _Field(default=b'')
     descriptor_version: Optional[str] = _Field(default="")
     updated_at: Optional[datetime.datetime] = _Field(default=None)
     description: Optional[str] = _Field(default="")
@@ -511,10 +666,9 @@ class GetProtobufDescriptorResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "GetProtobufDescriptorResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'GetProtobufDescriptorResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListProtobufDescriptorsRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -522,17 +676,14 @@ class ListProtobufDescriptorsRequest(BaseModel):
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
-        _proto = pool.FindMessageTypeByName(
-            "stew.api.v1.ListProtobufDescriptorsRequest"
-        )
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ListProtobufDescriptorsRequest")
         _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListProtobufDescriptorsRequest":
+    def from_protobuf(cls, src: _message.Message) -> 'ListProtobufDescriptorsRequest':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ListProtobufDescriptorsResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -540,17 +691,14 @@ class ListProtobufDescriptorsResponse(BaseModel):
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
-        _proto = pool.FindMessageTypeByName(
-            "stew.api.v1.ListProtobufDescriptorsResponse"
-        )
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ListProtobufDescriptorsResponse")
         _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ListProtobufDescriptorsResponse":
+    def from_protobuf(cls, src: _message.Message) -> 'ListProtobufDescriptorsResponse':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
 
 class ProtobufDescriptorInfo(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -560,6 +708,8 @@ class ProtobufDescriptorInfo(BaseModel):
     description: Optional[str] = _Field(default="")
     services: Optional[List[str]] = _Field(default="")
     size_bytes: Optional[int] = _Field(default=0)
+    descriptor_hash: Optional[str] = _Field(default="")
+    is_active: Optional[bool] = _Field(default=False)
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -568,6 +718,93 @@ class ProtobufDescriptorInfo(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "ProtobufDescriptorInfo":
+    def from_protobuf(cls, src: _message.Message) -> 'ProtobufDescriptorInfo':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
+class DescriptorVersionInfo(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    version: Optional[str] = _Field(default="")
+    descriptor_hash: Optional[str] = _Field(default="")
+    created_at: Optional[datetime.datetime] = _Field(default=None)
+    description: Optional[str] = _Field(default="")
+    services: Optional[List[str]] = _Field(default="")
+    size_bytes: Optional[int] = _Field(default=0)
+    is_active: Optional[bool] = _Field(default=False)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.DescriptorVersionInfo")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'DescriptorVersionInfo':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class RollbackDescriptorRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    service_name: Optional[str] = _Field(default="")
+    target_version: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RollbackDescriptorRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'RollbackDescriptorRequest':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class RollbackDescriptorResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    success: Optional[bool] = _Field(default=False)
+    message: Optional[str] = _Field(default="")
+    active_version: Optional[str] = _Field(default="")
+    discovered_services: Optional[List[str]] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.RollbackDescriptorResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'RollbackDescriptorResponse':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ListDescriptorVersionsRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    service_name: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ListDescriptorVersionsRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ListDescriptorVersionsRequest':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+class ListDescriptorVersionsResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    versions: Optional[List[DescriptorVersionInfo]] = _Field(default=None)
+    active_version: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.ListDescriptorVersionsResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> 'ListDescriptorVersionsResponse':
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+

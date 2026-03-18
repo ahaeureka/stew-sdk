@@ -1,11 +1,10 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-"""
+'''
 @File    :   resource_model.py
-@Time    :   2025-10-22 08:37:13
+@Time    :   2026-03-18 11:13:54
 @Desc    :   Generated Pydantic models from protobuf definitions
-"""
-
+'''
 import datetime
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
@@ -30,6 +29,7 @@ class Resource(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> "Resource":
+    def from_protobuf(cls, src: _message.Message) -> 'Resource':
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+

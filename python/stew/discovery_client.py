@@ -388,7 +388,14 @@ class DiscoveryClient:
         )
         if not resp.success:
             raise DiscoveryError(f"Registration failed: {resp.message}")
-        assigned_id = instance_id or resp.message  # gateway echoes id in message when auto-assigned
+        # Prefer the explicit instance_id echoed back by the server (field 4).
+        # Fall back to the caller-supplied id, then to the legacy behaviour of
+        # parsing resp.message (which embeds the id as human-readable text and
+        # is therefore fragile).
+        assigned_id = resp.instance_id or instance_id
+        if not assigned_id:
+            # Last-resort fallback for old gateway versions without field 4.
+            assigned_id = instance_id or resp.message
         log.info(
             "registered service_name=%s instance_id=%s lease_id=%s",
             service_name,
