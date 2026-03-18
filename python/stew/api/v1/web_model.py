@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 '''
 @File    :   web_model.py
-@Time    :   2026-03-18 11:13:54
+@Time    :   2026-03-18 12:59:42
 @Desc    :   Generated Pydantic models from protobuf definitions
 '''
 from enum import Enum as _Enum

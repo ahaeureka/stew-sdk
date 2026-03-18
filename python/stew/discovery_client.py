@@ -33,12 +33,24 @@ import grpc.aio
 from stew.api.v1 import service_discovery_pb2 as _pb
 from stew.api.v1 import service_discovery_pb2_grpc as _grpc
 
+# Re-export proto-generated sub-message types as public SDK types.
+# Users can construct them with the same keyword arguments documented in
+# the .pyi stubs without needing an extra wrapper layer.
+CorsConfig = _pb.ServiceCorsConfig
+RiskRuleConfig = _pb.ServiceRiskRuleConfig
+RiskConfig = _pb.ServiceRiskConfig
+TurnstileConfig = _pb.ServiceTurnstileConfig
+
 __all__ = [
     "DiscoveryClient",
     "Endpoint",
     "BalanceType",
     "HealthCheckConfig",
     "MiddlewareConfig",
+    "CorsConfig",
+    "RiskRuleConfig",
+    "RiskConfig",
+    "TurnstileConfig",
     "DescriptorVersion",
     "DiscoveryError",
     "ConflictError",
@@ -89,6 +101,11 @@ class MiddlewareConfig:
     rate_limit_rpm: int = 0
     rate_limit_user_rpm: int = 0
     cors_enabled: bool = False
+    cors: CorsConfig | None = None
+    risk_enabled: bool = False
+    risk: RiskConfig | None = None
+    turnstile_enabled: bool = False
+    turnstile: TurnstileConfig | None = None
 
 
 @dataclass
@@ -164,12 +181,21 @@ def _to_proto_hc(cfg: HealthCheckConfig | None) -> _pb.HealthCheckConfig | None:
 def _to_proto_mw(cfg: MiddlewareConfig | None) -> _pb.ServiceMiddlewareConfig | None:
     if cfg is None:
         return None
-    return _pb.ServiceMiddlewareConfig(
+    kwargs: dict = dict(
         rate_limit_enabled=cfg.rate_limit_enabled,
         rate_limit_rpm=cfg.rate_limit_rpm,
         rate_limit_user_rpm=cfg.rate_limit_user_rpm,
         cors_enabled=cfg.cors_enabled,
+        risk_enabled=cfg.risk_enabled,
+        turnstile_enabled=cfg.turnstile_enabled,
     )
+    if cfg.cors is not None:
+        kwargs["cors"] = cfg.cors
+    if cfg.risk is not None:
+        kwargs["risk"] = cfg.risk
+    if cfg.turnstile is not None:
+        kwargs["turnstile"] = cfg.turnstile
+    return _pb.ServiceMiddlewareConfig(**kwargs)
 
 
 def _wrap_rpc_error(exc: grpc.RpcError) -> DiscoveryError:

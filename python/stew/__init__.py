@@ -5,6 +5,7 @@ Stew Gateway Python SDK
 from stew.discovery_client import (
     BalanceType,
     ConflictError,
+    CorsConfig,
     DescriptorVersion,
     DiscoveryClient,
     DiscoveryError,
@@ -12,7 +13,10 @@ from stew.discovery_client import (
     HealthCheckConfig,
     MiddlewareConfig,
     NotFoundError,
+    RiskConfig,
+    RiskRuleConfig,
     SyncDiscoveryClient,
+    TurnstileConfig,
 )
 
 __all__ = [
@@ -22,6 +26,10 @@ __all__ = [
     "BalanceType",
     "HealthCheckConfig",
     "MiddlewareConfig",
+    "CorsConfig",
+    "RiskRuleConfig",
+    "RiskConfig",
+    "TurnstileConfig",
     "DescriptorVersion",
     "DiscoveryError",
     "ConflictError",
