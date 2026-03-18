@@ -244,6 +244,9 @@ class DiscoveryClient:
         api_key: str = "",
         use_tls: bool = False,
         timeout: float = 10.0,
+        retry_max: int = 10,
+        retry_base_delay: float = 2.0,
+        retry_max_delay: float = 60.0,
     ) -> None:
         """
         Parameters
@@ -256,11 +259,21 @@ class DiscoveryClient:
             Connect over TLS.
         timeout:
             Default RPC deadline in seconds.
+        retry_max:
+            Maximum number of retries when the gateway is unavailable (UNAVAILABLE
+            status code).  Set to 0 to disable retries.
+        retry_base_delay:
+            Initial retry delay in seconds (doubles on each attempt).
+        retry_max_delay:
+            Maximum retry delay in seconds (caps the exponential growth).
         """
         self._addr = gateway_addr
         self._api_key = api_key or os.environ.get("SERVICE_API_KEY", "")
         self._use_tls = use_tls
         self._timeout = timeout
+        self._retry_max = retry_max
+        self._retry_base_delay = retry_base_delay
+        self._retry_max_delay = retry_max_delay
         self._channel: grpc.aio.Channel | None = None
         self._stub: _grpc.ServiceDiscoveryServiceStub | None = None
         self._keepalive_tasks: dict[str, asyncio.Task[None]] = {}
@@ -319,6 +332,31 @@ class DiscoveryClient:
             return await coro
         except grpc.RpcError as exc:
             raise _wrap_rpc_error(exc) from exc
+
+    async def _call_with_retry(self, make_coro):  # type: ignore[no-untyped-def]
+        """
+        Call an RPC with exponential-backoff retry for UNAVAILABLE errors.
+
+        ``make_coro`` is a zero-argument callable that returns a new coroutine
+        on each invocation (required because coroutines can only be awaited once).
+        """
+        delay = self._retry_base_delay
+        for attempt in range(self._retry_max + 1):
+            try:
+                return await self._call(make_coro())
+            except DiscoveryError as exc:
+                is_unavailable = exc.code == grpc.StatusCode.UNAVAILABLE
+                if not is_unavailable or attempt >= self._retry_max:
+                    raise
+                log.warning(
+                    "gateway unavailable, retry %d/%d in %.1fs: %s",
+                    attempt + 1,
+                    self._retry_max,
+                    delay,
+                    exc,
+                )
+                await asyncio.sleep(delay)
+                delay = min(delay * 2, self._retry_max_delay)
 
     # ------------------------------------------------------------------
     # Registration
@@ -409,8 +447,8 @@ class DiscoveryClient:
             service=_pb.ServiceInstance(**instance_kwargs),
             ttl=ttl,
         )
-        resp: _pb.RegisterServiceResponse = await self._call(
-            self._s.RegisterService(req, metadata=self._meta(), timeout=self._timeout)
+        resp: _pb.RegisterServiceResponse = await self._call_with_retry(  # type: ignore[assignment]
+            lambda: self._s.RegisterService(req, metadata=self._meta(), timeout=self._timeout)
         )
         if not resp.success:
             raise DiscoveryError(f"Registration failed: {resp.message}")
@@ -495,8 +533,8 @@ class DiscoveryClient:
             status=status,
             health_message=message,
         )
-        resp: _pb.UpdateServiceHealthResponse = await self._call(
-            self._s.UpdateServiceHealth(req, metadata=self._meta(), timeout=self._timeout)
+        resp: _pb.UpdateServiceHealthResponse = await self._call_with_retry(  # type: ignore[assignment]
+            lambda: self._s.UpdateServiceHealth(req, metadata=self._meta(), timeout=self._timeout)
         )
         if not resp.success:
             raise DiscoveryError(f"Health update failed: {resp.message}")
