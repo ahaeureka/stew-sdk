@@ -31,11 +31,10 @@ import hashlib
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import IntEnum
 from types import TracebackType
-from typing import AsyncIterator, Sequence
+from typing import Callable, Sequence
 
 import grpc
 import grpc.aio
@@ -283,7 +282,12 @@ class DiscoveryClient:
             Maximum retry delay in seconds (caps the exponential growth).
         """
         self._addr = gateway_addr
-        self._api_key = app_secret or api_key or os.environ.get("SERVICE_API_KEY", "")
+        self._api_key = (
+            app_secret
+            or api_key
+            or os.environ.get("APP_SECRET")
+            or os.environ.get("SERVICE_API_KEY", "")
+        )
         self._use_tls = use_tls
         self._timeout = timeout
         self._retry_max = retry_max
@@ -377,119 +381,33 @@ class DiscoveryClient:
     # Registration
     # ------------------------------------------------------------------
 
-    async def register(
-        self,
-        *,
-        service_name: str,
-        endpoints: Sequence[Endpoint],
-        instance_id: str = "",
-        version: str = "1.0.0",
-        balance_type: BalanceType = BalanceType.ROUND_ROBIN,
-        tags: dict[str, str] | None = None,
-        protocol: str = "grpc",
-        tls_enabled: bool = False,
-        ttl: int = 60,
-        health_check: HealthCheckConfig | None = None,
-        middleware: MiddlewareConfig | None = None,
-        descriptor_data: bytes | None = None,
-        metadata: dict | None = None,
-    ) -> str:
+    async def register(self, **_kwargs: object) -> str:  # type: ignore[override]
         """
-        Register a service instance with the gateway.
-
-        .. deprecated::
-            Service registration is now an admin-only operation.  Use the
-            management frontend to initialise services.  This method requires
-            admin (JWT) authentication and will be removed in a future version.
-
         Raises
         ------
-        DiscoveryError
-            On any gRPC error.
+        PermissionError
+            Always.  Service registration is an admin-only operation managed
+            through the management frontend.  Obtain an ``app_secret`` from the
+            admin UI and use :meth:`upload_descriptor_from_file` instead.
         """
-        import warnings
-        warnings.warn(
-            "register() is deprecated. Use the admin management UI to initialise services.",
-            DeprecationWarning,
-            stacklevel=2,
+        raise PermissionError(
+            "register() is an admin-only operation. "
+            "Initialise services through the management frontend to obtain an app_secret, "
+            "then use upload_descriptor_from_file() to submit your .pb descriptor."
         )
-        lb = _to_proto_lb(endpoints, balance_type)
-        hc = _to_proto_hc(health_check)
-        mw = _to_proto_mw(middleware)
 
-        instance_kwargs: dict = dict(
-            service_name=service_name,
-            instance_id=instance_id,
-            lb=lb,
-            version=version,
-            tags=tags or {},
-            protocol=protocol,
-            tls_enabled=tls_enabled,
-            weight=max(ep.weight for ep in endpoints) if endpoints else 1,
-            status=_pb.SERVICE_STATUS_HEALTHY,
-        )
-        if hc is not None:
-            instance_kwargs["health_check_config"] = hc
-        if mw is not None:
-            instance_kwargs["middleware_config"] = mw
-        if descriptor_data:
-            instance_kwargs["protobuf_descriptor"] = descriptor_data
-
-        req = _pb.RegisterServiceRequest(
-            service=_pb.ServiceInstance(**instance_kwargs),
-            ttl=ttl,
-        )
-        resp: _pb.RegisterServiceResponse = await self._call_with_retry(  # type: ignore[assignment]
-            lambda: self._s.RegisterService(req, metadata=self._meta(), timeout=self._timeout)
-        )
-        if not resp.success:
-            raise DiscoveryError(f"Registration failed: {resp.message}")
-        # Prefer the explicit instance_id echoed back by the server (field 4).
-        # Fall back to the caller-supplied id, then to the legacy behaviour of
-        # parsing resp.message (which embeds the id as human-readable text and
-        # is therefore fragile).
-        assigned_id = resp.instance_id or instance_id
-        if not assigned_id:
-            # Last-resort fallback for old gateway versions without field 4.
-            assigned_id = instance_id or resp.message
-        log.info(
-            "registered service_name=%s instance_id=%s lease_id=%s",
-            service_name,
-            instance_id or "(auto)",
-            resp.lease_id,
-        )
-        return assigned_id
-
-    async def deregister(self, *, service_name: str, instance_id: str) -> None:
+    async def deregister(self, **_kwargs: object) -> None:  # type: ignore[override]
         """
-        Deregister a service instance.
-
-        .. deprecated::
-            Service deregistration is now an admin-only operation.  Use the
-            management frontend.  This method requires admin (JWT)
-            authentication and will be removed in a future version.
-
         Raises
         ------
-        DiscoveryError
-            On any gRPC error.
+        PermissionError
+            Always.  Service deregistration is an admin-only operation managed
+            through the management frontend.
         """
-        import warnings
-        warnings.warn(
-            "deregister() is deprecated. Use the admin management UI to manage services.",
-            DeprecationWarning,
-            stacklevel=2,
+        raise PermissionError(
+            "deregister() is an admin-only operation. "
+            "Manage service lifecycle through the management frontend."
         )
-        req = _pb.DeregisterServiceRequest(
-            service_name=service_name,
-            instance_id=instance_id,
-        )
-        resp: _pb.DeregisterServiceResponse = await self._call(
-            self._s.DeregisterService(req, metadata=self._meta(), timeout=self._timeout)
-        )
-        if not resp.success:
-            raise DiscoveryError(f"Deregistration failed: {resp.message}")
-        log.info("deregistered service_name=%s instance_id=%s", service_name, instance_id)
 
     # ------------------------------------------------------------------
     # Health / keepalive
@@ -500,7 +418,7 @@ class DiscoveryClient:
         *,
         service_name: str,
         instance_id: str,
-        status: str = "SERVICE_STATUS_HEALTHY",
+        status: int = _pb.SERVICE_STATUS_HEALTHY,
         message: str = "",
     ) -> None:
         """
@@ -509,12 +427,13 @@ class DiscoveryClient:
         Parameters
         ----------
         service_name:
-            Fully-qualified service name.
+            Fully-qualified service name (must match the ``app_secret`` binding).
         instance_id:
-            Instance ID.
+            Instance ID assigned by the admin when the service was configured.
+            Use :meth:`get_instances` to discover the assigned ID.
         status:
-            One of ``SERVICE_STATUS_HEALTHY``, ``SERVICE_STATUS_UNHEALTHY``,
-            ``SERVICE_STATUS_MAINTENANCE``, ``SERVICE_STATUS_DRAINING``.
+            One of ``_pb.SERVICE_STATUS_HEALTHY``, ``_pb.SERVICE_STATUS_UNHEALTHY``,
+            ``_pb.SERVICE_STATUS_MAINTENANCE``, ``_pb.SERVICE_STATUS_DRAINING``.
         message:
             Optional human-readable status message.
 
@@ -541,7 +460,7 @@ class DiscoveryClient:
         service_name: str,
         instance_id: str,
         interval: int = 30,
-        on_error: None = None,
+        on_error: Callable[[DiscoveryError], None] | None = None,
     ) -> None:
         """
         Start a background keepalive loop for this instance.
@@ -553,12 +472,17 @@ class DiscoveryClient:
         Parameters
         ----------
         service_name:
-            Fully-qualified service name.
+            Fully-qualified service name (must match the ``app_secret`` binding).
         instance_id:
-            Instance ID.
+            Instance ID assigned by the admin.  Discover it via
+            :meth:`get_instances` if it was not provided to you directly.
         interval:
-            Heartbeat interval in seconds.  Should be less than the TTL used
-            during registration (default TTL is 60 s, recommended interval ≤ 30 s).
+            Heartbeat interval in seconds.  Must be less than the TTL
+            configured on the gateway (default TTL is 60 s, recommended
+            interval \u2264 30 s).
+        on_error:
+            Optional callback invoked with the :class:`DiscoveryError` each
+            time a heartbeat fails.  If ``None``, failures are only logged.
 
         Raises
         ------
@@ -580,6 +504,11 @@ class DiscoveryClient:
                     log.debug("keepalive sent for %s", key)
                 except DiscoveryError as exc:
                     log.warning("keepalive failed for %s: %s", key, exc)
+                    if on_error is not None:
+                        try:
+                            on_error(exc)
+                        except Exception:  # noqa: BLE001
+                            log.exception("keepalive on_error callback raised for %s", key)
 
         task = asyncio.create_task(_loop(), name=f"keepalive:{key}")
         self._keepalive_tasks[key] = task
@@ -812,8 +741,52 @@ class DiscoveryClient:
         return None
 
     # ------------------------------------------------------------------
-    # Query
+    # Query (read-only, available to all authenticated callers)
     # ------------------------------------------------------------------
+
+    async def list_services(
+        self,
+        *,
+        name_prefix: str = "",
+        tag_filters: dict[str, str] | None = None,
+    ) -> list[dict]:
+        """
+        List services registered on the gateway (read-only).
+
+        Parameters
+        ----------
+        name_prefix:
+            Filter by service name prefix.  Empty string returns all services.
+        tag_filters:
+            Key/value tag pairs that must all match.
+
+        Returns
+        -------
+        list[dict]
+            Each entry contains ``service_name``, ``instance_id``, ``version``,
+            ``status``, ``protocol``, and ``endpoints``.
+        """
+        req = _pb.ListServicesRequest(
+            name_prefix=name_prefix,
+            tag_filters=tag_filters or {},
+        )
+        resp: _pb.ListServicesResponse = await self._call(
+            self._s.ListServices(req, metadata=self._meta(), timeout=self._timeout)
+        )
+        return [
+            {
+                "service_name": svc.service_name,
+                "instance_id": svc.instance_id,
+                "version": svc.version,
+                "status": svc.status,
+                "protocol": svc.protocol,
+                "endpoints": [
+                    {"address": ep.address, "port": ep.port, "weight": ep.weight}
+                    for ep in (svc.lb.endpoints if svc.lb else [])
+                ],
+            }
+            for svc in (resp.services or [])
+        ]
 
     async def get_instances(
         self,
@@ -889,12 +862,6 @@ class SyncDiscoveryClient:
         self._run(self._client.close())
         self._loop.close()
 
-    def register(self, **kwargs) -> str:  # type: ignore[no-untyped-def]
-        return self._run(self._client.register(**kwargs))
-
-    def deregister(self, **kwargs) -> None:  # type: ignore[no-untyped-def]
-        self._run(self._client.deregister(**kwargs))
-
     def heartbeat(self, **kwargs) -> None:  # type: ignore[no-untyped-def]
         self._run(self._client.heartbeat(**kwargs))
 
@@ -912,3 +879,6 @@ class SyncDiscoveryClient:
 
     def get_instances(self, service_name: str, **kwargs) -> list[dict]:  # type: ignore[no-untyped-def]
         return self._run(self._client.get_instances(service_name, **kwargs))
+
+    def list_services(self, **kwargs) -> list[dict]:  # type: ignore[no-untyped-def]
+        return self._run(self._client.list_services(**kwargs))
