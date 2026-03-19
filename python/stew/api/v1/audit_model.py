@@ -1,10 +1,11 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   audit_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:10
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 import datetime
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
@@ -41,9 +42,10 @@ class AuditLogEntry(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AuditLogEntry':
+    def from_protobuf(cls, src: _message.Message) -> "AuditLogEntry":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetAuditLogsRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -68,9 +70,10 @@ class GetAuditLogsRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetAuditLogsRequest':
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditLogsRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetAuditLogsResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -86,9 +89,10 @@ class GetAuditLogsResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetAuditLogsResponse':
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditLogsResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetAuditStatisticsRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -102,9 +106,10 @@ class GetAuditStatisticsRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetAuditStatisticsRequest':
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditStatisticsRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class ActionStatistic(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -118,9 +123,10 @@ class ActionStatistic(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'ActionStatistic':
+    def from_protobuf(cls, src: _message.Message) -> "ActionStatistic":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetAuditStatisticsResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -136,7 +142,6 @@ class GetAuditStatisticsResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetAuditStatisticsResponse':
+    def from_protobuf(cls, src: _message.Message) -> "GetAuditStatisticsResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-

@@ -172,8 +172,76 @@ class ServiceTurnstileConfig(_message.Message):
     enforce_on_risk_challenge: bool
     def __init__(self, enabled: bool = ..., required_paths: _Optional[_Iterable[str]] = ..., skip_paths: _Optional[_Iterable[str]] = ..., expected_action: _Optional[str] = ..., expected_hostname: _Optional[str] = ..., enforce_on_risk_challenge: bool = ...) -> None: ...
 
+class AiBodyFieldMap(_message.Message):
+    __slots__ = ("messages_path", "role_field", "content_field", "user_role_value", "prompt_path", "model_path", "max_tokens_path")
+    MESSAGES_PATH_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_FIELD_NUMBER: _ClassVar[int]
+    USER_ROLE_VALUE_FIELD_NUMBER: _ClassVar[int]
+    PROMPT_PATH_FIELD_NUMBER: _ClassVar[int]
+    MODEL_PATH_FIELD_NUMBER: _ClassVar[int]
+    MAX_TOKENS_PATH_FIELD_NUMBER: _ClassVar[int]
+    messages_path: str
+    role_field: str
+    content_field: str
+    user_role_value: str
+    prompt_path: str
+    model_path: str
+    max_tokens_path: str
+    def __init__(self, messages_path: _Optional[str] = ..., role_field: _Optional[str] = ..., content_field: _Optional[str] = ..., user_role_value: _Optional[str] = ..., prompt_path: _Optional[str] = ..., model_path: _Optional[str] = ..., max_tokens_path: _Optional[str] = ...) -> None: ...
+
+class ServiceAiGuardConfig(_message.Message):
+    __slots__ = ("enabled", "mode", "include_paths", "request_body_max_bytes", "max_input_tokens", "max_output_tokens", "max_context_tokens", "history_policy", "daily_token_quota", "daily_request_quota", "minute_request_quota", "allow_free_chat", "allowed_topics", "deny_keywords", "enable_audit", "classifier_type", "llm_endpoint", "llm_model", "llm_system_prompt", "llm_timeout_ms", "llm_confidence_threshold", "body_map", "quota_window_secs")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_PATHS_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_BODY_MAX_BYTES_FIELD_NUMBER: _ClassVar[int]
+    MAX_INPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    MAX_OUTPUT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    MAX_CONTEXT_TOKENS_FIELD_NUMBER: _ClassVar[int]
+    HISTORY_POLICY_FIELD_NUMBER: _ClassVar[int]
+    DAILY_TOKEN_QUOTA_FIELD_NUMBER: _ClassVar[int]
+    DAILY_REQUEST_QUOTA_FIELD_NUMBER: _ClassVar[int]
+    MINUTE_REQUEST_QUOTA_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_FREE_CHAT_FIELD_NUMBER: _ClassVar[int]
+    ALLOWED_TOPICS_FIELD_NUMBER: _ClassVar[int]
+    DENY_KEYWORDS_FIELD_NUMBER: _ClassVar[int]
+    ENABLE_AUDIT_FIELD_NUMBER: _ClassVar[int]
+    CLASSIFIER_TYPE_FIELD_NUMBER: _ClassVar[int]
+    LLM_ENDPOINT_FIELD_NUMBER: _ClassVar[int]
+    LLM_MODEL_FIELD_NUMBER: _ClassVar[int]
+    LLM_SYSTEM_PROMPT_FIELD_NUMBER: _ClassVar[int]
+    LLM_TIMEOUT_MS_FIELD_NUMBER: _ClassVar[int]
+    LLM_CONFIDENCE_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
+    BODY_MAP_FIELD_NUMBER: _ClassVar[int]
+    QUOTA_WINDOW_SECS_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    mode: str
+    include_paths: _containers.RepeatedScalarFieldContainer[str]
+    request_body_max_bytes: int
+    max_input_tokens: int
+    max_output_tokens: int
+    max_context_tokens: int
+    history_policy: str
+    daily_token_quota: int
+    daily_request_quota: int
+    minute_request_quota: int
+    allow_free_chat: bool
+    allowed_topics: _containers.RepeatedScalarFieldContainer[str]
+    deny_keywords: _containers.RepeatedScalarFieldContainer[str]
+    enable_audit: bool
+    classifier_type: str
+    llm_endpoint: str
+    llm_model: str
+    llm_system_prompt: str
+    llm_timeout_ms: int
+    llm_confidence_threshold: float
+    body_map: AiBodyFieldMap
+    quota_window_secs: int
+    def __init__(self, enabled: bool = ..., mode: _Optional[str] = ..., include_paths: _Optional[_Iterable[str]] = ..., request_body_max_bytes: _Optional[int] = ..., max_input_tokens: _Optional[int] = ..., max_output_tokens: _Optional[int] = ..., max_context_tokens: _Optional[int] = ..., history_policy: _Optional[str] = ..., daily_token_quota: _Optional[int] = ..., daily_request_quota: _Optional[int] = ..., minute_request_quota: _Optional[int] = ..., allow_free_chat: bool = ..., allowed_topics: _Optional[_Iterable[str]] = ..., deny_keywords: _Optional[_Iterable[str]] = ..., enable_audit: bool = ..., classifier_type: _Optional[str] = ..., llm_endpoint: _Optional[str] = ..., llm_model: _Optional[str] = ..., llm_system_prompt: _Optional[str] = ..., llm_timeout_ms: _Optional[int] = ..., llm_confidence_threshold: _Optional[float] = ..., body_map: _Optional[_Union[AiBodyFieldMap, _Mapping]] = ..., quota_window_secs: _Optional[int] = ...) -> None: ...
+
 class ServiceMiddlewareConfig(_message.Message):
-    __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile")
+    __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile", "ai_guard_enabled", "ai_guard")
     RATE_LIMIT_ENABLED_FIELD_NUMBER: _ClassVar[int]
     RATE_LIMIT_RPM_FIELD_NUMBER: _ClassVar[int]
     RATE_LIMIT_USER_RPM_FIELD_NUMBER: _ClassVar[int]
@@ -183,6 +251,8 @@ class ServiceMiddlewareConfig(_message.Message):
     RISK_FIELD_NUMBER: _ClassVar[int]
     TURNSTILE_ENABLED_FIELD_NUMBER: _ClassVar[int]
     TURNSTILE_FIELD_NUMBER: _ClassVar[int]
+    AI_GUARD_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    AI_GUARD_FIELD_NUMBER: _ClassVar[int]
     rate_limit_enabled: bool
     rate_limit_rpm: int
     rate_limit_user_rpm: int
@@ -192,7 +262,9 @@ class ServiceMiddlewareConfig(_message.Message):
     risk: ServiceRiskConfig
     turnstile_enabled: bool
     turnstile: ServiceTurnstileConfig
-    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ...) -> None: ...
+    ai_guard_enabled: bool
+    ai_guard: ServiceAiGuardConfig
+    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ...) -> None: ...
 
 class ServiceInstance(_message.Message):
     __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")

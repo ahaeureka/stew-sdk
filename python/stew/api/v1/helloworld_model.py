@@ -1,10 +1,11 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   helloworld_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:10
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
@@ -23,9 +24,10 @@ class HelloRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'HelloRequest':
+    def from_protobuf(cls, src: _message.Message) -> "HelloRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class HelloReply(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -39,7 +41,6 @@ class HelloReply(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'HelloReply':
+    def from_protobuf(cls, src: _message.Message) -> "HelloReply":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-

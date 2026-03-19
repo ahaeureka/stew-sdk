@@ -1,4 +1,69 @@
 {
+    "AiGuardFieldOptions": {
+        "is_messages_array": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "is_role_field": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "is_content_field": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "role_filter": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "is_prompt": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "is_model": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "is_max_tokens": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        }
+    },
     "Tenant": {
         "sub": {
             "type": "str",

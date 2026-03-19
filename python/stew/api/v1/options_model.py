@@ -1,10 +1,34 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   options_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:11
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
-from typing import Type
+"""
+
+from google.protobuf import message as _message, message_factory
+from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
+from pydantic import BaseModel, ConfigDict, Field as _Field
+from typing import Optional, Type
 
 
+class AiGuardFieldOptions(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    is_messages_array: Optional[bool] = _Field(default=False)
+    is_role_field: Optional[bool] = _Field(default=False)
+    is_content_field: Optional[bool] = _Field(default=False)
+    role_filter: Optional[str] = _Field(default="")
+    is_prompt: Optional[bool] = _Field(default=False)
+    is_model: Optional[bool] = _Field(default=False)
+    is_max_tokens: Optional[bool] = _Field(default=False)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.AiGuardFieldOptions")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "AiGuardFieldOptions":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)

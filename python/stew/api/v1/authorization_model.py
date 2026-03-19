@@ -1,10 +1,11 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   authorization_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:10
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 import datetime
 from .user_model import User
 from google.protobuf import message as _message, message_factory
@@ -26,9 +27,10 @@ class TokenRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'TokenRequest':
+    def from_protobuf(cls, src: _message.Message) -> "TokenRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class TokenResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -46,9 +48,10 @@ class TokenResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'TokenResponse':
+    def from_protobuf(cls, src: _message.Message) -> "TokenResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class ValidateTokenRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -61,9 +64,10 @@ class ValidateTokenRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'ValidateTokenRequest':
+    def from_protobuf(cls, src: _message.Message) -> "ValidateTokenRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class ValidateTokenResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -79,9 +83,10 @@ class ValidateTokenResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'ValidateTokenResponse':
+    def from_protobuf(cls, src: _message.Message) -> "ValidateTokenResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class AuthorizationRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -100,9 +105,10 @@ class AuthorizationRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AuthorizationRequest':
+    def from_protobuf(cls, src: _message.Message) -> "AuthorizationRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class AuthorizationResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -120,9 +126,10 @@ class AuthorizationResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AuthorizationResponse':
+    def from_protobuf(cls, src: _message.Message) -> "AuthorizationResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class BatchAuthorizationRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -135,9 +142,10 @@ class BatchAuthorizationRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'BatchAuthorizationRequest':
+    def from_protobuf(cls, src: _message.Message) -> "BatchAuthorizationRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class BatchAuthorizationResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -150,9 +158,10 @@ class BatchAuthorizationResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'BatchAuthorizationResponse':
+    def from_protobuf(cls, src: _message.Message) -> "BatchAuthorizationResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class PolicyRule(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -166,9 +175,10 @@ class PolicyRule(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'PolicyRule':
+    def from_protobuf(cls, src: _message.Message) -> "PolicyRule":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class SyncPolicyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -183,9 +193,10 @@ class SyncPolicyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'SyncPolicyRequest':
+    def from_protobuf(cls, src: _message.Message) -> "SyncPolicyRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class SyncPolicyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -201,9 +212,10 @@ class SyncPolicyResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'SyncPolicyResponse':
+    def from_protobuf(cls, src: _message.Message) -> "SyncPolicyResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetPolicyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -217,9 +229,10 @@ class GetPolicyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetPolicyRequest':
+    def from_protobuf(cls, src: _message.Message) -> "GetPolicyRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetPolicyResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -234,9 +247,10 @@ class GetPolicyResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetPolicyResponse':
+    def from_protobuf(cls, src: _message.Message) -> "GetPolicyResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class AddPolicyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -250,9 +264,10 @@ class AddPolicyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AddPolicyRequest':
+    def from_protobuf(cls, src: _message.Message) -> "AddPolicyRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class RemovePolicyRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -266,9 +281,10 @@ class RemovePolicyRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'RemovePolicyRequest':
+    def from_protobuf(cls, src: _message.Message) -> "RemovePolicyRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class PolicyOperationResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -282,9 +298,10 @@ class PolicyOperationResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'PolicyOperationResponse':
+    def from_protobuf(cls, src: _message.Message) -> "PolicyOperationResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class AuditLog(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -307,9 +324,10 @@ class AuditLog(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AuditLog':
+    def from_protobuf(cls, src: _message.Message) -> "AuditLog":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class QueryAuditLogsRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -327,9 +345,10 @@ class QueryAuditLogsRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'QueryAuditLogsRequest':
+    def from_protobuf(cls, src: _message.Message) -> "QueryAuditLogsRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class QueryAuditLogsResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -344,9 +363,10 @@ class QueryAuditLogsResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'QueryAuditLogsResponse':
+    def from_protobuf(cls, src: _message.Message) -> "QueryAuditLogsResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class HealthCheckRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -359,9 +379,10 @@ class HealthCheckRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'HealthCheckRequest':
+    def from_protobuf(cls, src: _message.Message) -> "HealthCheckRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class HealthCheckResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -376,7 +397,6 @@ class HealthCheckResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'HealthCheckResponse':
+    def from_protobuf(cls, src: _message.Message) -> "HealthCheckResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-

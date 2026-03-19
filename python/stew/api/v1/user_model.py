@@ -1,24 +1,28 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   user_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:10
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 from enum import Enum as _Enum
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
 from typing import Any, Dict, List, Optional, Type
 
+
 class Role(_Enum):
     ADMIN = 0
+
 
 class USER_STATUS(_Enum):
     ACTIVE = 0
     INACTIVE = 1
     LOCKED = 2
     DELETED = 3
+
 
 class UserSvrCode(_Enum):
     USER_UNKNOWN = 0
@@ -53,9 +57,10 @@ class Address(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'Address':
+    def from_protobuf(cls, src: _message.Message) -> "Address":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class User(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -101,9 +106,10 @@ class User(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'User':
+    def from_protobuf(cls, src: _message.Message) -> "User":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class BasicAuth(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -125,9 +131,10 @@ class BasicAuth(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'BasicAuth':
+    def from_protobuf(cls, src: _message.Message) -> "BasicAuth":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class PostUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -150,9 +157,10 @@ class PostUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'PostUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "PostUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -165,9 +173,10 @@ class GetUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "GetUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class DeleteUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -180,9 +189,10 @@ class DeleteUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'DeleteUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "DeleteUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class DeleteUserResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -195,9 +205,10 @@ class DeleteUserResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'DeleteUserResponse':
+    def from_protobuf(cls, src: _message.Message) -> "DeleteUserResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class PatchUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -220,9 +231,10 @@ class PatchUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'PatchUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "PatchUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class UpdateUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -245,13 +257,14 @@ class UpdateUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'UpdateUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "UpdateUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 
+
 class UploadAvatarRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
-    avatar_data: Optional[bytes] = _Field(default=b'')
+    avatar_data: Optional[bytes] = _Field(default=b"")
     filename: Optional[str] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
@@ -261,9 +274,10 @@ class UploadAvatarRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'UploadAvatarRequest':
+    def from_protobuf(cls, src: _message.Message) -> "UploadAvatarRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class UploadAvatarResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -276,7 +290,6 @@ class UploadAvatarResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'UploadAvatarResponse':
+    def from_protobuf(cls, src: _message.Message) -> "UploadAvatarResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-

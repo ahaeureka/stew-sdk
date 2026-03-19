@@ -1,15 +1,17 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   web_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:11
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 from enum import Enum as _Enum
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
 from typing import Optional, Type
+
 
 class Code(_Enum):
     UNKNOWN = 0
@@ -32,7 +34,7 @@ class APIResponse(BaseModel):
     message: Optional[str] = _Field(default="")
     code: Optional[float] = _Field(default=0.0)
     response_type: Optional[str] = _Field(default="")
-    data: Optional[bytes] = _Field(default=b'')
+    data: Optional[bytes] = _Field(default=b"")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -41,9 +43,10 @@ class APIResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'APIResponse':
+    def from_protobuf(cls, src: _message.Message) -> "APIResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class HttpResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -58,9 +61,10 @@ class HttpResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'HttpResponse':
+    def from_protobuf(cls, src: _message.Message) -> "HttpResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class EventStreamResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -76,9 +80,10 @@ class EventStreamResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'EventStreamResponse':
+    def from_protobuf(cls, src: _message.Message) -> "EventStreamResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class RedirectResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -92,9 +97,10 @@ class RedirectResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'RedirectResponse':
+    def from_protobuf(cls, src: _message.Message) -> "RedirectResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class Errors(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -114,9 +120,10 @@ class Errors(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'Errors':
+    def from_protobuf(cls, src: _message.Message) -> "Errors":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class Headers(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -132,9 +139,10 @@ class Headers(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'Headers':
+    def from_protobuf(cls, src: _message.Message) -> "Headers":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class EventStream(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -150,7 +158,6 @@ class EventStream(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'EventStream':
+    def from_protobuf(cls, src: _message.Message) -> "EventStream":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-

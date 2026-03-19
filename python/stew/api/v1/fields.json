@@ -1,4 +1,13 @@
 {
+    "AiGuardFieldOptions": {
+        "is_messages_array": "",
+        "is_role_field": "",
+        "is_content_field": "",
+        "role_filter": "",
+        "is_prompt": "",
+        "is_model": "",
+        "is_max_tokens": ""
+    },
     "Tenant": {
         "sub": "",
         "name": "",

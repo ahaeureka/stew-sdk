@@ -1,10 +1,11 @@
 # !/usr/bin/env python
 # -*- encoding: utf-8 -*-
-'''
+"""
 @File    :   authentication_model.py
-@Time    :   2026-03-18 13:08:00
+@Time    :   2026-03-19 14:39:10
 @Desc    :   Generated Pydantic models from protobuf definitions
-'''
+"""
+
 from .user_model import User
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
@@ -27,9 +28,10 @@ class OpenIDConnectCallbackRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'OpenIDConnectCallbackRequest':
+    def from_protobuf(cls, src: _message.Message) -> "OpenIDConnectCallbackRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class LoginRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -42,9 +44,10 @@ class LoginRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'LoginRequest':
+    def from_protobuf(cls, src: _message.Message) -> "LoginRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class LoginCallbackResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -58,9 +61,10 @@ class LoginCallbackResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'LoginCallbackResponse':
+    def from_protobuf(cls, src: _message.Message) -> "LoginCallbackResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class LogoutRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -75,9 +79,10 @@ class LogoutRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'LogoutRequest':
+    def from_protobuf(cls, src: _message.Message) -> "LogoutRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class LogoutCallbackRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -91,9 +96,10 @@ class LogoutCallbackRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'LogoutCallbackRequest':
+    def from_protobuf(cls, src: _message.Message) -> "LogoutCallbackRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class AuthServiceUris(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -107,9 +113,10 @@ class AuthServiceUris(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'AuthServiceUris':
+    def from_protobuf(cls, src: _message.Message) -> "AuthServiceUris":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class GetCurrentUserRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -121,9 +128,10 @@ class GetCurrentUserRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'GetCurrentUserRequest':
+    def from_protobuf(cls, src: _message.Message) -> "GetCurrentUserRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class CurrentUserResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -138,9 +146,10 @@ class CurrentUserResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'CurrentUserResponse':
+    def from_protobuf(cls, src: _message.Message) -> "CurrentUserResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class ValidateSessionRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -153,9 +162,10 @@ class ValidateSessionRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'ValidateSessionRequest':
+    def from_protobuf(cls, src: _message.Message) -> "ValidateSessionRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class ValidateSessionResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -170,9 +180,10 @@ class ValidateSessionResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'ValidateSessionResponse':
+    def from_protobuf(cls, src: _message.Message) -> "ValidateSessionResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class RefreshTokenRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -185,9 +196,10 @@ class RefreshTokenRequest(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'RefreshTokenRequest':
+    def from_protobuf(cls, src: _message.Message) -> "RefreshTokenRequest":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
+
 
 class RefreshTokenResponse(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
@@ -201,7 +213,6 @@ class RefreshTokenResponse(BaseModel):
         return model2protobuf(self, _cls())
 
     @classmethod
-    def from_protobuf(cls, src: _message.Message) -> 'RefreshTokenResponse':
+    def from_protobuf(cls, src: _message.Message) -> "RefreshTokenResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
-
