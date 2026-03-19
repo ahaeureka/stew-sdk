@@ -1,5 +1,6 @@
 import datetime
 
+from google.protobuf import any_pb2 as _any_pb2
 from google.api import annotations_pb2 as _annotations_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
@@ -191,7 +192,7 @@ class AiBodyFieldMap(_message.Message):
     def __init__(self, messages_path: _Optional[str] = ..., role_field: _Optional[str] = ..., content_field: _Optional[str] = ..., user_role_value: _Optional[str] = ..., prompt_path: _Optional[str] = ..., model_path: _Optional[str] = ..., max_tokens_path: _Optional[str] = ...) -> None: ...
 
 class ServiceAiGuardConfig(_message.Message):
-    __slots__ = ("enabled", "mode", "include_paths", "request_body_max_bytes", "max_input_tokens", "max_output_tokens", "max_context_tokens", "history_policy", "daily_token_quota", "daily_request_quota", "minute_request_quota", "allow_free_chat", "allowed_topics", "deny_keywords", "enable_audit", "classifier_type", "llm_endpoint", "llm_model", "llm_system_prompt", "llm_timeout_ms", "llm_confidence_threshold", "body_map", "quota_window_secs")
+    __slots__ = ("enabled", "mode", "include_paths", "request_body_max_bytes", "max_input_tokens", "max_output_tokens", "max_context_tokens", "history_policy", "daily_token_quota", "daily_request_quota", "minute_request_quota", "allow_free_chat", "allowed_topics", "deny_keywords", "enable_audit", "classifier_type", "llm_endpoint", "llm_model", "llm_system_prompt", "llm_timeout_ms", "llm_confidence_threshold", "body_map", "quota_window_secs", "business_description", "valid_intent_examples", "invalid_intent_examples")
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     MODE_FIELD_NUMBER: _ClassVar[int]
     INCLUDE_PATHS_FIELD_NUMBER: _ClassVar[int]
@@ -215,6 +216,9 @@ class ServiceAiGuardConfig(_message.Message):
     LLM_CONFIDENCE_THRESHOLD_FIELD_NUMBER: _ClassVar[int]
     BODY_MAP_FIELD_NUMBER: _ClassVar[int]
     QUOTA_WINDOW_SECS_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    VALID_INTENT_EXAMPLES_FIELD_NUMBER: _ClassVar[int]
+    INVALID_INTENT_EXAMPLES_FIELD_NUMBER: _ClassVar[int]
     enabled: bool
     mode: str
     include_paths: _containers.RepeatedScalarFieldContainer[str]
@@ -238,7 +242,10 @@ class ServiceAiGuardConfig(_message.Message):
     llm_confidence_threshold: float
     body_map: AiBodyFieldMap
     quota_window_secs: int
-    def __init__(self, enabled: bool = ..., mode: _Optional[str] = ..., include_paths: _Optional[_Iterable[str]] = ..., request_body_max_bytes: _Optional[int] = ..., max_input_tokens: _Optional[int] = ..., max_output_tokens: _Optional[int] = ..., max_context_tokens: _Optional[int] = ..., history_policy: _Optional[str] = ..., daily_token_quota: _Optional[int] = ..., daily_request_quota: _Optional[int] = ..., minute_request_quota: _Optional[int] = ..., allow_free_chat: bool = ..., allowed_topics: _Optional[_Iterable[str]] = ..., deny_keywords: _Optional[_Iterable[str]] = ..., enable_audit: bool = ..., classifier_type: _Optional[str] = ..., llm_endpoint: _Optional[str] = ..., llm_model: _Optional[str] = ..., llm_system_prompt: _Optional[str] = ..., llm_timeout_ms: _Optional[int] = ..., llm_confidence_threshold: _Optional[float] = ..., body_map: _Optional[_Union[AiBodyFieldMap, _Mapping]] = ..., quota_window_secs: _Optional[int] = ...) -> None: ...
+    business_description: str
+    valid_intent_examples: _containers.RepeatedScalarFieldContainer[str]
+    invalid_intent_examples: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, enabled: bool = ..., mode: _Optional[str] = ..., include_paths: _Optional[_Iterable[str]] = ..., request_body_max_bytes: _Optional[int] = ..., max_input_tokens: _Optional[int] = ..., max_output_tokens: _Optional[int] = ..., max_context_tokens: _Optional[int] = ..., history_policy: _Optional[str] = ..., daily_token_quota: _Optional[int] = ..., daily_request_quota: _Optional[int] = ..., minute_request_quota: _Optional[int] = ..., allow_free_chat: bool = ..., allowed_topics: _Optional[_Iterable[str]] = ..., deny_keywords: _Optional[_Iterable[str]] = ..., enable_audit: bool = ..., classifier_type: _Optional[str] = ..., llm_endpoint: _Optional[str] = ..., llm_model: _Optional[str] = ..., llm_system_prompt: _Optional[str] = ..., llm_timeout_ms: _Optional[int] = ..., llm_confidence_threshold: _Optional[float] = ..., body_map: _Optional[_Union[AiBodyFieldMap, _Mapping]] = ..., quota_window_secs: _Optional[int] = ..., business_description: _Optional[str] = ..., valid_intent_examples: _Optional[_Iterable[str]] = ..., invalid_intent_examples: _Optional[_Iterable[str]] = ...) -> None: ...
 
 class ServiceMiddlewareConfig(_message.Message):
     __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile", "ai_guard_enabled", "ai_guard")
@@ -268,6 +275,13 @@ class ServiceMiddlewareConfig(_message.Message):
 
 class ServiceInstance(_message.Message):
     __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: _any_pb2.Any
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[_any_pb2.Any, _Mapping]] = ...) -> None: ...
     class TagsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -294,7 +308,7 @@ class ServiceInstance(_message.Message):
     instance_id: str
     lb: LoadBalancer
     version: str
-    metadata: _struct_pb2.Struct
+    metadata: _containers.MessageMap[str, _any_pb2.Any]
     health_endpoint: str
     health_check_config: HealthCheckConfig
     registered_at: _timestamp_pb2.Timestamp
@@ -305,7 +319,31 @@ class ServiceInstance(_message.Message):
     tls_enabled: bool
     protobuf_descriptor: bytes
     middleware_config: ServiceMiddlewareConfig
-    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ..., middleware_config: _Optional[_Union[ServiceMiddlewareConfig, _Mapping]] = ...) -> None: ...
+    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Mapping[str, _any_pb2.Any]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ..., middleware_config: _Optional[_Union[ServiceMiddlewareConfig, _Mapping]] = ...) -> None: ...
+
+class InitServiceRequest(_message.Message):
+    __slots__ = ("service_name", "description", "protocol")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    PROTOCOL_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    description: str
+    protocol: str
+    def __init__(self, service_name: _Optional[str] = ..., description: _Optional[str] = ..., protocol: _Optional[str] = ...) -> None: ...
+
+class InitServiceResponse(_message.Message):
+    __slots__ = ("success", "message", "app_id", "app_secret", "service_name")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    APP_ID_FIELD_NUMBER: _ClassVar[int]
+    APP_SECRET_FIELD_NUMBER: _ClassVar[int]
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    app_id: str
+    app_secret: str
+    service_name: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., app_id: _Optional[str] = ..., app_secret: _Optional[str] = ..., service_name: _Optional[str] = ...) -> None: ...
 
 class RegisterServiceRequest(_message.Message):
     __slots__ = ("service", "ttl")

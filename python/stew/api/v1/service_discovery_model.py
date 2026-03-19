@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   service_discovery_model.py
-@Time    :   2026-03-19 14:39:10
+@Time    :   2026-03-19 15:58:25
 @Desc    :   Generated Pydantic models from protobuf definitions
 """
 
@@ -11,7 +11,7 @@ from enum import Enum as _Enum
 from google.protobuf import message as _message, message_factory
 from protobuf_pydantic_gen.ext import model2protobuf, pool, protobuf2model
 from pydantic import BaseModel, ConfigDict, Field as _Field
-from typing import Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional, Type
 
 
 class BalanceType(_Enum):
@@ -233,6 +233,9 @@ class ServiceAiGuardConfig(BaseModel):
     llm_confidence_threshold: Optional[float] = _Field(default=0.0)
     body_map: Optional[AiBodyFieldMap] = _Field(default=None)
     quota_window_secs: Optional[int] = _Field(default=0)
+    business_description: Optional[str] = _Field(default="")
+    valid_intent_examples: Optional[List[str]] = _Field(default="")
+    invalid_intent_examples: Optional[List[str]] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -278,7 +281,7 @@ class ServiceInstance(BaseModel):
     instance_id: Optional[str] = _Field(default="")
     lb: Optional[LoadBalancer] = _Field(default=None)
     version: Optional[str] = _Field(default="")
-    metadata: Optional[Struct] = _Field(default=None)
+    metadata: Optional[Dict[str, Any]] = _Field(default=None)
     health_endpoint: Optional[str] = _Field(default="")
     health_check_config: Optional[HealthCheckConfig] = _Field(default=None)
     registered_at: Optional[datetime.datetime] = _Field(default=None)
@@ -298,6 +301,44 @@ class ServiceInstance(BaseModel):
 
     @classmethod
     def from_protobuf(cls, src: _message.Message) -> "ServiceInstance":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class InitServiceRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    service_name: Optional[str] = _Field(default="")
+    description: Optional[str] = _Field(default="")
+    protocol: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.InitServiceRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "InitServiceRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class InitServiceResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    success: Optional[bool] = _Field(default=False)
+    message: Optional[str] = _Field(default="")
+    app_id: Optional[str] = _Field(default="")
+    app_secret: Optional[str] = _Field(default="")
+    service_name: Optional[str] = _Field(default="")
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.InitServiceResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "InitServiceResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 

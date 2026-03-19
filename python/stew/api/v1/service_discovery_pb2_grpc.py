@@ -37,6 +37,11 @@ class ServiceDiscoveryServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.InitService = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/InitService',
+                request_serializer=service__discovery__pb2.InitServiceRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.InitServiceResponse.FromString,
+                _registered_method=True)
         self.RegisterService = channel.unary_unary(
                 '/stew.api.v1.ServiceDiscoveryService/RegisterService',
                 request_serializer=service__discovery__pb2.RegisterServiceRequest.SerializeToString,
@@ -119,6 +124,13 @@ class ServiceDiscoveryServiceServicer(object):
 
     服务注册和发现服务
     """
+
+    def InitService(self, request, context):
+        """初始化服务（管理端专属，生成 app_id + app_secret）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def RegisterService(self, request, context):
         """注册服务实例
@@ -228,6 +240,11 @@ class ServiceDiscoveryServiceServicer(object):
 
 def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'InitService': grpc.unary_unary_rpc_method_handler(
+                    servicer.InitService,
+                    request_deserializer=service__discovery__pb2.InitServiceRequest.FromString,
+                    response_serializer=service__discovery__pb2.InitServiceResponse.SerializeToString,
+            ),
             'RegisterService': grpc.unary_unary_rpc_method_handler(
                     servicer.RegisterService,
                     request_deserializer=service__discovery__pb2.RegisterServiceRequest.FromString,
@@ -316,6 +333,33 @@ class ServiceDiscoveryService(object):
 
     服务注册和发现服务
     """
+
+    @staticmethod
+    def InitService(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/InitService',
+            service__discovery__pb2.InitServiceRequest.SerializeToString,
+            service__discovery__pb2.InitServiceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
 
     @staticmethod
     def RegisterService(request,

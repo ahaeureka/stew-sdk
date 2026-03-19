@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   audit_model.py
-@Time    :   2026-03-19 14:39:10
+@Time    :   2026-03-19 15:58:25
 @Desc    :   Generated Pydantic models from protobuf definitions
 """
 
