@@ -43,7 +43,33 @@ SDK **不负责**服务注册/注销，这些操作需要管理员通过前端�
 
 ## 快速上手
 
-### 异步（推荐）
+### 一键接入（推荐）
+
+`GatewayClient` 是最简单的接入方式：连接网关、上传描述符、启动心跳保活一步完成。
+当网关启动时不可达（`UNAVAILABLE`），后台会以指数退避自动轮询重试，直到注册成功，
+业务服务无需处理网关宕机场景。
+
+```python
+import asyncio
+from stew import GatewayClient
+
+async def main():
+    async with GatewayClient(
+        "127.0.0.1:3012",
+        app_secret="ak_xxx",
+        service_name="stew.api.v1.OrderService",
+        pb_path="./order_service.pb",
+    ) as gw:
+        # 可选：等待首次注册成功后再提供服务流量
+        await gw.registered.wait()
+        await asyncio.Event().wait()  # 持续运行
+
+asyncio.run(main())
+```
+
+### 异步（低层 API）
+
+需要精细控制描述符版本或手动管理心跳时使用 `DiscoveryClient`：
 
 ```python
 import asyncio
@@ -95,7 +121,47 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 ## API 参考
 
-### `DiscoveryClient(gateway_addr, *, app_secret, ...)`
+### `GatewayClient(gateway_addr, *, app_secret, service_name, pb_path, ...)` — 推荐
+
+一键接入封装：上传描述符 + 启动心跳，网关不可达时后台自动轮询重试。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `gateway_addr` | `str` | 必填 | 网关地址，如 `127.0.0.1:3012` |
+| `app_secret` | `str` | `""` | 管理员下发的服务凭证 |
+| `api_key` | `str` | `""` | `app_secret` 的别名（兼容旧代码） |
+| `service_name` | `str` | 必填 | 完全限定服务名，如 `stew.api.v1.OrderService` |
+| `pb_path` | `str` | 必填 | `.pb` 描述符文件路径 |
+| `version` | `str` | `""` | 版本号，留空自动生成 |
+| `description` | `str` | `""` | 版本描述 |
+| `keepalive_interval` | `int` | `30` | 心跳间隔（秒），须小于网关 TTL |
+| `retry_base_delay` | `float` | `5.0` | 网关不可达时首次重试等待（秒） |
+| `retry_max_delay` | `float` | `300.0` | 重试间隔上限（秒） |
+| `use_tls` | `bool` | `False` | 是否启用 TLS |
+| `timeout` | `float` | `10.0` | 单次 RPC 超时（秒） |
+| `on_registered` | `Callable[[], None] \| None` | `None` | 首次注册成功后的回调 |
+
+**属性与方法：**
+
+| 成员 | 说明 |
+|------|------|
+| `registered` | `asyncio.Event`，首次注册成功后置位 |
+| `await start()` | 连接并执行注册；网关不可达时启动后台重试任务 |
+| `await stop()` | 取消重试任务并关闭连接 |
+
+**错误处理行为：**
+
+| 情形 | 行为 |
+|------|------|
+| 网关 `UNAVAILABLE` | 后台指数退避重试（5 s → 10 s → … → 300 s） |
+| `ConflictError`（乐观锁冲突） | 视为幂等成功，注册完成 |
+| `PERMISSION_DENIED` / `INVALID_ARGUMENT` | 记录警告，停止重试（非瞬时错误） |
+
+---
+
+### `DiscoveryClient(gateway_addr, *, app_secret, ...)` — 低层 API
+
+需要精细控制版本或手动管理心跳时使用。
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -302,7 +368,46 @@ async with DiscoveryClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 
 ## 完整示例：服务启动时提交描述符
 
-适合作为 Docker `ENTRYPOINT` 脚本或 Kubernetes init-container：
+### 方式一：GatewayClient（asyncio 服务，推荐）
+
+网关不可达时自动后台重试，适合长时间运行的 async 服务：
+
+```python
+#!/usr/bin/env python3
+"""main.py — asyncio 服务入口"""
+import asyncio
+import logging
+import os
+
+from stew import GatewayClient
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+
+GATEWAY    = os.environ.get("GATEWAY_ADDR", "127.0.0.1:3012")
+APP_SECRET = os.environ["APP_SECRET"]
+SVC_NAME   = os.environ["SERVICE_NAME"]
+PB_PATH    = os.environ.get("DESCRIPTOR_FILE", "service.pb")
+VERSION    = os.environ.get("SERVICE_VERSION", "")
+
+async def main():
+    async with GatewayClient(
+        GATEWAY,
+        app_secret=APP_SECRET,
+        service_name=SVC_NAME,
+        pb_path=PB_PATH,
+        version=VERSION,
+    ) as gw:
+        # 等待首次注册成功（可选）；网关不可达时后台持续重试
+        await gw.registered.wait()
+        # 启动业务 gRPC server ...
+        await asyncio.Event().wait()
+
+asyncio.run(main())
+```
+
+### 方式二：SyncDiscoveryClient（启动脚本 / init-container）
+
+适合一次性提交描述符并退出的场景。**注意**：此方式不含自动重试；若网关不可达将直接失败退出。
 
 ```python
 #!/usr/bin/env python3
