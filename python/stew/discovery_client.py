@@ -56,6 +56,7 @@ __all__ = [
     "BalanceType",
     "HealthCheckConfig",
     "MiddlewareConfig",
+    "RegistrationConfig",
     "CorsConfig",
     "RiskRuleConfig",
     "RiskConfig",
@@ -127,6 +128,51 @@ class DescriptorVersion:
     size_bytes: int
     is_active: bool
     created_at: str  # RFC3339 string
+
+
+@dataclass
+class RegistrationConfig:
+    """
+    Endpoint and metadata used for automatic service re-registration.
+
+    Pass an instance to :meth:`DiscoveryClient.start_keepalive` to enable
+    self-healing: when the gateway returns ``NOT_FOUND`` during a heartbeat
+    (e.g. after the gateway restarts and fails to recover the ETCD entry),
+    the keepalive loop calls ``RegisterService`` with this configuration and
+    resumes normal heartbeats once re-registration succeeds.
+
+    Parameters
+    ----------
+    endpoints:
+        List of backend address/port/weight entries.
+    balance_type:
+        Load-balancing algorithm.  Defaults to :attr:`BalanceType.ROUND_ROBIN`.
+    version:
+        Service version string for display / routing purposes.
+    health_check:
+        Optional active health-check configuration.
+    middleware:
+        Optional per-service middleware switches (rate limit, CORS, etc.).
+    tags:
+        Arbitrary key/value labels attached to the service instance.
+    protocol:
+        Transport protocol: ``"grpc"`` (default) or ``"http"``.
+    tls_enabled:
+        Whether the backend endpoint requires TLS.
+    descriptor_data:
+        Raw bytes of the compiled ``.pb`` descriptor file.  When provided the
+        descriptor is embedded in the registration request so the gateway can
+        rebuild its routing table without a separate upload step.
+    """
+    endpoints: Sequence[Endpoint]
+    balance_type: BalanceType = BalanceType.ROUND_ROBIN
+    version: str = ""
+    health_check: HealthCheckConfig | None = None
+    middleware: MiddlewareConfig | None = None
+    tags: dict[str, str] | None = None
+    protocol: str = "grpc"
+    tls_enabled: bool = False
+    descriptor_data: bytes = b""
 
 
 # ---------------------------------------------------------------------------
@@ -461,6 +507,7 @@ class DiscoveryClient:
         instance_id: str,
         interval: int = 30,
         on_error: Callable[[DiscoveryError], None] | None = None,
+        registration: RegistrationConfig | None = None,
     ) -> None:
         """
         Start a background keepalive loop for this instance.
@@ -468,6 +515,13 @@ class DiscoveryClient:
         Sends a heartbeat every ``interval`` seconds.  The loop runs as a
         background ``asyncio.Task`` and is cancelled automatically when the
         client is closed.
+
+        If the gateway returns ``NOT_FOUND`` (e.g. after the gateway process
+        restarts and its recovery mechanism fails to restore the ETCD entry),
+        the loop will automatically re-register the service using the supplied
+        ``registration`` config.  Without ``registration``, a ``NOT_FOUND``
+        error is treated the same as any other failure and forwarded to
+        ``on_error``.
 
         Parameters
         ----------
@@ -478,11 +532,18 @@ class DiscoveryClient:
             :meth:`get_instances` if it was not provided to you directly.
         interval:
             Heartbeat interval in seconds.  Must be less than the TTL
-            configured on the gateway (default TTL is 60 s, recommended
-            interval \u2264 30 s).
+            configured on the gateway (default TTL is 300 s, recommended
+            interval <= 30 s).
         on_error:
             Optional callback invoked with the :class:`DiscoveryError` each
-            time a heartbeat fails.  If ``None``, failures are only logged.
+            time a heartbeat or re-registration attempt fails.  If ``None``,
+            failures are only logged.
+        registration:
+            Optional :class:`RegistrationConfig` enabling self-healing
+            re-registration when the gateway loses the service entry.
+            When provided and ``NOT_FOUND`` is returned by the gateway, the
+            loop calls ``RegisterService`` automatically and resumes normal
+            heartbeats on success.
 
         Raises
         ------
@@ -493,6 +554,45 @@ class DiscoveryClient:
         if key in self._keepalive_tasks:
             raise RuntimeError(f"Keepalive already running for {key}")
 
+        async def _try_reregister() -> None:
+            log.info(
+                "keepalive: re-registering %s after NOT_FOUND (gateway may have restarted)",
+                key,
+            )
+            assert registration is not None  # guarded by caller
+            try:
+                instance = _pb.ServiceInstance(
+                    service_name=service_name,
+                    instance_id=instance_id,
+                    version=registration.version,
+                    lb=_to_proto_lb(registration.endpoints, registration.balance_type),
+                    health_check=_to_proto_hc(registration.health_check),
+                    middleware_config=_to_proto_mw(registration.middleware),
+                    tags=registration.tags or {},
+                    protocol=registration.protocol,
+                    tls_enabled=registration.tls_enabled,
+                    protobuf_descriptor=registration.descriptor_data,
+                    status=_pb.SERVICE_STATUS_HEALTHY,
+                )
+                req = _pb.RegisterServiceRequest(service=instance)
+                resp: _pb.RegisterServiceResponse = await self._call(  # type: ignore[assignment]
+                    self._s.RegisterService(req, metadata=self._meta(), timeout=self._timeout)
+                )
+                if not resp.success:
+                    raise DiscoveryError(f"Re-registration rejected by gateway: {resp.message}")
+                log.info(
+                    "keepalive: re-registration successful for %s (lease=%s)",
+                    key,
+                    resp.lease_id,
+                )
+            except DiscoveryError as exc:
+                log.error("keepalive: re-registration failed for %s: %s", key, exc)
+                if on_error is not None:
+                    try:
+                        on_error(exc)
+                    except Exception:  # noqa: BLE001
+                        log.exception("keepalive on_error callback raised for %s", key)
+
         async def _loop() -> None:
             while True:
                 await asyncio.sleep(interval)
@@ -502,6 +602,26 @@ class DiscoveryClient:
                         instance_id=instance_id,
                     )
                     log.debug("keepalive sent for %s", key)
+                except NotFoundError as exc:
+                    # Gateway lost the registration -- attempt self-healing re-registration.
+                    log.warning(
+                        "keepalive NOT_FOUND for %s: service is no longer registered on the "
+                        "gateway (gateway restart?)",
+                        key,
+                    )
+                    if registration is not None:
+                        await _try_reregister()
+                    else:
+                        log.warning(
+                            "keepalive: no RegistrationConfig supplied for %s; "
+                            "cannot auto-recover -- re-register via the admin UI",
+                            key,
+                        )
+                        if on_error is not None:
+                            try:
+                                on_error(exc)
+                            except Exception:  # noqa: BLE001
+                                log.exception("keepalive on_error callback raised for %s", key)
                 except DiscoveryError as exc:
                     log.warning("keepalive failed for %s: %s", key, exc)
                     if on_error is not None:
@@ -512,7 +632,7 @@ class DiscoveryClient:
 
         task = asyncio.create_task(_loop(), name=f"keepalive:{key}")
         self._keepalive_tasks[key] = task
-        log.info("keepalive started for %s (interval=%ds)", key, interval)
+        log.info("keepalive started for %s (interval=%ds, auto_recovery=%s)", key, interval, registration is not None)
 
     def stop_keepalive(self, *, service_name: str, instance_id: str) -> None:
         """Cancel the keepalive loop for a specific instance."""
@@ -882,3 +1002,326 @@ class SyncDiscoveryClient:
 
     def list_services(self, **kwargs) -> list[dict]:  # type: ignore[no-untyped-def]
         return self._run(self._client.list_services(**kwargs))
+
+
+# ---------------------------------------------------------------------------
+# One-stop client with automatic retry on gateway unavailability
+# ---------------------------------------------------------------------------
+
+
+class GatewayClient:
+    """
+    One-stop client: upload descriptor + start keepalive with automatic retry.
+
+    Simplified entry point for business services.  On :meth:`start`, it:
+
+    1. Connects to the gateway.
+    2. Uploads the ``.pb`` descriptor (idempotent; ``ConflictError`` is treated
+       as success).
+    3. Queries registered instances and starts keepalive heartbeats for each.
+
+    If the gateway is unreachable (``UNAVAILABLE``) at any step, a background
+    task retries with exponential backoff until the full sequence succeeds.
+    The calling service does **not** need to handle gateway downtime at startup.
+
+    Parameters
+    ----------
+    gateway_addr:
+        Host:port of the Stew gateway gRPC endpoint, e.g. ``127.0.0.1:3012``.
+    app_secret:
+        APP Secret issued by the admin UI.  Falls back to ``api_key``, then
+        the ``APP_SECRET`` / ``SERVICE_API_KEY`` environment variables.
+    api_key:
+        Alias for ``app_secret`` (kept for backward compatibility).
+    service_name:
+        Fully-qualified protobuf service name, e.g. ``stew.api.v1.OrderService``.
+    pb_path:
+        Filesystem path to the compiled ``.pb`` descriptor file.
+    version:
+        Optional descriptor version string.  Auto-generated when empty.
+    description:
+        Human-readable note stored with the uploaded version.
+    keepalive_interval:
+        Heartbeat interval in seconds (must be < gateway TTL; default 30 s).
+    retry_base_delay:
+        Initial delay between registration retries in seconds.
+    retry_max_delay:
+        Maximum delay cap for exponential backoff.
+    use_tls:
+        Connect over TLS.
+    timeout:
+        Per-RPC deadline in seconds.
+    on_registered:
+        Optional zero-argument callback invoked once after the first
+        successful registration.
+
+    Example::
+
+        async with GatewayClient(
+            "127.0.0.1:3012",
+            app_secret="ak_xxx",
+            service_name="stew.api.v1.OrderService",
+            pb_path="./order_service.pb",
+        ) as gw:
+            await gw.registered.wait()  # optional: block until first success
+            await your_app.serve()
+    """
+
+    def __init__(
+        self,
+        gateway_addr: str,
+        *,
+        app_secret: str = "",
+        api_key: str = "",
+        service_name: str,
+        pb_path: str,
+        version: str = "",
+        description: str = "",
+        keepalive_interval: int = 30,
+        retry_base_delay: float = 5.0,
+        retry_max_delay: float = 300.0,
+        use_tls: bool = False,
+        timeout: float = 10.0,
+        on_registered: Callable[[], None] | None = None,
+    ) -> None:
+        # Disable inner retry logic; GatewayClient owns all retry scheduling.
+        self._client = DiscoveryClient(
+            gateway_addr,
+            app_secret=app_secret,
+            api_key=api_key,
+            use_tls=use_tls,
+            timeout=timeout,
+            retry_max=0,
+        )
+        self._service_name = service_name
+        self._pb_path = pb_path
+        self._version = version
+        self._description = description
+        self._keepalive_interval = keepalive_interval
+        self._retry_base_delay = retry_base_delay
+        self._retry_max_delay = retry_max_delay
+        self._on_registered = on_registered
+        self._registered: asyncio.Event = asyncio.Event()
+        self._retry_task: asyncio.Task[None] | None = None
+
+    # ------------------------------------------------------------------
+    # Public interface
+    # ------------------------------------------------------------------
+
+    @property
+    def registered(self) -> asyncio.Event:
+        """Event that is set once the descriptor has been uploaded successfully."""
+        return self._registered
+
+    async def start(self) -> None:
+        """
+        Connect to the gateway and attempt registration.
+
+        If the gateway is unreachable a background task polls with exponential
+        backoff until it becomes available.  This method always returns promptly
+        and never raises due to gateway unavailability.
+        """
+        await self._client.connect()
+        try:
+            success = await self._register_once()
+        except Exception as exc:  # noqa: BLE001
+            log.warning(
+                "initial gateway registration raised for %s: %s",
+                self._service_name,
+                exc,
+            )
+            success = False
+
+        if success:
+            self._fire_on_registered()
+            log.info("gateway registration complete for %s", self._service_name)
+        else:
+            log.warning(
+                "gateway unreachable at startup for %s; background retry task started",
+                self._service_name,
+            )
+            self._retry_task = asyncio.create_task(
+                self._retry_loop(),
+                name=f"gateway-retry:{self._service_name}",
+            )
+
+    async def stop(self) -> None:
+        """Cancel background tasks and close the gateway connection."""
+        if self._retry_task is not None:
+            self._retry_task.cancel()
+            self._retry_task = None
+        await self._client.close()
+
+    async def __aenter__(self) -> "GatewayClient":
+        await self.start()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        await self.stop()
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    async def _upload_once(self) -> bool:
+        """
+        Attempt one descriptor upload.
+
+        Returns True on success (including idempotent ConflictError).
+        Returns False when the gateway is UNAVAILABLE; raises on other errors.
+        """
+        active_version: str | None = None
+        try:
+            active_version = await self._client.get_active_version(self._service_name)
+        except DiscoveryError:
+            pass  # fail-open: version check is advisory only
+
+        try:
+            result = await self._client.upload_descriptor_from_file(
+                service_name=self._service_name,
+                pb_path=self._pb_path,
+                version=self._version,
+                description=self._description or "auto-submitted at startup",
+                previous_version=active_version or "",
+            )
+            log.info(
+                "descriptor uploaded: service=%s version=%s services=%s",
+                self._service_name,
+                result["applied_version"],
+                result["discovered_services"],
+            )
+            for w in result["compatibility_warnings"]:
+                log.warning(
+                    "descriptor compatibility warning [%s]: %s",
+                    self._service_name,
+                    w,
+                )
+            return True
+        except ConflictError as exc:
+            log.info(
+                "descriptor already up-to-date for %s: %s",
+                self._service_name,
+                exc,
+            )
+            return True
+        except DiscoveryError as exc:
+            if exc.code == grpc.StatusCode.UNAVAILABLE:
+                log.warning(
+                    "gateway unreachable during descriptor upload [%s]: %s",
+                    self._service_name,
+                    exc,
+                )
+                return False
+            # Non-retryable error (e.g. PERMISSION_DENIED, INVALID_ARGUMENT).
+            log.warning(
+                "descriptor upload non-retryable failure for %s: %s",
+                self._service_name,
+                exc,
+            )
+            return True  # avoid infinite retries for non-transient errors
+
+    async def _start_keepalive_once(self) -> bool:
+        """
+        Query registered instances and start keepalive for each.
+
+        Returns False on UNAVAILABLE; True on success or when no instances exist.
+        """
+        try:
+            instances = await self._client.get_instances(
+                self._service_name, healthy_only=False
+            )
+        except DiscoveryError as exc:
+            if exc.code == grpc.StatusCode.UNAVAILABLE:
+                log.warning(
+                    "gateway unreachable during instance query [%s]: %s",
+                    self._service_name,
+                    exc,
+                )
+                return False
+            log.warning(
+                "failed to query instances for %s: %s",
+                self._service_name,
+                exc,
+            )
+            return True
+
+        if not instances:
+            log.debug("no instances found for %s after upload", self._service_name)
+            return True
+
+        for inst in instances:
+            instance_id: str = inst["instance_id"]
+            try:
+                await self._client.start_keepalive(
+                    service_name=self._service_name,
+                    instance_id=instance_id,
+                    interval=self._keepalive_interval,
+                )
+                log.info(
+                    "keepalive started: service=%s instance_id=%s",
+                    self._service_name,
+                    instance_id,
+                )
+            except RuntimeError:
+                pass  # keepalive already running for this instance; idempotent
+
+        return True
+
+    async def _register_once(self) -> bool:
+        """
+        Run one full registration cycle: upload descriptor + start keepalive.
+
+        Returns True on success, False when the gateway is unreachable.
+        """
+        uploaded = await self._upload_once()
+        if not uploaded:
+            return False
+        return await self._start_keepalive_once()
+
+    def _fire_on_registered(self) -> None:
+        self._registered.set()
+        if self._on_registered is not None:
+            try:
+                self._on_registered()
+            except Exception:  # noqa: BLE001
+                log.exception("on_registered callback raised for %s", self._service_name)
+
+    async def _retry_loop(self) -> None:
+        """Background task: retry registration with exponential backoff until success."""
+        delay = self._retry_base_delay
+        attempt = 0
+        while True:
+            attempt += 1
+            log.info(
+                "gateway registration retry #%d for %s in %.0fs",
+                attempt,
+                self._service_name,
+                delay,
+            )
+            await asyncio.sleep(delay)
+            try:
+                success = await self._register_once()
+            except Exception as exc:  # noqa: BLE001
+                log.warning(
+                    "gateway registration retry #%d raised unexpectedly for %s: %s",
+                    attempt,
+                    self._service_name,
+                    exc,
+                )
+                success = False
+
+            if success:
+                log.info(
+                    "gateway registration succeeded for %s on retry #%d",
+                    self._service_name,
+                    attempt,
+                )
+                self._fire_on_registered()
+                return
+
+            delay = min(delay * 2, self._retry_max_delay)

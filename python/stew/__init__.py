@@ -10,6 +10,7 @@ from stew.discovery_client import (
     DiscoveryClient,
     DiscoveryError,
     Endpoint,
+    GatewayClient,
     HealthCheckConfig,
     MiddlewareConfig,
     NotFoundError,
@@ -22,6 +23,7 @@ from stew.discovery_client import (
 __all__ = [
     "DiscoveryClient",
     "SyncDiscoveryClient",
+    "GatewayClient",
     "Endpoint",
     "BalanceType",
     "HealthCheckConfig",
