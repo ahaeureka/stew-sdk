@@ -97,7 +97,7 @@
             "repeated": true,
             "required": false,
             "ext": {
-                "default": "\"\""
+                "default": []
             },
             "description": ""
         },
@@ -106,7 +106,7 @@
             "repeated": true,
             "required": false,
             "ext": {
-                "default": "\"\""
+                "default": []
             },
             "description": ""
         },
@@ -115,7 +115,7 @@
             "repeated": true,
             "required": false,
             "ext": {
-                "default": "\"\""
+                "default": []
             },
             "description": ""
         },
