@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   service_discovery_model.py
-@Time    :   2026-03-19 15:58:25
+@Time    :   2026-04-01 13:40:07
 @Desc    :   Generated Pydantic models from protobuf definitions
 """
 
@@ -236,6 +236,7 @@ class ServiceAiGuardConfig(BaseModel):
     business_description: Optional[str] = _Field(default="")
     valid_intent_examples: Optional[List[str]] = _Field(default="")
     invalid_intent_examples: Optional[List[str]] = _Field(default="")
+    endpoint_overrides: Optional[List[AiGuardEndpointConfig]] = _Field(default=None)
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -245,6 +246,50 @@ class ServiceAiGuardConfig(BaseModel):
 
     @classmethod
     def from_protobuf(cls, src: _message.Message) -> "ServiceAiGuardConfig":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class AiGuardEndpointConfig(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    endpoint_id: Optional[str] = _Field(default="")
+    exact_paths: Optional[List[str]] = _Field(default="")
+    prefix_paths: Optional[List[str]] = _Field(default="")
+    pattern_paths: Optional[List[str]] = _Field(default="")
+    disabled: Optional[bool] = _Field(default=False)
+    mode: Optional[str] = _Field(default="")
+    request_body_max_bytes: Optional[int] = _Field(default=0)
+    max_input_tokens: Optional[int] = _Field(default=0)
+    max_output_tokens: Optional[int] = _Field(default=0)
+    max_context_tokens: Optional[int] = _Field(default=0)
+    history_policy: Optional[str] = _Field(default="")
+    daily_token_quota: Optional[int] = _Field(default=0)
+    daily_request_quota: Optional[int] = _Field(default=0)
+    minute_request_quota: Optional[int] = _Field(default=0)
+    quota_window_secs: Optional[int] = _Field(default=0)
+    allow_free_chat: Optional[bool] = _Field(default=False)
+    allowed_topics: Optional[List[str]] = _Field(default="")
+    deny_keywords: Optional[List[str]] = _Field(default="")
+    enable_audit: Optional[bool] = _Field(default=False)
+    classifier_type: Optional[str] = _Field(default="")
+    llm_endpoint: Optional[str] = _Field(default="")
+    llm_model: Optional[str] = _Field(default="")
+    llm_system_prompt: Optional[str] = _Field(default="")
+    business_description: Optional[str] = _Field(default="")
+    valid_intent_examples: Optional[List[str]] = _Field(default="")
+    invalid_intent_examples: Optional[List[str]] = _Field(default="")
+    llm_timeout_ms: Optional[int] = _Field(default=0)
+    llm_confidence_threshold: Optional[float] = _Field(default=0.0)
+    body_map: Optional[AiBodyFieldMap] = _Field(default=None)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.AiGuardEndpointConfig")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "AiGuardEndpointConfig":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)
 

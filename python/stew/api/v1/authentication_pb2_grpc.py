@@ -77,6 +77,11 @@ class AuthServiceStub(object):
                 request_serializer=authentication__pb2.RefreshTokenRequest.SerializeToString,
                 response_deserializer=authentication__pb2.RefreshTokenResponse.FromString,
                 _registered_method=True)
+        self.CreateAnonymousSession = channel.unary_unary(
+                '/stew.api.v1.AuthService/CreateAnonymousSession',
+                request_serializer=authentication__pb2.DeviceFingerprintRequest.SerializeToString,
+                response_deserializer=authentication__pb2.AnonymousSessionResponse.FromString,
+                _registered_method=True)
 
 
 class AuthServiceServicer(object):
@@ -136,6 +141,13 @@ class AuthServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CreateAnonymousSession(self, request, context):
+        """创建或续期匿名用户会话（基于设备指纹 + ECDSA 设备绑定签名）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AuthServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -178,6 +190,11 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     servicer.RefreshToken,
                     request_deserializer=authentication__pb2.RefreshTokenRequest.FromString,
                     response_serializer=authentication__pb2.RefreshTokenResponse.SerializeToString,
+            ),
+            'CreateAnonymousSession': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateAnonymousSession,
+                    request_deserializer=authentication__pb2.DeviceFingerprintRequest.FromString,
+                    response_serializer=authentication__pb2.AnonymousSessionResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -396,6 +413,33 @@ class AuthService(object):
             '/stew.api.v1.AuthService/RefreshToken',
             authentication__pb2.RefreshTokenRequest.SerializeToString,
             authentication__pb2.RefreshTokenResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CreateAnonymousSession(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthService/CreateAnonymousSession',
+            authentication__pb2.DeviceFingerprintRequest.SerializeToString,
+            authentication__pb2.AnonymousSessionResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 @File    :   authentication_model.py
-@Time    :   2026-03-19 15:58:25
+@Time    :   2026-04-01 13:40:07
 @Desc    :   Generated Pydantic models from protobuf definitions
 """
 
@@ -36,6 +36,7 @@ class OpenIDConnectCallbackRequest(BaseModel):
 class LoginRequest(BaseModel):
     model_config = ConfigDict(protected_namespaces=())
     callback: Optional[str] = _Field(default="")
+    anonymous_id: Optional[str] = _Field(default="")
 
     def to_protobuf(self) -> _message.Message:
         """Convert Pydantic model to protobuf message"""
@@ -214,5 +215,46 @@ class RefreshTokenResponse(BaseModel):
 
     @classmethod
     def from_protobuf(cls, src: _message.Message) -> "RefreshTokenResponse":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class DeviceFingerprintRequest(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    fingerprint_hash: Optional[str] = _Field(default="")
+    signature: Optional[str] = _Field(default="")
+    public_key: Optional[str] = _Field(default="")
+    timestamp: Optional[int] = _Field(default=0)
+    nonce: Optional[str] = _Field(default="")
+    anonymous_id: Optional[str] = _Field(default="")
+    components_count: Optional[int] = _Field(default=0)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.DeviceFingerprintRequest")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "DeviceFingerprintRequest":
+        """Convert protobuf message to Pydantic model"""
+        return protobuf2model(cls, src)
+
+
+class AnonymousSessionResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+    anonymous_id: Optional[str] = _Field(default="")
+    session_token: Optional[str] = _Field(default="")
+    expires_at: Optional[int] = _Field(default=0)
+    is_suspicious: Optional[bool] = _Field(default=False)
+
+    def to_protobuf(self) -> _message.Message:
+        """Convert Pydantic model to protobuf message"""
+        _proto = pool.FindMessageTypeByName("stew.api.v1.AnonymousSessionResponse")
+        _cls: Type[_message.Message] = message_factory.GetMessageClass(_proto)
+        return model2protobuf(self, _cls())
+
+    @classmethod
+    def from_protobuf(cls, src: _message.Message) -> "AnonymousSessionResponse":
         """Convert protobuf message to Pydantic model"""
         return protobuf2model(cls, src)

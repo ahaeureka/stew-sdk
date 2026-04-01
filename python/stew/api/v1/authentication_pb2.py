@@ -32,7 +32,7 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from protobuf_pydantic_gen import pydantic_pb2 as protobuf__pydantic__gen_dot_pydantic__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61uthentication.proto\x12\x0bstew.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/descriptor.proto\x1a\nuser.proto\x1a\x19stew/api/v1/options.proto\x1a\x15stew/api/v1/web.proto\x1a\x19stew/api/v1/context.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a$protobuf_pydantic_gen/pydantic.proto\"\xae\x02\n\x1cOpenIDConnectCallbackRequest\x12\x1c\n\x04\x63ode\x18\x01 \x01(\tB\x08\xa2\xbb\x18\x04\n\x00\x18\x00R\x04\x63ode\x12\x1e\n\x05state\x18\x02 \x01(\tB\x08\xa2\xbb\x18\x04\n\x00\x18\x01R\x05state\x12<\n\x05nonce\x18\x05 \x01(\tB&\xa2\xbb\x18\"\n\x1cThe nonce to verify id token\x12\x00\x18\x00R\x05nonce\x12H\n\x08\x63\x61llback\x18\x03 \x01(\tB,\xa2\xbb\x18(\n\"The URL to redirect to after login\x12\x00\x18\x00R\x08\x63\x61llback\x12H\n\nsession_id\x18\x04 \x01(\tB(\xa2\xbb\x18$\n\x1eThe session id to verify state\x12\x00\x18\x00R\nsession_id\"X\n\x0cLoginRequest\x12H\n\x08\x63\x61llback\x18\x01 \x01(\tB,\xa2\xbb\x18(\n\"The URL to redirect to after login\x12\x00\x18\x00R\x08\x63\x61llback\"{\n\x15LoginCallbackResponse\x12\x38\n\x04user\x18\x02 \x01(\x0b\x32\x11.stew.api.v1.UserB\x11\xa2\xbb\x18\r\n\tUser info\x18\x01R\x04user\x12(\n\x05token\x18\x01 \x01(\tB\x12\xa2\xbb\x18\x0e\n\x08ID token\x12\x00\x18\x00R\x05token\"\xe5\x01\n\rLogoutRequest\x12I\n\x08\x63\x61llback\x18\x01 \x01(\tB-\xa2\xbb\x18)\n#The URL to redirect to after logout\x12\x00\x18\x00R\x08\x63\x61llback\x12:\n\x05token\x18\x02 \x01(\tB$\xa2\xbb\x18 \n\x1cThe ID token hint for logout\x18\x01R\x05token\x12M\n\nsession_id\x18\x03 \x01(\tB-\xa2\xbb\x18)\n#The state to verify logout callback\x12\x00\x18\x00R\nsession_id\"\x9e\x01\n\x15LogoutCallbackRequest\x12:\n\x05state\x18\x02 \x01(\tB$\xa2\xbb\x18 \n\x1cThe ID token hint for logout\x18\x01R\x05token\x12I\n\x08\x63\x61llback\x18\x01 \x01(\tB-\xa2\xbb\x18)\n#The URL to redirect to after logout\x12\x00\x18\x00R\x08\x63\x61llback\"\xa8\x01\n\x0f\x41uthServiceUris\x12H\n\tlogin_url\x18\x01 \x01(\tB*\xa2\xbb\x18&\n The URL to redirect to for login\x12\x00\x18\x00R\tlogin_url\x12K\n\nlogout_url\x18\x02 \x01(\tB+\xa2\xbb\x18\'\n!The URL to redirect to for logout\x12\x00\x18\x00R\nlogout_url\"\x17\n\x15GetCurrentUserRequest\"\xd6\x01\n\x13\x43urrentUserResponse\x12\x45\n\x04user\x18\x01 \x01(\x0b\x32\x11.stew.api.v1.UserB\x1e\xa2\xbb\x18\x1a\n\x16\x43urrent logged in user\x18\x01R\x04user\x12\x32\n\nsession_id\x18\x02 \x01(\tB\x12\xa2\xbb\x18\x0e\n\nSession ID\x18\x01R\nsession_id\x12\x44\n\nexpires_at\x18\x03 \x01(\x03\x42$\xa2\xbb\x18 \n\x1cSession expiration timestamp\x18\x01R\nexpires_at\"X\n\x16ValidateSessionRequest\x12>\n\nsession_id\x18\x01 \x01(\tB\x1e\xa2\xbb\x18\x1a\n\x16Session ID to validate\x18\x00R\nsession_id\"\xcb\x01\n\x17ValidateSessionResponse\x12\x36\n\x05valid\x18\x01 \x01(\x08\x42 \xa2\xbb\x18\x1c\n\x18Whether session is valid\x18\x01R\x05valid\x12\x32\n\x07user_id\x18\x02 \x01(\tB\x18\xa2\xbb\x18\x14\n\x10User ID if valid\x18\x00R\x07user_id\x12\x44\n\nexpires_at\x18\x03 \x01(\x03\x42$\xa2\xbb\x18 \n\x1cSession expiration timestamp\x18\x00R\nexpires_at\"I\n\x13RefreshTokenRequest\x12\x32\n\nsession_id\x18\x01 \x01(\tB\x12\xa2\xbb\x18\x0e\n\nSession ID\x18\x00R\nsession_id\"\x97\x01\n\x14RefreshTokenResponse\x12<\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tB\x18\xa2\xbb\x18\x14\n\x10New access token\x18\x01R\x0c\x61\x63\x63\x65ss_token\x12\x41\n\nexpires_in\x18\x02 \x01(\x03\x42!\xa2\xbb\x18\x1d\n\x19Token validity in seconds\x18\x01R\nexpires_in2\xa9\x07\n\x0b\x41uthService\x12r\n\x08\x43\x61llback\x12).stew.api.v1.OpenIDConnectCallbackRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x1c\xb2\xbb\x18\x02\x08\x01\x82\xd3\xe4\x93\x02\x10\x12\x0e/auth/callback\x12\\\n\x05Login\x12\x19.stew.api.v1.LoginRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x19\xb2\xbb\x18\x02\x08\x01\x82\xd3\xe4\x93\x02\r\x12\x0b/auth/login\x12[\n\x07\x43ontext\x12\x1a.stew.api.v1.ClientContext\x1a\x16.google.protobuf.Empty\"\x1c\x90\xb7\x18\x01\x82\xd3\xe4\x93\x02\x12\"\r/auth/context:\x01*\x12\x65\n\x06Logout\x12\x1a.stew.api.v1.LogoutRequest\x1a\x1d.stew.api.v1.RedirectResponse\" \xaa\xbb\x18\x08\x08\x01\x12\x04read\x82\xd3\xe4\x93\x02\x0e\x12\x0c/auth/logout\x12y\n\x0eLogoutCallback\x12).stew.api.v1.OpenIDConnectCallbackRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/auth/logout/callback\x12w\n\x0eGetCurrentUser\x12\".stew.api.v1.GetCurrentUserRequest\x1a .stew.api.v1.CurrentUserResponse\"\x1f\xaa\xbb\x18\x0b\x08\x01\x12\x07profile\x82\xd3\xe4\x93\x02\n\x12\x08/auth/me\x12\x83\x01\n\x0fValidateSession\x12#.stew.api.v1.ValidateSessionRequest\x1a$.stew.api.v1.ValidateSessionResponse\"%\x90\xb7\x18\x01\x82\xd3\xe4\x93\x02\x1b\"\x16/auth/session/validate:\x01*\x12\x89\x01\n\x0cRefreshToken\x12 .stew.api.v1.RefreshTokenRequest\x1a!.stew.api.v1.RefreshTokenResponse\"4\xaa\xbb\x18\x12\x08\x01\x12\x0eoffline_access\x82\xd3\xe4\x93\x02\x18\"\x13/auth/token/refresh:\x01*B\"Z github.com/stew/proto/sdk/api/v1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x61uthentication.proto\x12\x0bstew.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a google/protobuf/descriptor.proto\x1a\nuser.proto\x1a\x19stew/api/v1/options.proto\x1a\x15stew/api/v1/web.proto\x1a\x19stew/api/v1/context.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a$protobuf_pydantic_gen/pydantic.proto\"\xae\x02\n\x1cOpenIDConnectCallbackRequest\x12\x1c\n\x04\x63ode\x18\x01 \x01(\tB\x08\xa2\xbb\x18\x04\n\x00\x18\x00R\x04\x63ode\x12\x1e\n\x05state\x18\x02 \x01(\tB\x08\xa2\xbb\x18\x04\n\x00\x18\x01R\x05state\x12<\n\x05nonce\x18\x05 \x01(\tB&\xa2\xbb\x18\"\n\x1cThe nonce to verify id token\x12\x00\x18\x00R\x05nonce\x12H\n\x08\x63\x61llback\x18\x03 \x01(\tB,\xa2\xbb\x18(\n\"The URL to redirect to after login\x12\x00\x18\x00R\x08\x63\x61llback\x12H\n\nsession_id\x18\x04 \x01(\tB(\xa2\xbb\x18$\n\x1eThe session id to verify state\x12\x00\x18\x00R\nsession_id\"\xbf\x01\n\x0cLoginRequest\x12H\n\x08\x63\x61llback\x18\x01 \x01(\tB,\xa2\xbb\x18(\n\"The URL to redirect to after login\x12\x00\x18\x00R\x08\x63\x61llback\x12\x65\n\x0c\x61nonymous_id\x18\x02 \x01(\tBA\xa2\xbb\x18=\n7Optional anonymous user ID to associate with this login\x12\x00\x18\x00R\x0c\x61nonymous_id\"{\n\x15LoginCallbackResponse\x12\x38\n\x04user\x18\x02 \x01(\x0b\x32\x11.stew.api.v1.UserB\x11\xa2\xbb\x18\r\n\tUser info\x18\x01R\x04user\x12(\n\x05token\x18\x01 \x01(\tB\x12\xa2\xbb\x18\x0e\n\x08ID token\x12\x00\x18\x00R\x05token\"\xe5\x01\n\rLogoutRequest\x12I\n\x08\x63\x61llback\x18\x01 \x01(\tB-\xa2\xbb\x18)\n#The URL to redirect to after logout\x12\x00\x18\x00R\x08\x63\x61llback\x12:\n\x05token\x18\x02 \x01(\tB$\xa2\xbb\x18 \n\x1cThe ID token hint for logout\x18\x01R\x05token\x12M\n\nsession_id\x18\x03 \x01(\tB-\xa2\xbb\x18)\n#The state to verify logout callback\x12\x00\x18\x00R\nsession_id\"\x9e\x01\n\x15LogoutCallbackRequest\x12:\n\x05state\x18\x02 \x01(\tB$\xa2\xbb\x18 \n\x1cThe ID token hint for logout\x18\x01R\x05token\x12I\n\x08\x63\x61llback\x18\x01 \x01(\tB-\xa2\xbb\x18)\n#The URL to redirect to after logout\x12\x00\x18\x00R\x08\x63\x61llback\"\xa8\x01\n\x0f\x41uthServiceUris\x12H\n\tlogin_url\x18\x01 \x01(\tB*\xa2\xbb\x18&\n The URL to redirect to for login\x12\x00\x18\x00R\tlogin_url\x12K\n\nlogout_url\x18\x02 \x01(\tB+\xa2\xbb\x18\'\n!The URL to redirect to for logout\x12\x00\x18\x00R\nlogout_url\"\x17\n\x15GetCurrentUserRequest\"\xd6\x01\n\x13\x43urrentUserResponse\x12\x45\n\x04user\x18\x01 \x01(\x0b\x32\x11.stew.api.v1.UserB\x1e\xa2\xbb\x18\x1a\n\x16\x43urrent logged in user\x18\x01R\x04user\x12\x32\n\nsession_id\x18\x02 \x01(\tB\x12\xa2\xbb\x18\x0e\n\nSession ID\x18\x01R\nsession_id\x12\x44\n\nexpires_at\x18\x03 \x01(\x03\x42$\xa2\xbb\x18 \n\x1cSession expiration timestamp\x18\x01R\nexpires_at\"X\n\x16ValidateSessionRequest\x12>\n\nsession_id\x18\x01 \x01(\tB\x1e\xa2\xbb\x18\x1a\n\x16Session ID to validate\x18\x00R\nsession_id\"\xcb\x01\n\x17ValidateSessionResponse\x12\x36\n\x05valid\x18\x01 \x01(\x08\x42 \xa2\xbb\x18\x1c\n\x18Whether session is valid\x18\x01R\x05valid\x12\x32\n\x07user_id\x18\x02 \x01(\tB\x18\xa2\xbb\x18\x14\n\x10User ID if valid\x18\x00R\x07user_id\x12\x44\n\nexpires_at\x18\x03 \x01(\x03\x42$\xa2\xbb\x18 \n\x1cSession expiration timestamp\x18\x00R\nexpires_at\"I\n\x13RefreshTokenRequest\x12\x32\n\nsession_id\x18\x01 \x01(\tB\x12\xa2\xbb\x18\x0e\n\nSession ID\x18\x00R\nsession_id\"\x97\x01\n\x14RefreshTokenResponse\x12<\n\x0c\x61\x63\x63\x65ss_token\x18\x01 \x01(\tB\x18\xa2\xbb\x18\x14\n\x10New access token\x18\x01R\x0c\x61\x63\x63\x65ss_token\x12\x41\n\nexpires_in\x18\x02 \x01(\x03\x42!\xa2\xbb\x18\x1d\n\x19Token validity in seconds\x18\x01R\nexpires_in\"\x81\x06\n\x18\x44\x65viceFingerprintRequest\x12i\n\x10\x66ingerprint_hash\x18\x01 \x01(\tB=\xa2\xbb\x18\x39\n5SHA-256 hex digest of all collected signal components\x18\x01R\x10\x66ingerprint_hash\x12k\n\tsignature\x18\x02 \x01(\tBM\xa2\xbb\x18I\nEECDSA-P256 IEEE P1363 signature over hash:timestamp:nonce (base64url)\x18\x01R\tsignature\x12j\n\npublic_key\x18\x03 \x01(\tBJ\xa2\xbb\x18\x46\nBECDSA-P256 SubjectPublicKeyInfo DER encoded public key (base64url)\x18\x01R\npublic_key\x12\x66\n\ttimestamp\x18\x04 \x01(\x03\x42H\xa2\xbb\x18\x44\n@Client Unix timestamp in milliseconds when signature was created\x18\x01R\ttimestamp\x12]\n\x05nonce\x18\x05 \x01(\tBG\xa2\xbb\x18\x43\n?Random nonce (base64url, min 8 bytes) to prevent replay attacks\x18\x01R\x05nonce\x12q\n\x0c\x61nonymous_id\x18\x06 \x01(\tBM\xa2\xbb\x18I\nCExisting anonymous ID to renew session (empty string to create new)\x12\x00\x18\x00R\x0c\x61nonymous_id\x12g\n\x10\x63omponents_count\x18\x07 \x01(\x05\x42;\xa2\xbb\x18\x37\n3Number of signal components collected by the client\x18\x00R\x10\x63omponents_count\"\xaf\x03\n\x18\x41nonymousSessionResponse\x12\x66\n\x0c\x61nonymous_id\x18\x01 \x01(\tBB\xa2\xbb\x18>\n:Anonymous user identifier in format anon:{hash8}-{random6}\x18\x01R\x0c\x61nonymous_id\x12\x64\n\rsession_token\x18\x02 \x01(\tB>\xa2\xbb\x18:\n6Signed JWT for use in X-Anonymous-Token request header\x18\x01R\rsession_token\x12O\n\nexpires_at\x18\x03 \x01(\x03\x42/\xa2\xbb\x18+\n\'Session expiration as Unix milliseconds\x18\x01R\nexpires_at\x12t\n\ris_suspicious\x18\x04 \x01(\x08\x42N\xa2\xbb\x18J\nFTrue when anomaly score exceeds degraded threshold (IP/UA instability)\x18\x01R\ris_suspicious2\xb2\x08\n\x0b\x41uthService\x12r\n\x08\x43\x61llback\x12).stew.api.v1.OpenIDConnectCallbackRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x1c\xb2\xbb\x18\x02\x08\x01\x82\xd3\xe4\x93\x02\x10\x12\x0e/auth/callback\x12\\\n\x05Login\x12\x19.stew.api.v1.LoginRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x19\xb2\xbb\x18\x02\x08\x01\x82\xd3\xe4\x93\x02\r\x12\x0b/auth/login\x12[\n\x07\x43ontext\x12\x1a.stew.api.v1.ClientContext\x1a\x16.google.protobuf.Empty\"\x1c\x90\xb7\x18\x01\x82\xd3\xe4\x93\x02\x12\"\r/auth/context:\x01*\x12\x65\n\x06Logout\x12\x1a.stew.api.v1.LogoutRequest\x1a\x1d.stew.api.v1.RedirectResponse\" \xaa\xbb\x18\x08\x08\x01\x12\x04read\x82\xd3\xe4\x93\x02\x0e\x12\x0c/auth/logout\x12y\n\x0eLogoutCallback\x12).stew.api.v1.OpenIDConnectCallbackRequest\x1a\x1d.stew.api.v1.RedirectResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/auth/logout/callback\x12w\n\x0eGetCurrentUser\x12\".stew.api.v1.GetCurrentUserRequest\x1a .stew.api.v1.CurrentUserResponse\"\x1f\xaa\xbb\x18\x0b\x08\x01\x12\x07profile\x82\xd3\xe4\x93\x02\n\x12\x08/auth/me\x12\x83\x01\n\x0fValidateSession\x12#.stew.api.v1.ValidateSessionRequest\x1a$.stew.api.v1.ValidateSessionResponse\"%\x90\xb7\x18\x01\x82\xd3\xe4\x93\x02\x1b\"\x16/auth/session/validate:\x01*\x12\x89\x01\n\x0cRefreshToken\x12 .stew.api.v1.RefreshTokenRequest\x1a!.stew.api.v1.RefreshTokenResponse\"4\xaa\xbb\x18\x12\x08\x01\x12\x0eoffline_access\x82\xd3\xe4\x93\x02\x18\"\x13/auth/token/refresh:\x01*\x12\x86\x01\n\x16\x43reateAnonymousSession\x12%.stew.api.v1.DeviceFingerprintRequest\x1a%.stew.api.v1.AnonymousSessionResponse\"\x1e\x90\xb7\x18\x01\x82\xd3\xe4\x93\x02\x14\"\x0f/auth/anonymous:\x01*B\"Z github.com/stew/proto/sdk/api/v1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -52,6 +52,8 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_OPENIDCONNECTCALLBACKREQUEST'].fields_by_name['session_id']._serialized_options = b'\242\273\030$\n\036The session id to verify state\022\000\030\000'
   _globals['_LOGINREQUEST'].fields_by_name['callback']._loaded_options = None
   _globals['_LOGINREQUEST'].fields_by_name['callback']._serialized_options = b'\242\273\030(\n\"The URL to redirect to after login\022\000\030\000'
+  _globals['_LOGINREQUEST'].fields_by_name['anonymous_id']._loaded_options = None
+  _globals['_LOGINREQUEST'].fields_by_name['anonymous_id']._serialized_options = b'\242\273\030=\n7Optional anonymous user ID to associate with this login\022\000\030\000'
   _globals['_LOGINCALLBACKRESPONSE'].fields_by_name['user']._loaded_options = None
   _globals['_LOGINCALLBACKRESPONSE'].fields_by_name['user']._serialized_options = b'\242\273\030\r\n\tUser info\030\001'
   _globals['_LOGINCALLBACKRESPONSE'].fields_by_name['token']._loaded_options = None
@@ -90,6 +92,28 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_REFRESHTOKENRESPONSE'].fields_by_name['access_token']._serialized_options = b'\242\273\030\024\n\020New access token\030\001'
   _globals['_REFRESHTOKENRESPONSE'].fields_by_name['expires_in']._loaded_options = None
   _globals['_REFRESHTOKENRESPONSE'].fields_by_name['expires_in']._serialized_options = b'\242\273\030\035\n\031Token validity in seconds\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['fingerprint_hash']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['fingerprint_hash']._serialized_options = b'\242\273\0309\n5SHA-256 hex digest of all collected signal components\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['signature']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['signature']._serialized_options = b'\242\273\030I\nEECDSA-P256 IEEE P1363 signature over hash:timestamp:nonce (base64url)\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['public_key']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['public_key']._serialized_options = b'\242\273\030F\nBECDSA-P256 SubjectPublicKeyInfo DER encoded public key (base64url)\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['timestamp']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['timestamp']._serialized_options = b'\242\273\030D\n@Client Unix timestamp in milliseconds when signature was created\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['nonce']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['nonce']._serialized_options = b'\242\273\030C\n?Random nonce (base64url, min 8 bytes) to prevent replay attacks\030\001'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['anonymous_id']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['anonymous_id']._serialized_options = b'\242\273\030I\nCExisting anonymous ID to renew session (empty string to create new)\022\000\030\000'
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['components_count']._loaded_options = None
+  _globals['_DEVICEFINGERPRINTREQUEST'].fields_by_name['components_count']._serialized_options = b'\242\273\0307\n3Number of signal components collected by the client\030\000'
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['anonymous_id']._loaded_options = None
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['anonymous_id']._serialized_options = b'\242\273\030>\n:Anonymous user identifier in format anon:{hash8}-{random6}\030\001'
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['session_token']._loaded_options = None
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['session_token']._serialized_options = b'\242\273\030:\n6Signed JWT for use in X-Anonymous-Token request header\030\001'
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['expires_at']._loaded_options = None
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['expires_at']._serialized_options = b'\242\273\030+\n\'Session expiration as Unix milliseconds\030\001'
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['is_suspicious']._loaded_options = None
+  _globals['_ANONYMOUSSESSIONRESPONSE'].fields_by_name['is_suspicious']._serialized_options = b'\242\273\030J\nFTrue when anomaly score exceeds degraded threshold (IP/UA instability)\030\001'
   _globals['_AUTHSERVICE'].methods_by_name['Callback']._loaded_options = None
   _globals['_AUTHSERVICE'].methods_by_name['Callback']._serialized_options = b'\262\273\030\002\010\001\202\323\344\223\002\020\022\016/auth/callback'
   _globals['_AUTHSERVICE'].methods_by_name['Login']._loaded_options = None
@@ -106,30 +130,36 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_AUTHSERVICE'].methods_by_name['ValidateSession']._serialized_options = b'\220\267\030\001\202\323\344\223\002\033\"\026/auth/session/validate:\001*'
   _globals['_AUTHSERVICE'].methods_by_name['RefreshToken']._loaded_options = None
   _globals['_AUTHSERVICE'].methods_by_name['RefreshToken']._serialized_options = b'\252\273\030\022\010\001\022\016offline_access\202\323\344\223\002\030\"\023/auth/token/refresh:\001*'
+  _globals['_AUTHSERVICE'].methods_by_name['CreateAnonymousSession']._loaded_options = None
+  _globals['_AUTHSERVICE'].methods_by_name['CreateAnonymousSession']._serialized_options = b'\220\267\030\001\202\323\344\223\002\024\"\017/auth/anonymous:\001*'
   _globals['_OPENIDCONNECTCALLBACKREQUEST']._serialized_start=258
   _globals['_OPENIDCONNECTCALLBACKREQUEST']._serialized_end=560
-  _globals['_LOGINREQUEST']._serialized_start=562
-  _globals['_LOGINREQUEST']._serialized_end=650
-  _globals['_LOGINCALLBACKRESPONSE']._serialized_start=652
-  _globals['_LOGINCALLBACKRESPONSE']._serialized_end=775
-  _globals['_LOGOUTREQUEST']._serialized_start=778
-  _globals['_LOGOUTREQUEST']._serialized_end=1007
-  _globals['_LOGOUTCALLBACKREQUEST']._serialized_start=1010
-  _globals['_LOGOUTCALLBACKREQUEST']._serialized_end=1168
-  _globals['_AUTHSERVICEURIS']._serialized_start=1171
-  _globals['_AUTHSERVICEURIS']._serialized_end=1339
-  _globals['_GETCURRENTUSERREQUEST']._serialized_start=1341
-  _globals['_GETCURRENTUSERREQUEST']._serialized_end=1364
-  _globals['_CURRENTUSERRESPONSE']._serialized_start=1367
-  _globals['_CURRENTUSERRESPONSE']._serialized_end=1581
-  _globals['_VALIDATESESSIONREQUEST']._serialized_start=1583
-  _globals['_VALIDATESESSIONREQUEST']._serialized_end=1671
-  _globals['_VALIDATESESSIONRESPONSE']._serialized_start=1674
-  _globals['_VALIDATESESSIONRESPONSE']._serialized_end=1877
-  _globals['_REFRESHTOKENREQUEST']._serialized_start=1879
-  _globals['_REFRESHTOKENREQUEST']._serialized_end=1952
-  _globals['_REFRESHTOKENRESPONSE']._serialized_start=1955
-  _globals['_REFRESHTOKENRESPONSE']._serialized_end=2106
-  _globals['_AUTHSERVICE']._serialized_start=2109
-  _globals['_AUTHSERVICE']._serialized_end=3046
+  _globals['_LOGINREQUEST']._serialized_start=563
+  _globals['_LOGINREQUEST']._serialized_end=754
+  _globals['_LOGINCALLBACKRESPONSE']._serialized_start=756
+  _globals['_LOGINCALLBACKRESPONSE']._serialized_end=879
+  _globals['_LOGOUTREQUEST']._serialized_start=882
+  _globals['_LOGOUTREQUEST']._serialized_end=1111
+  _globals['_LOGOUTCALLBACKREQUEST']._serialized_start=1114
+  _globals['_LOGOUTCALLBACKREQUEST']._serialized_end=1272
+  _globals['_AUTHSERVICEURIS']._serialized_start=1275
+  _globals['_AUTHSERVICEURIS']._serialized_end=1443
+  _globals['_GETCURRENTUSERREQUEST']._serialized_start=1445
+  _globals['_GETCURRENTUSERREQUEST']._serialized_end=1468
+  _globals['_CURRENTUSERRESPONSE']._serialized_start=1471
+  _globals['_CURRENTUSERRESPONSE']._serialized_end=1685
+  _globals['_VALIDATESESSIONREQUEST']._serialized_start=1687
+  _globals['_VALIDATESESSIONREQUEST']._serialized_end=1775
+  _globals['_VALIDATESESSIONRESPONSE']._serialized_start=1778
+  _globals['_VALIDATESESSIONRESPONSE']._serialized_end=1981
+  _globals['_REFRESHTOKENREQUEST']._serialized_start=1983
+  _globals['_REFRESHTOKENREQUEST']._serialized_end=2056
+  _globals['_REFRESHTOKENRESPONSE']._serialized_start=2059
+  _globals['_REFRESHTOKENRESPONSE']._serialized_end=2210
+  _globals['_DEVICEFINGERPRINTREQUEST']._serialized_start=2213
+  _globals['_DEVICEFINGERPRINTREQUEST']._serialized_end=2982
+  _globals['_ANONYMOUSSESSIONRESPONSE']._serialized_start=2985
+  _globals['_ANONYMOUSSESSIONRESPONSE']._serialized_end=3416
+  _globals['_AUTHSERVICE']._serialized_start=3419
+  _globals['_AUTHSERVICE']._serialized_end=4493
 # @@protoc_insertion_point(module_scope)
