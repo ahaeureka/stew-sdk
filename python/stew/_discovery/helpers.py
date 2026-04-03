@@ -86,7 +86,6 @@ def endpoint_matches_binding(
         binding.service_name == service_name
         and binding.address == endpoint.address
         and binding.port == endpoint.port
-        and binding.weight == endpoint.weight
         and binding.protocol == protocol
         and binding.tls_enabled == tls_enabled
     )

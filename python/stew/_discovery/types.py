@@ -28,7 +28,7 @@ class Endpoint:
 
     address: str
     port: int
-    weight: int = 1
+    weight: int = 0
 
 
 @dataclass
@@ -39,7 +39,7 @@ class EndpointBinding:
     service_name: str
     address: str
     port: int
-    weight: int = 1
+    weight: int = 0
     protocol: str = "grpc"
     tls_enabled: bool = False
 

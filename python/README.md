@@ -52,8 +52,13 @@ SDK **不负责**服务注册/注销，这些操作需要管理员通过前端�
 前端管理的服务配置不会被本地 SDK 回写覆盖。
 
 当提供 `local_endpoint` 时，SDK 会把该地址注册成一个独立的业务侧 endpoint 实例，并把
-`endpoint_id` 持久化到本地绑定文件。只有地址、端口、权重、协议、TLS 配置都一致时才复用
-旧 `endpoint_id`；如果 endpoint 配置变化，SDK 会生成新的 `endpoint_id`，避免覆盖前端已配置的 endpoint。
+`endpoint_id` 持久化到本地绑定文件。默认只把地址、端口、协议、TLS 配置视为 endpoint
+身份；`weight` 默认不由业务侧管理，因此不会参与 endpoint 绑定复用判断。前端后续如果调整
+该 endpoint 的权重，SDK 不会因此生成新的 `endpoint_id` 或覆盖前端配置。如果地址、端口、
+协议或 TLS 配置变化，SDK 才会生成新的 `endpoint_id`，避免覆盖前端已配置的 endpoint。
+如果本地还没有保存过 `endpoint_id`，SDK 会先调用 `get_instances()` 拉取当前服务实例，按
+地址/端口优先匹配已有 endpoint，并复用远端实例的 `endpoint_id`、`protocol`、`tls_enabled`
+等配置后再执行注册，避免把管理端已经配置的实例字段冲掉。
 
 ```python
 import asyncio
@@ -65,7 +70,7 @@ async def main():
         app_secret="ak_xxx",
         service_name="stew.api.v1.OrderService",
         pb_path="./order_service.pb",
-        local_endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+        local_endpoint=Endpoint(address="127.0.0.1", port=50051),
     ) as gw:
         # 可选：等待首次注册成功后再提供服务流量
         await gw.registered.wait()
@@ -105,6 +110,14 @@ with SyncDiscoveryClient("127.0.0.1:3012", app_secret="ak_xxx") as c:
     )
     print("applied version:", result["applied_version"])
 ```
+
+`local_endpoint` / `register_endpoint()` 的权重约定：
+
+- `Endpoint.weight > 0`：业务侧显式指定权重
+- `Endpoint.weight = 0` 或留空：视为“未指定权重”，由前端管理
+- 对已有 endpoint：服务端保留当前已有权重
+- 对新注册 endpoint：服务端先使用默认权重 `1`
+- 前端后续修改权重后，SDK 不会因为权重变化而重建 `endpoint_id`
 
 ### 通过环境变量传入凭证
 
@@ -216,7 +229,7 @@ asyncio.run(main())
 | `api_key` | `str` | `""` | `app_secret` 的别名（兼容旧代码） |
 | `service_name` | `str` | 必填 | 完全限定服务名，如 `stew.api.v1.OrderService` |
 | `pb_path` | `str` | 必填 | `.pb` 描述符文件路径 |
-| `local_endpoint` | `Endpoint \\| None` | `None` | 业务服务自己的 IP/端口/权重；提供后会自动注册为单独 endpoint 实例 |
+| `local_endpoint` | `Endpoint \\| None` | `None` | 业务服务自己的 IP/端口；`weight` 留空或 `0` 表示由前端管理 |
 | `endpoint_state_path` | `str` | `""` | endpoint_id 本地绑定文件路径；默认使用 `{pb_path}.endpoint.json` |
 | `endpoint_protocol` | `str` | `"grpc"` | 该 endpoint 的后端协议 |
 | `endpoint_tls_enabled` | `bool` | `False` | 该 endpoint 是否要求 TLS |
@@ -246,6 +259,7 @@ asyncio.run(main())
 - 心跳遇到异常、网络问题或网关重启后的运行时状态丢失时，会按指数退避持续恢复。
 - 恢复时只会重传本地 `.pb` 描述符，再补发心跳；不会覆盖前端管理的实例配置。
 - 当提供 `local_endpoint` 时，SDK 会为该 endpoint 生成或复用本地保存的 `endpoint_id`，并以追加实例的方式注册到网关，不会覆盖已有 endpoint。
+- `weight` 不参与 endpoint 绑定复用判断。业务侧通常只传地址和端口，权重由前端统一调整。
 - `GatewayClient` 默认每 30 秒检查一次本地 `.pb` 文件，文件变化后自动上传新描述符，实现动态更新服务。
 
 **错误处理行为：**
@@ -361,16 +375,24 @@ print(result["applied_version"])
 
 #### `register_endpoint()`
 
-追加一个业务侧自管理的 endpoint，不影响前端已配置的其他 endpoint：
+追加一个业务侧自管理的 endpoint，不影响前端已配置的其他 endpoint。推荐做法是业务侧只注册 `address` 和 `port`，不要主动设置 `weight`；权重由前端统一配置。
 
 ```python
 registration = await client.register_endpoint(
     service_name="stew.api.v1.OrderService",
-    endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+    endpoint=Endpoint(address="127.0.0.1", port=50051),
     endpoint_id="existing-or-empty",
 )
 print(registration["endpoint_id"])
 ```
+
+返回结果里的 `endpoint_id` 可直接用于后续 `heartbeat()` 或 `start_keepalive()` 的 `instance_id`。当 `weight`
+留空或为 `0` 时：
+
+- SDK 在未显式传入 `endpoint_id` 时，会先查询现有实例；如果发现同地址/端口的 endpoint，优先复用远端 `endpoint_id`，并沿用已有 `protocol`、`tls_enabled`、`version`
+- 如果该地址/端口对应的 endpoint 已存在，服务端会保留已有权重
+- 如果这是一个新 endpoint，服务端先使用默认权重 `1`
+- 前端后续改权重时，不会导致 SDK 重新生成新的 `endpoint_id`
 
 #### `deregister_endpoint()`
 
@@ -438,7 +460,7 @@ from stew import Endpoint, RegistrationConfig
 
 registration = await client.register_endpoint(
     service_name="stew.api.v1.OrderService",
-    endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+    endpoint=Endpoint(address="127.0.0.1", port=50051),
 )
 
 await client.start_keepalive(
@@ -571,7 +593,7 @@ async def main():
         app_secret=APP_SECRET,
         service_name=SVC_NAME,
         pb_path=PB_PATH,
-        local_endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+        local_endpoint=Endpoint(address="127.0.0.1", port=50051),
         version=VERSION,
         descriptor_refresh_interval=30,
     ) as gw:

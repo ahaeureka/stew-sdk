@@ -205,17 +205,43 @@ class DiscoveryClient:
         tls_enabled: bool = False,
         protobuf_descriptor: bytes = b"",
     ) -> dict:
+        resolved_endpoint_id = endpoint_id
+        resolved_version = version
+        resolved_protocol = protocol
+        resolved_tls_enabled = tls_enabled
+
+        if not resolved_endpoint_id:
+            existing_instance = await self._find_existing_endpoint_instance(
+                service_name=service_name,
+                endpoint=endpoint,
+                protocol=protocol,
+                tls_enabled=tls_enabled,
+            )
+            if existing_instance is not None:
+                resolved_endpoint_id = existing_instance["instance_id"]
+                if not resolved_version:
+                    resolved_version = existing_instance["version"]
+                if resolved_protocol == "grpc" and existing_instance["protocol"]:
+                    resolved_protocol = existing_instance["protocol"]
+                if not resolved_tls_enabled:
+                    resolved_tls_enabled = bool(existing_instance["tls_enabled"])
+                log.info(
+                    "reusing existing endpoint configuration for %s endpoint_id=%s",
+                    service_name,
+                    resolved_endpoint_id,
+                )
+
         req = _pb.RegisterServiceEndpointRequest(
             service_name=service_name,
-            endpoint_id=endpoint_id,
+            endpoint_id=resolved_endpoint_id,
             endpoint=_pb.Endpoint(
                 address=endpoint.address,
                 port=endpoint.port,
                 weight=endpoint.weight,
             ),
-            version=version,
-            protocol=protocol,
-            tls_enabled=tls_enabled,
+            version=resolved_version,
+            protocol=resolved_protocol,
+            tls_enabled=resolved_tls_enabled,
             protobuf_descriptor=protobuf_descriptor,
         )
         resp: _pb.RegisterServiceEndpointResponse = await self._call_with_retry(  # type: ignore[assignment]
@@ -656,16 +682,71 @@ class DiscoveryClient:
         resp: _pb.GetServiceInstancesResponse = await self._call(
             self._s.GetServiceInstances(req, metadata=self._meta(), timeout=self._timeout)
         )
-        return [
-            {
-                "service_name": inst.service_name,
-                "instance_id": inst.instance_id,
-                "version": inst.version,
-                "tags": dict(inst.tags),
-                "status": _pb.ServiceStatus.Name(inst.status),
-            }
-            for inst in resp.instances
+        return [self._service_instance_to_dict(inst) for inst in resp.instances]
+
+    async def _find_existing_endpoint_instance(
+        self,
+        *,
+        service_name: str,
+        endpoint: Endpoint,
+        protocol: str,
+        tls_enabled: bool,
+    ) -> dict | None:
+        try:
+            instances = await self.get_instances(service_name, healthy_only=False)
+        except DiscoveryError as exc:
+            log.debug(
+                "failed to query existing instances before endpoint registration [%s]: %s",
+                service_name,
+                exc,
+            )
+            return None
+
+        address_matches = [
+            inst
+            for inst in instances
+            if any(
+                existing["address"] == endpoint.address and existing["port"] == endpoint.port
+                for existing in inst["endpoints"]
+            )
         ]
+        if not address_matches:
+            return None
+
+        exact_matches = [
+            inst
+            for inst in address_matches
+            if inst["protocol"] == protocol and bool(inst["tls_enabled"]) == tls_enabled
+        ]
+        if exact_matches:
+            return exact_matches[0]
+
+        if len(address_matches) == 1:
+            return address_matches[0]
+
+        log.debug(
+            "multiple endpoint candidates found for %s %s:%s; skipping automatic reuse",
+            service_name,
+            endpoint.address,
+            endpoint.port,
+        )
+        return None
+
+    @staticmethod
+    def _service_instance_to_dict(inst: _pb.ServiceInstance) -> dict:
+        return {
+            "service_name": inst.service_name,
+            "instance_id": inst.instance_id,
+            "version": inst.version,
+            "protocol": inst.protocol,
+            "tls_enabled": inst.tls_enabled,
+            "tags": dict(inst.tags),
+            "status": _pb.ServiceStatus.Name(inst.status),
+            "endpoints": [
+                {"address": endpoint.address, "port": endpoint.port, "weight": endpoint.weight}
+                for endpoint in (inst.lb.endpoints if inst.HasField("lb") else [])
+            ],
+        }
 
 
 class SyncDiscoveryClient:
