@@ -47,6 +47,16 @@ class ServiceDiscoveryServiceStub(object):
                 request_serializer=service__discovery__pb2.RegisterServiceRequest.SerializeToString,
                 response_deserializer=service__discovery__pb2.RegisterServiceResponse.FromString,
                 _registered_method=True)
+        self.RegisterServiceEndpoint = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/RegisterServiceEndpoint',
+                request_serializer=service__discovery__pb2.RegisterServiceEndpointRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.RegisterServiceEndpointResponse.FromString,
+                _registered_method=True)
+        self.DeregisterServiceEndpoint = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/DeregisterServiceEndpoint',
+                request_serializer=service__discovery__pb2.DeregisterServiceEndpointRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.DeregisterServiceEndpointResponse.FromString,
+                _registered_method=True)
         self.DeregisterService = channel.unary_unary(
                 '/stew.api.v1.ServiceDiscoveryService/DeregisterService',
                 request_serializer=service__discovery__pb2.DeregisterServiceRequest.SerializeToString,
@@ -134,6 +144,20 @@ class ServiceDiscoveryServiceServicer(object):
 
     def RegisterService(self, request, context):
         """注册服务实例
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RegisterServiceEndpoint(self, request, context):
+        """业务侧追加单个 endpoint（service-scoped）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeregisterServiceEndpoint(self, request, context):
+        """业务侧注销单个 endpoint（service-scoped）
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -249,6 +273,16 @@ def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
                     servicer.RegisterService,
                     request_deserializer=service__discovery__pb2.RegisterServiceRequest.FromString,
                     response_serializer=service__discovery__pb2.RegisterServiceResponse.SerializeToString,
+            ),
+            'RegisterServiceEndpoint': grpc.unary_unary_rpc_method_handler(
+                    servicer.RegisterServiceEndpoint,
+                    request_deserializer=service__discovery__pb2.RegisterServiceEndpointRequest.FromString,
+                    response_serializer=service__discovery__pb2.RegisterServiceEndpointResponse.SerializeToString,
+            ),
+            'DeregisterServiceEndpoint': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeregisterServiceEndpoint,
+                    request_deserializer=service__discovery__pb2.DeregisterServiceEndpointRequest.FromString,
+                    response_serializer=service__discovery__pb2.DeregisterServiceEndpointResponse.SerializeToString,
             ),
             'DeregisterService': grpc.unary_unary_rpc_method_handler(
                     servicer.DeregisterService,
@@ -378,6 +412,60 @@ class ServiceDiscoveryService(object):
             '/stew.api.v1.ServiceDiscoveryService/RegisterService',
             service__discovery__pb2.RegisterServiceRequest.SerializeToString,
             service__discovery__pb2.RegisterServiceResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RegisterServiceEndpoint(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/RegisterServiceEndpoint',
+            service__discovery__pb2.RegisterServiceEndpointRequest.SerializeToString,
+            service__discovery__pb2.RegisterServiceEndpointResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeregisterServiceEndpoint(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/DeregisterServiceEndpoint',
+            service__discovery__pb2.DeregisterServiceEndpointRequest.SerializeToString,
+            service__discovery__pb2.DeregisterServiceEndpointResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -429,6 +429,54 @@ class RegisterServiceResponse(_message.Message):
     instance_id: str
     def __init__(self, success: bool = ..., message: _Optional[str] = ..., lease_id: _Optional[str] = ..., instance_id: _Optional[str] = ...) -> None: ...
 
+class RegisterServiceEndpointRequest(_message.Message):
+    __slots__ = ("service_name", "endpoint_id", "endpoint", "version", "protocol", "tls_enabled", "protobuf_descriptor")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_ID_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_FIELD_NUMBER: _ClassVar[int]
+    VERSION_FIELD_NUMBER: _ClassVar[int]
+    PROTOCOL_FIELD_NUMBER: _ClassVar[int]
+    TLS_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    PROTOBUF_DESCRIPTOR_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    endpoint_id: str
+    endpoint: Endpoint
+    version: str
+    protocol: str
+    tls_enabled: bool
+    protobuf_descriptor: bytes
+    def __init__(self, service_name: _Optional[str] = ..., endpoint_id: _Optional[str] = ..., endpoint: _Optional[_Union[Endpoint, _Mapping]] = ..., version: _Optional[str] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ...) -> None: ...
+
+class RegisterServiceEndpointResponse(_message.Message):
+    __slots__ = ("success", "message", "endpoint_id", "lease_id", "registered_service")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_ID_FIELD_NUMBER: _ClassVar[int]
+    LEASE_ID_FIELD_NUMBER: _ClassVar[int]
+    REGISTERED_SERVICE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    endpoint_id: str
+    lease_id: str
+    registered_service: ServiceInstance
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., endpoint_id: _Optional[str] = ..., lease_id: _Optional[str] = ..., registered_service: _Optional[_Union[ServiceInstance, _Mapping]] = ...) -> None: ...
+
+class DeregisterServiceEndpointRequest(_message.Message):
+    __slots__ = ("service_name", "endpoint_id")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_ID_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    endpoint_id: str
+    def __init__(self, service_name: _Optional[str] = ..., endpoint_id: _Optional[str] = ...) -> None: ...
+
+class DeregisterServiceEndpointResponse(_message.Message):
+    __slots__ = ("success", "message")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
 class DeregisterServiceRequest(_message.Message):
     __slots__ = ("service_name", "instance_id")
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]

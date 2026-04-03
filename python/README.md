@@ -45,13 +45,19 @@ SDK **不负责**服务注册/注销，这些操作需要管理员通过前端�
 
 ### 一键接入（推荐）
 
-`GatewayClient` 是最简单的接入方式：连接网关、上传描述符、启动心跳保活一步完成。
+`GatewayClient` 是最简单的接入方式：连接网关、追加本机 endpoint、上传描述符、启动心跳保活一步完成。
 当网关启动时不可达（`UNAVAILABLE`），后台会以指数退避自动轮询重试，直到注册成功，
-业务服务无需处理网关宕机场景。
+业务服务无需处理网关宕机场景。首次 keepalive 会立即发送；运行中如果心跳因异常或网络
+问题失败，客户端会持续重试，并在恢复阶段只重传本地 `.pb` 描述符，然后再恢复心跳；
+前端管理的服务配置不会被本地 SDK 回写覆盖。
+
+当提供 `local_endpoint` 时，SDK 会把该地址注册成一个独立的业务侧 endpoint 实例，并把
+`endpoint_id` 持久化到本地绑定文件。只有地址、端口、权重、协议、TLS 配置都一致时才复用
+旧 `endpoint_id`；如果 endpoint 配置变化，SDK 会生成新的 `endpoint_id`，避免覆盖前端已配置的 endpoint。
 
 ```python
 import asyncio
-from stew import GatewayClient
+from stew import Endpoint, GatewayClient
 
 async def main():
     async with GatewayClient(
@@ -59,6 +65,7 @@ async def main():
         app_secret="ak_xxx",
         service_name="stew.api.v1.OrderService",
         pb_path="./order_service.pb",
+        local_endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
     ) as gw:
         # 可选：等待首次注册成功后再提供服务流量
         await gw.registered.wait()
@@ -117,13 +124,90 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 优先级：构造函数 `app_secret` > `api_key` > 环境变量 `APP_SECRET` > `SERVICE_API_KEY`
 
+### 文件存储客户端
+
+`FileStorageService` 现在已经接入 SDK，可直接通过 `FileStorageClient` 或 `SyncFileStorageClient` 调用。
+
+```python
+import asyncio
+from stew import FileStorageClient
+
+async def main():
+    async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        result = await client.upload_file(
+            filename="avatar.png",
+            content_type="image/png",
+            folder="/profiles",
+            data=b"binary-image-data",
+        )
+        print(result.file_info.id)
+
+asyncio.run(main())
+```
+
+如需使用 gRPC 分片下载，SDK 会通过同一个 `DownloadFile` unary RPC 循环发送 `range: bytes=start-end` metadata，而不是退回 HTTP：
+
+```python
+import asyncio
+from stew import FileStorageClient
+
+async def main():
+    async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        downloaded = await client.download_file_in_chunks(
+            file_id="550e8400-e29b-41d4-a716-446655440000",
+            chunk_size=1024 * 1024,
+            verify_integrity=True,
+            on_progress=lambda p: print(
+                f"chunk {p.chunk_index}/{p.total_chunks} "
+                f"{p.downloaded_bytes}/{p.total_bytes} bytes"
+            ),
+        )
+        print(downloaded.filename, len(downloaded.data), downloaded.etag)
+
+asyncio.run(main())
+```
+
+其中：
+
+- `on_progress` 会在每个分片下载完成后触发一次，参数为 `DownloadProgress`
+- `verify_integrity=True` 会在本地拼装完成后计算 SHA-256，再通过 gRPC `DownloadFile(verify_only=true)` 让服务端确认一致性
+
+如果文件较大，优先使用直接写盘接口，避免先把所有分片拼到内存里：
+
+```python
+import asyncio
+from stew import FileStorageClient
+
+async def main():
+    async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        saved = await client.download_file_to_path(
+            file_id="550e8400-e29b-41d4-a716-446655440000",
+            output_path="./downloads/report.pdf",
+            chunk_size=1024 * 1024,
+            verify_integrity=True,
+            replace_existing=True,
+        )
+        print(saved.path, saved.bytes_written, saved.etag)
+
+asyncio.run(main())
+```
+
+`download_file_to_path()` 默认支持断点续下：如果目标路径旁边已经存在同名 `.part` 文件，SDK 会检测已下载字节数，并从对应偏移继续通过 gRPC `Range` metadata 拉取剩余内容。
+
+如果最终目标文件已经存在，SDK 默认会抛出 `FileExistsError`，避免无意覆盖既有业务文件；只有显式传入 `replace_existing=True` 时，下载完成后才会替换目标文件。
+
+更贴近业务接入的完整流程示例见：
+
+- `examples/file_storage_download.py`：通用写盘下载
+- `examples/file_storage_business_download.py`：先 `get_file_info()`，再按业务目录落盘并启用续传与完整性校验
+
 ---
 
 ## API 参考
 
 ### `GatewayClient(gateway_addr, *, app_secret, service_name, pb_path, ...)` — 推荐
 
-一键接入封装：上传描述符 + 启动心跳，网关不可达时后台自动轮询重试。
+一键接入封装：追加本机 endpoint + 上传描述符 + 启动心跳，网关不可达时后台自动轮询重试。
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -132,9 +216,14 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 | `api_key` | `str` | `""` | `app_secret` 的别名（兼容旧代码） |
 | `service_name` | `str` | 必填 | 完全限定服务名，如 `stew.api.v1.OrderService` |
 | `pb_path` | `str` | 必填 | `.pb` 描述符文件路径 |
+| `local_endpoint` | `Endpoint \\| None` | `None` | 业务服务自己的 IP/端口/权重；提供后会自动注册为单独 endpoint 实例 |
+| `endpoint_state_path` | `str` | `""` | endpoint_id 本地绑定文件路径；默认使用 `{pb_path}.endpoint.json` |
+| `endpoint_protocol` | `str` | `"grpc"` | 该 endpoint 的后端协议 |
+| `endpoint_tls_enabled` | `bool` | `False` | 该 endpoint 是否要求 TLS |
 | `version` | `str` | `""` | 版本号，留空自动生成 |
 | `description` | `str` | `""` | 版本描述 |
 | `keepalive_interval` | `int` | `30` | 心跳间隔（秒），须小于网关 TTL |
+| `descriptor_refresh_interval` | `int` | `30` | 本地 `.pb` 文件轮询间隔（秒），`0` 表示关闭动态刷新 |
 | `retry_base_delay` | `float` | `5.0` | 网关不可达时首次重试等待（秒） |
 | `retry_max_delay` | `float` | `300.0` | 重试间隔上限（秒） |
 | `use_tls` | `bool` | `False` | 是否启用 TLS |
@@ -148,6 +237,16 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 | `registered` | `asyncio.Event`，首次注册成功后置位 |
 | `await start()` | 连接并执行注册；网关不可达时启动后台重试任务 |
 | `await stop()` | 取消重试任务并关闭连接 |
+
+`endpoint_state_path` 保存的是 endpoint 配置与 `endpoint_id` 的绑定关系。默认文件名是 `{pb_path}.endpoint.json`。
+
+运行中恢复行为：
+
+- keepalive 启动后立即发送第一次心跳，不等待一个完整间隔。
+- 心跳遇到异常、网络问题或网关重启后的运行时状态丢失时，会按指数退避持续恢复。
+- 恢复时只会重传本地 `.pb` 描述符，再补发心跳；不会覆盖前端管理的实例配置。
+- 当提供 `local_endpoint` 时，SDK 会为该 endpoint 生成或复用本地保存的 `endpoint_id`，并以追加实例的方式注册到网关，不会覆盖已有 endpoint。
+- `GatewayClient` 默认每 30 秒检查一次本地 `.pb` 文件，文件变化后自动上传新描述符，实现动态更新服务。
 
 **错误处理行为：**
 
@@ -247,12 +346,68 @@ active = await client.get_active_version("stew.api.v1.OrderService")
 # 如果没有任何版本，返回 None
 ```
 
+#### `refresh_descriptor_from_file()`
+
+重新读取本地 `.pb` 文件并执行一次描述符刷新，只更新描述符本身：
+
+```python
+result = await client.refresh_descriptor_from_file(
+    service_name="stew.api.v1.OrderService",
+    pb_path="./order_service.pb",
+    description="manual descriptor refresh",
+)
+print(result["applied_version"])
+```
+
+#### `register_endpoint()`
+
+追加一个业务侧自管理的 endpoint，不影响前端已配置的其他 endpoint：
+
+```python
+registration = await client.register_endpoint(
+    service_name="stew.api.v1.OrderService",
+    endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+    endpoint_id="existing-or-empty",
+)
+print(registration["endpoint_id"])
+```
+
+#### `deregister_endpoint()`
+
+按 `endpoint_id` 注销一个业务侧 endpoint：
+
+```python
+await client.deregister_endpoint(
+    service_name="stew.api.v1.OrderService",
+    endpoint_id="endpoint-123",
+)
+```
+
+#### `start_descriptor_refresh()`
+
+周期轮询本地 `.pb` 文件，发现变化后自动上传新描述符：
+
+```python
+await client.start_descriptor_refresh(
+    service_name="stew.api.v1.OrderService",
+    pb_path="./order_service.pb",
+    interval=30,
+)
+
+# ... 服务运行中 ...
+
+client.stop_descriptor_refresh(
+    service_name="stew.api.v1.OrderService",
+    pb_path="./order_service.pb",
+)
+```
+
 ---
 
 ### 心跳 / 保活
 
 心跳可选，用于向网关上报服务健康状态，维持 ETCD 租约。
-`instance_id` 由管理员配置服务端点时设置，可通过 `get_instances()` 查询。
+如果你是通过 `register_endpoint()` 追加业务侧 endpoint，后续 keepalive 应使用返回的 `endpoint_id` 作为 `instance_id`；如果是对已有实例发心跳，可通过 `get_instances()` 查询。
 
 #### 单次心跳
 
@@ -279,11 +434,27 @@ await client.heartbeat(
 #### 后台心跳循环
 
 ```python
+from stew import Endpoint, RegistrationConfig
+
+registration = await client.register_endpoint(
+    service_name="stew.api.v1.OrderService",
+    endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
+)
+
 await client.start_keepalive(
     service_name="stew.api.v1.OrderService",
-    instance_id="order-service-prod-1",
+    instance_id=registration["endpoint_id"],
     interval=30,              # 每 30 秒发送一次，应小于 TTL（默认 60 s）
+    registration=RegistrationConfig(
+        descriptor_path="./order_service.pb",
+    ),
     on_error=lambda e: logging.warning("keepalive error: %s", e),
+)
+
+await client.start_descriptor_refresh(
+    service_name="stew.api.v1.OrderService",
+    pb_path="./order_service.pb",
+    interval=30,
 )
 
 # ... 服务运行中 ...
@@ -291,7 +462,12 @@ await client.start_keepalive(
 # 停止单个实例的心跳循环
 client.stop_keepalive(
     service_name="stew.api.v1.OrderService",
-    instance_id="order-service-prod-1",
+    instance_id=registration["endpoint_id"],
+)
+
+client.stop_descriptor_refresh(
+    service_name="stew.api.v1.OrderService",
+    pb_path="./order_service.pb",
 )
 
 # 关闭 client 时自动取消所有心跳循环
@@ -379,7 +555,7 @@ import asyncio
 import logging
 import os
 
-from stew import GatewayClient
+from stew import Endpoint, GatewayClient
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
@@ -395,9 +571,11 @@ async def main():
         app_secret=APP_SECRET,
         service_name=SVC_NAME,
         pb_path=PB_PATH,
+        local_endpoint=Endpoint(address="127.0.0.1", port=50051, weight=10),
         version=VERSION,
+        descriptor_refresh_interval=30,
     ) as gw:
-        # 等待首次注册成功（可选）；网关不可达时后台持续重试
+        # 等待首次注册成功（会同时追加本机 endpoint 并上传描述符）
         await gw.registered.wait()
         # 启动业务 gRPC server ...
         await asyncio.Event().wait()
@@ -428,17 +606,12 @@ PB_PATH    = os.environ.get("DESCRIPTOR_FILE", "service.pb")
 VERSION    = os.environ.get("SERVICE_VERSION", "")
 
 with SyncDiscoveryClient(GATEWAY, app_secret=APP_SECRET) as c:
-    # 查询当前激活版本用于乐观锁
-    versions = c.list_descriptor_versions(SVC_NAME)
-    active = next((v.version for v in versions if v.is_active), None)
-
     try:
-        result = c.upload_descriptor_from_file(
+        result = c.refresh_descriptor_from_file(
             service_name=SVC_NAME,
             pb_path=PB_PATH,
             version=VERSION,
             description="auto-submitted at startup",
-            previous_version=active or "",
         )
         log.info("descriptor applied: %s", result["applied_version"])
         for w in result["compatibility_warnings"]:
@@ -504,6 +677,8 @@ proto/sdk/python/
 │   └── keepalive_demo.py      # 心跳保活示例
 └── stew/
     ├── __init__.py            # 公开导出
-    ├── discovery_client.py    # 主 SDK 实现
+    ├── discovery_client.py    # discovery 兼容入口
+    ├── file_storage_client.py # FileStorageService SDK 封装
+    ├── _discovery/            # discovery 内部拆分实现
     └── api/v1/                # protoc 生成的 pb2 文件
 ```

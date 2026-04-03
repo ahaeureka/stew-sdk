@@ -2,9 +2,9 @@
 """
 Descriptor submit tool for Stew gateway.
 
-Uploads a compiled .pb descriptor file to the gateway using the high-level
-SyncDiscoveryClient.  Suitable as a Docker CMD / Kubernetes init-container
-that runs once at service startup before the main process starts.
+Uploads or refreshes a compiled .pb descriptor file to the gateway using the
+high-level SyncDiscoveryClient.  Suitable as a Docker CMD / Kubernetes
+init-container that runs once at service startup before the main process starts.
 
 Usage:
     APP_SECRET=ak_xxx python3 descriptor_submit.py \
@@ -62,7 +62,10 @@ def main() -> int:
         if args.rollback:
             log.info("rolling back %s to version %s", args.service, args.rollback)
             try:
-                active = client.rollback_descriptor(args.service, args.rollback)
+                active = client.rollback_descriptor(
+                    service_name=args.service,
+                    target_version=args.rollback,
+                )
                 log.info("rollback succeeded, active version: %s", active)
                 return 0
             except NotFoundError as e:
@@ -77,19 +80,15 @@ def main() -> int:
             log.error("descriptor file not found: %s", args.descriptor)
             return 1
 
-        # Fetch current active version for optimistic locking.
-        # ConflictError is raised when another deployment won the race — treat
-        # as idempotent success so parallel pods don't fail each other.
         active = client.get_active_version(args.service)
         log.info("current active version: %s", active or "(none)")
 
         try:
-            result = client.upload_descriptor_from_file(
+            result = client.refresh_descriptor_from_file(
                 service_name=args.service,
                 pb_path=args.descriptor,
                 version=args.version,
                 description=args.description or "auto-submitted at startup",
-                previous_version=active or "",
                 force=args.force,
             )
         except ConflictError as e:
