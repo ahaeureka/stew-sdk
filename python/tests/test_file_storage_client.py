@@ -11,6 +11,8 @@ from stew import (
     FileStorageClient,
     SavedDownloadedFile,
     SyncFileStorageClient,
+    collect_grpc_context_metadata,
+    grpc_context_passthrough,
 )
 from stew.api.v1 import file_storage_model as file_storage_model
 from stew.api.v1 import file_storage_pb2 as file_storage_pb2
@@ -64,6 +66,62 @@ def test_download_file_extracts_extension_metadata() -> None:
             etag='"etag-value"',
         ),
     )
+
+
+def test_collect_grpc_context_metadata_filters_and_normalizes_headers() -> None:
+    class FakeContext:
+        def invocation_metadata(self):
+            return [
+                ("authorization", "Bearer token-123"),
+                ("X-User-Id", "user-1"),
+                ("x-request-id", "req-1"),
+                ("x-api-key", "should-not-pass"),
+                ("grpc-timeout", "1S"),
+            ]
+
+    metadata = collect_grpc_context_metadata(FakeContext())
+
+    assert metadata == [
+        ("authorization", "Bearer token-123"),
+        ("x-user-id", "user-1"),
+        ("x-request-id", "req-1"),
+    ]
+
+
+def test_file_storage_client_merges_grpc_context_passthrough_metadata() -> None:
+    captured: dict[str, object] = {}
+
+    class FakeContext:
+        def invocation_metadata(self):
+            return [
+                ("authorization", "Bearer token-123"),
+                ("x-user-id", "user-1"),
+                ("x-request-id", "req-1"),
+                ("x-api-key", "inbound-secret"),
+            ]
+
+    class Stub:
+        async def GetFileInfo(self, request, metadata, timeout):
+            captured["metadata"] = list(metadata)
+            return file_storage_pb2.FileInfo(
+                id="file-1",
+                filename="archive.bin",
+                content_type="application/octet-stream",
+                file_size=10,
+            )
+
+    client = FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    with grpc_context_passthrough(FakeContext()):
+        asyncio.run(client.get_file_info(file_id="file-1"))
+
+    assert captured["metadata"] == [
+        ("authorization", "Bearer token-123"),
+        ("x-user-id", "user-1"),
+        ("x-request-id", "req-1"),
+        ("x-api-key", "ak_xxx"),
+    ]
 
 
 def test_download_file_reports_progress_and_verifies_integrity() -> None:

@@ -116,8 +116,11 @@ class DiscoveryClient:
             raise RuntimeError("Client is not connected. Call connect() or use async with.")
         return self._stub
 
-    def _meta(self) -> list[tuple[str, str]]:
-        return make_metadata(self._api_key)
+    def _meta(
+        self,
+        extra_metadata: Sequence[tuple[str, str]] = (),
+    ) -> list[tuple[str, str]]:
+        return make_metadata(self._api_key, extra_metadata=extra_metadata)
 
     async def _call(self, coro):  # type: ignore[no-untyped-def]
         try:

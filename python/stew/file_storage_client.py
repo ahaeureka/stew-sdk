@@ -256,8 +256,11 @@ class FileStorageClient:
             raise RuntimeError("Client is not connected. Call connect() or use async with.")
         return self._stub
 
-    def _meta(self) -> list[tuple[str, str]]:
-        return make_metadata(self._api_key)
+    def _meta(
+        self,
+        extra_metadata: Sequence[tuple[str, str]] = (),
+    ) -> list[tuple[str, str]]:
+        return make_metadata(self._api_key, extra_metadata=extra_metadata)
 
     async def _download_call(
         self,
@@ -267,7 +270,7 @@ class FileStorageClient:
     ) -> tuple[Any, dict[str, str]]:
         call = self._s.DownloadFile(
             message,
-            metadata=[*self._meta(), *extra_metadata],
+            metadata=self._meta(extra_metadata=extra_metadata),
             timeout=self._timeout,
         )
         response = await self._call(call)

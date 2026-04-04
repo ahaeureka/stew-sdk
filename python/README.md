@@ -137,6 +137,81 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 优先级：构造函数 `app_secret` > `api_key` > 环境变量 `APP_SECRET` > `SERVICE_API_KEY`
 
+### 自动透传当前 gRPC Context
+
+如果业务服务本身是通过 Stew 网关接入的，并且在 gRPC handler 内还会再次使用 SDK 调回网关
+（例如调用 `FileStorageClient` 下载用户上传的文件），推荐启用 SDK 提供的 gRPC context 自动透传能力。
+
+透传后，SDK 会自动把当前请求里的以下 metadata 一并转发给网关：
+
+- `authorization`
+- `x-user-*`
+- `x-token-*`
+- `x-client-context`
+- `x-request-id`
+- `traceparent` / `tracestate` / `baggage` / `x-b3-*`
+
+入站请求里的 `x-api-key` 不会被继续转发；SDK 始终使用当前客户端自身的 `app_secret`
+作为下游网关调用凭证，避免把上游服务凭证错误透传出去。
+
+#### 同步 gRPC 服务：使用拦截器
+
+```python
+from concurrent import futures
+
+import grpc
+
+from stew import FileStorageClient, GrpcContextPassthroughInterceptor
+
+
+class FileServiceServicer:
+    def IngestGatewayFile(self, request, context):
+        with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+            info = client.get_file_info(file_id=request.file_id)
+            return info
+
+
+server = grpc.server(
+    futures.ThreadPoolExecutor(max_workers=10),
+    interceptors=[GrpcContextPassthroughInterceptor()],
+)
+```
+
+#### `grpc.aio` 服务：使用异步拦截器
+
+```python
+import grpc
+
+from stew import AioGrpcContextPassthroughInterceptor, FileStorageClient
+
+
+class FileServiceServicer:
+    async def IngestGatewayFile(self, request, context):
+        async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+            info = await client.get_file_info(file_id=request.file_id)
+            return info
+
+
+server = grpc.aio.server(
+    interceptors=[AioGrpcContextPassthroughInterceptor()],
+)
+```
+
+#### 无法统一挂拦截器时：使用装饰器
+
+```python
+from stew import FileStorageClient, grpc_context_passthrough_handler
+
+
+class FileServiceServicer:
+    @grpc_context_passthrough_handler
+    async def IngestGatewayFile(self, request, context):
+        async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+            return await client.get_file_info(file_id=request.file_id)
+```
+
+只有在业务框架不方便统一注册 gRPC interceptor 时，才建议使用装饰器；能挂拦截器时，优先挂拦截器。
+
 ### 文件存储客户端
 
 `FileStorageService` 现在已经接入 SDK，可直接通过 `FileStorageClient` 或 `SyncFileStorageClient` 调用。
@@ -286,6 +361,16 @@ asyncio.run(main())
 | `retry_max` | `int` | `10` | 网关不可达时最大重试次数 |
 | `retry_base_delay` | `float` | `2.0` | 初始重试间隔（秒），指数增长 |
 | `retry_max_delay` | `float` | `60.0` | 重试间隔上限（秒） |
+
+### gRPC Context 透传辅助 API
+
+| API | 说明 |
+|------|------|
+| `GrpcContextPassthroughInterceptor()` | 用于 `grpc.server(...)` 的同步服务端拦截器 |
+| `AioGrpcContextPassthroughInterceptor()` | 用于 `grpc.aio.server(...)` 的异步服务端拦截器 |
+| `@grpc_context_passthrough_handler` | 无法统一挂拦截器时，可直接包单个业务方法 |
+| `grpc_context_passthrough(context)` | 低层 context manager，适合特殊场景手工包裹 |
+| `collect_grpc_context_metadata(context)` | 提取当前请求中允许透传的 metadata 白名单 |
 
 ---
 

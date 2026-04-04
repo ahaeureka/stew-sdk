@@ -4,6 +4,7 @@ from pathlib import Path
 from stew.api.v1 import service_discovery_pb2 as discovery_pb2
 from stew.discovery_client import Endpoint, EndpointBinding, GatewayClient
 from stew.discovery_client import DiscoveryClient
+from stew.discovery_client import grpc_context_passthrough
 
 
 def make_gateway_client(tmp_path: Path, *, endpoint: Endpoint) -> GatewayClient:
@@ -198,3 +199,25 @@ def test_register_endpoint_keeps_default_request_when_no_remote_match() -> None:
     assert register_request.version == ""
     assert register_request.protocol == "grpc"
     assert register_request.tls_enabled is False
+
+
+def test_discovery_client_merges_grpc_context_passthrough_metadata() -> None:
+    class FakeContext:
+        def invocation_metadata(self):
+            return [
+                ("authorization", "Bearer token-123"),
+                ("x-user-id", "user-1"),
+                ("x-request-id", "req-1"),
+            ]
+
+    client = DiscoveryClient("127.0.0.1:3012", app_secret="ak_xxx")
+
+    with grpc_context_passthrough(FakeContext()):
+        metadata = client._meta()
+
+    assert metadata == [
+        ("authorization", "Bearer token-123"),
+        ("x-user-id", "user-1"),
+        ("x-request-id", "req-1"),
+        ("x-api-key", "ak_xxx"),
+    ]
