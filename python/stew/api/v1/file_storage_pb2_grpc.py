@@ -88,6 +88,21 @@ class FileStorageServiceStub(object):
                 request_serializer=file__storage__pb2.GetFileInfoRequest.SerializeToString,
                 response_deserializer=file__storage__pb2.FileInfo.FromString,
                 _registered_method=True)
+        self.ListFolder = channel.unary_unary(
+                '/stew.api.v1.FileStorageService/ListFolder',
+                request_serializer=file__storage__pb2.ListFolderRequest.SerializeToString,
+                response_deserializer=file__storage__pb2.ListFolderResponse.FromString,
+                _registered_method=True)
+        self.GetPathInfo = channel.unary_unary(
+                '/stew.api.v1.FileStorageService/GetPathInfo',
+                request_serializer=file__storage__pb2.GetPathInfoRequest.SerializeToString,
+                response_deserializer=file__storage__pb2.GetPathInfoResponse.FromString,
+                _registered_method=True)
+        self.ReadTextFile = channel.unary_unary(
+                '/stew.api.v1.FileStorageService/ReadTextFile',
+                request_serializer=file__storage__pb2.ReadTextFileRequest.SerializeToString,
+                response_deserializer=file__storage__pb2.ReadTextFileResponse.FromString,
+                _registered_method=True)
 
 
 class FileStorageServiceServicer(object):
@@ -171,6 +186,27 @@ class FileStorageServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ListFolder(self, request, context):
+        """Browse direct child entries of a virtual folder.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetPathInfo(self, request, context):
+        """Resolve a file or directory by file_id or virtual path.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReadTextFile(self, request, context):
+        """Preview a small UTF-8 text file safely.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_FileStorageServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -223,6 +259,21 @@ def add_FileStorageServiceServicer_to_server(servicer, server):
                     servicer.GetFileInfo,
                     request_deserializer=file__storage__pb2.GetFileInfoRequest.FromString,
                     response_serializer=file__storage__pb2.FileInfo.SerializeToString,
+            ),
+            'ListFolder': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListFolder,
+                    request_deserializer=file__storage__pb2.ListFolderRequest.FromString,
+                    response_serializer=file__storage__pb2.ListFolderResponse.SerializeToString,
+            ),
+            'GetPathInfo': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPathInfo,
+                    request_deserializer=file__storage__pb2.GetPathInfoRequest.FromString,
+                    response_serializer=file__storage__pb2.GetPathInfoResponse.SerializeToString,
+            ),
+            'ReadTextFile': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReadTextFile,
+                    request_deserializer=file__storage__pb2.ReadTextFileRequest.FromString,
+                    response_serializer=file__storage__pb2.ReadTextFileResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -497,6 +548,87 @@ class FileStorageService(object):
             '/stew.api.v1.FileStorageService/GetFileInfo',
             file__storage__pb2.GetFileInfoRequest.SerializeToString,
             file__storage__pb2.FileInfo.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListFolder(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.FileStorageService/ListFolder',
+            file__storage__pb2.ListFolderRequest.SerializeToString,
+            file__storage__pb2.ListFolderResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetPathInfo(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.FileStorageService/GetPathInfo',
+            file__storage__pb2.GetPathInfoRequest.SerializeToString,
+            file__storage__pb2.GetPathInfoResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReadTextFile(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.FileStorageService/ReadTextFile',
+            file__storage__pb2.ReadTextFileRequest.SerializeToString,
+            file__storage__pb2.ReadTextFileResponse.FromString,
             options,
             channel_credentials,
             insecure,

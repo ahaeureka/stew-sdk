@@ -289,6 +289,93 @@ asyncio.run(main())
 - `examples/file_storage_download.py`：通用写盘下载
 - `examples/file_storage_business_download.py`：先 `get_file_info()`，再按业务目录落盘并启用续传与完整性校验
 
+### 业务资产浏览客户端
+
+`BusinessAssetBrowserService` 提供资产集合、版本快照、草稿编辑、变更 Diff 等能力，通过 `AssetBrowserClient` 或 `SyncAssetBrowserClient` 调用。
+
+```python
+import asyncio
+from stew import AssetBrowserClient
+
+async def main():
+    async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        # 列出资产集合
+        result = await client.list_collections(asset_space="configs")
+        for col in result.collections:
+            print(col.asset_id, col.display_name, col.has_draft)
+
+        # 浏览目录树
+        tree = await client.list_tree(
+            asset_space="configs", asset_id="my-app", folder="/templates"
+        )
+        for entry in tree.entries:
+            print(entry.entry_kind, entry.path, entry.size_bytes)
+
+        # 读取文本内容
+        text_resp = await client.get_entry_text(
+            asset_space="configs", asset_id="my-app",
+            version_id=tree.version.version_id,
+            path="/templates/main.yaml",
+        )
+        print(text_resp.text)
+
+asyncio.run(main())
+```
+
+草稿编辑完整工作流：
+
+```python
+import asyncio
+from stew import AssetBrowserClient
+
+async def main():
+    async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        # 1. 创建草稿
+        draft = await client.create_draft(
+            asset_space="configs", asset_id="my-app",
+            description="Update templates",
+        )
+        draft_vid = draft.draft_version.version_id
+
+        # 2. 编辑文件（使用乐观锁 expected_entry_revision）
+        saved = await client.update_draft_text(
+            asset_space="configs", asset_id="my-app",
+            draft_version_id=draft_vid,
+            path="/templates/main.yaml",
+            text="updated content",
+            expected_entry_revision=0,
+        )
+        print("saved revision:", saved.entry_revision)
+
+        # 3. 查看变更
+        diff = await client.diff_draft(
+            asset_space="configs", asset_id="my-app",
+            draft_version_id=draft_vid,
+        )
+        print("changes:", diff.summary.total_changes)
+
+        # 4. 发布
+        pub = await client.publish_draft(
+            asset_space="configs", asset_id="my-app",
+            draft_version_id=draft_vid,
+            description="v2: updated templates",
+        )
+        print("published:", pub.published_version.version_id)
+
+asyncio.run(main())
+```
+
+同步用法：
+
+```python
+from stew import SyncAssetBrowserClient
+
+with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+    result = client.list_collections(asset_space="configs")
+    for col in result.collections:
+        print(col.asset_id, col.display_name)
+```
+
 ---
 
 ## API 参考
@@ -361,6 +448,73 @@ asyncio.run(main())
 | `retry_max` | `int` | `10` | 网关不可达时最大重试次数 |
 | `retry_base_delay` | `float` | `2.0` | 初始重试间隔（秒），指数增长 |
 | `retry_max_delay` | `float` | `60.0` | 重试间隔上限（秒） |
+
+### `AssetBrowserClient(gateway_addr, *, app_secret, ...)` — 业务资产浏览
+
+管理资产集合、版本快照、草稿编辑和变更 Diff。所有方法均为 keyword-only 参数。
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `gateway_addr` | `str` | 必填 | 网关地址，如 `127.0.0.1:3012` |
+| `app_secret` | `str` | `""` | 管理员下发的服务凭证 |
+| `api_key` | `str` | `""` | `app_secret` 的别名（兼容旧代码） |
+| `use_tls` | `bool` | `False` | 是否启用 TLS |
+| `timeout` | `float` | `30.0` | 单次 RPC 超时（秒） |
+
+**集合管理：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `list_collections(*, asset_space, scope_kind, scope_value, page_size, page_token)` | `ListAssetCollectionsResponse` | 列出资产集合，支持作用域过滤和分页 |
+| `get_collection(*, asset_space, asset_id)` | `AssetCollection` | 获取单个集合详情 |
+
+**目录树：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `list_tree(*, asset_space, asset_id, version_id, folder, page_size, page_token, include_files, include_directories)` | `ListAssetTreeResponse` | 浏览指定版本的目录树 |
+
+**版本管理：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `list_versions(*, asset_space, asset_id, include_archived)` | `ListAssetVersionsResponse` | 列出版本列表 |
+| `get_version(*, asset_space, asset_id, version_id)` | `GetAssetVersionResponse` | 获取版本详情（含 base_version 和 draft_diff_summary） |
+
+**草稿生命周期：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `create_draft(*, asset_space, asset_id, base_version_id, draft_version_id, description)` | `CreateDraftVersionResponse` | 创建草稿；每个集合同时只能有一个草稿 |
+| `discard_draft(*, asset_space, asset_id, draft_version_id)` | `None` | 丢弃草稿 |
+| `publish_draft(*, asset_space, asset_id, draft_version_id, version_id, description, previous_version_id)` | `PublishDraftVersionResponse` | 发布草稿为 ready 版本 |
+
+**草稿编辑：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `get_entry_text(*, asset_space, asset_id, version_id, path)` | `GetAssetEntryTextResponse` | 读取文本内容（含 entry_revision 乐观锁） |
+| `update_draft_text(*, asset_space, asset_id, draft_version_id, path, text, content_type, expected_entry_revision, commit_message)` | `UpdateDraftTextEntryResponse` | 保存文本到草稿，支持乐观锁 |
+| `rename_draft_entry(*, asset_space, asset_id, draft_version_id, path, new_path)` | `RenameDraftEntryResponse` | 重命名草稿条目 |
+| `delete_draft_entry(*, asset_space, asset_id, draft_version_id, path)` | `DeleteDraftEntryResponse` | 删除草稿条目 |
+
+**Diff：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `diff_versions(*, asset_space, asset_id, left_version_id, right_version_id, diff_mode, path_prefix, page_size, page_token)` | `DiffAssetVersionsResponse` | 两个版本间的结构/文本 diff |
+| `diff_draft(*, asset_space, asset_id, draft_version_id, base_version_id, diff_mode, path_prefix, page_size, page_token)` | `DiffAssetDraftResponse` | 草稿与基础版本的 diff |
+| `get_diff_entry_detail(*, asset_space, asset_id, left_version_id, right_version_id, path, diff_mode)` | `GetAssetDiffEntryDetailResponse` | 单个文件的文本差异详情 |
+
+**版本激活：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `activate_version(*, asset_space, asset_id, target_version_id, previous_version_id)` | `ActivateAssetVersionResponse` | 激活指定版本 |
+
+`SyncAssetBrowserClient` 提供上述所有方法的同步版本，使用方式与 `SyncFileStorageClient` 一致。
+
+所有返回的模型类型定义在 `stew.api.v1.business_asset_browser_model` 中，由 protoc-gen-pydantic 自动生成。
 
 ### gRPC Context 透传辅助 API
 
@@ -778,14 +932,18 @@ client = DiscoveryClient(
 ```
 proto/sdk/python/
 ├── pyproject.toml
-├── README.md                  # 本文件
+├── README.md                       # 本文件
 ├── examples/
-│   ├── descriptor_submit.py   # 启动时提交描述符（命令行工具）
-│   └── keepalive_demo.py      # 心跳保活示例
+│   ├── descriptor_submit.py        # 启动时提交描述符（命令行工具）
+│   └── keepalive_demo.py           # 心跳保活示例
+├── tests/
+│   ├── test_file_storage_client.py  # FileStorageClient 测试
+│   └── test_asset_browser_client.py # AssetBrowserClient 测试
 └── stew/
-    ├── __init__.py            # 公开导出
-    ├── discovery_client.py    # discovery 兼容入口
-    ├── file_storage_client.py # FileStorageService SDK 封装
-    ├── _discovery/            # discovery 内部拆分实现
-    └── api/v1/                # protoc 生成的 pb2 文件
+    ├── __init__.py                  # 公开导出
+    ├── discovery_client.py          # discovery 兼容入口
+    ├── file_storage_client.py       # FileStorageService SDK 封装
+    ├── asset_browser_client.py      # BusinessAssetBrowserService SDK 封装
+    ├── _discovery/                  # discovery 内部拆分实现
+    └── api/v1/                      # protoc 生成的 pb2 + pydantic model 文件
 ```

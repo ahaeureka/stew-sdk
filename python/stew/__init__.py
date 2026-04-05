@@ -34,6 +34,11 @@ from stew.file_storage_client import (
     SavedDownloadedFile,
     SyncFileStorageClient,
 )
+from stew.asset_browser_client import (
+    AssetBrowserClient,
+    AssetBrowserError,
+    SyncAssetBrowserClient,
+)
 
 __all__ = [
     "DiscoveryClient",
@@ -64,4 +69,7 @@ __all__ = [
     "DiscoveryError",
     "ConflictError",
     "NotFoundError",
+    "AssetBrowserClient",
+    "AssetBrowserError",
+    "SyncAssetBrowserClient",
 ]

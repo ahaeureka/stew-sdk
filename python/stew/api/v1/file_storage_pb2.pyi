@@ -20,10 +20,19 @@ class UploadSessionStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     UPLOAD_SESSION_STATUS_ACTIVE: _ClassVar[UploadSessionStatus]
     UPLOAD_SESSION_STATUS_COMPLETED: _ClassVar[UploadSessionStatus]
     UPLOAD_SESSION_STATUS_ABORTED: _ClassVar[UploadSessionStatus]
+
+class PathEntryKind(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    PATH_ENTRY_KIND_UNSPECIFIED: _ClassVar[PathEntryKind]
+    PATH_ENTRY_KIND_FILE: _ClassVar[PathEntryKind]
+    PATH_ENTRY_KIND_DIRECTORY: _ClassVar[PathEntryKind]
 UPLOAD_SESSION_STATUS_UNSPECIFIED: UploadSessionStatus
 UPLOAD_SESSION_STATUS_ACTIVE: UploadSessionStatus
 UPLOAD_SESSION_STATUS_COMPLETED: UploadSessionStatus
 UPLOAD_SESSION_STATUS_ABORTED: UploadSessionStatus
+PATH_ENTRY_KIND_UNSPECIFIED: PathEntryKind
+PATH_ENTRY_KIND_FILE: PathEntryKind
+PATH_ENTRY_KIND_DIRECTORY: PathEntryKind
 
 class UploadFileRequest(_message.Message):
     __slots__ = ("metadata", "chunk_data")
@@ -262,3 +271,111 @@ class FileInfo(_message.Message):
     local_path: str
     storage_key: str
     def __init__(self, id: _Optional[str] = ..., filename: _Optional[str] = ..., content_type: _Optional[str] = ..., file_size: _Optional[int] = ..., folder: _Optional[str] = ..., owner_id: _Optional[str] = ..., checksum: _Optional[str] = ..., storage_backend: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., local_path: _Optional[str] = ..., storage_key: _Optional[str] = ...) -> None: ...
+
+class VirtualPathRef(_message.Message):
+    __slots__ = ("folder", "relative_path")
+    FOLDER_FIELD_NUMBER: _ClassVar[int]
+    RELATIVE_PATH_FIELD_NUMBER: _ClassVar[int]
+    folder: str
+    relative_path: str
+    def __init__(self, folder: _Optional[str] = ..., relative_path: _Optional[str] = ...) -> None: ...
+
+class PathSelector(_message.Message):
+    __slots__ = ("file_id", "path")
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    file_id: str
+    path: VirtualPathRef
+    def __init__(self, file_id: _Optional[str] = ..., path: _Optional[_Union[VirtualPathRef, _Mapping]] = ...) -> None: ...
+
+class PathEntry(_message.Message):
+    __slots__ = ("kind", "name", "path", "parent_folder", "file_id", "content_type", "size_bytes", "checksum", "created_at", "updated_at", "has_children")
+    KIND_FIELD_NUMBER: _ClassVar[int]
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    PARENT_FOLDER_FIELD_NUMBER: _ClassVar[int]
+    FILE_ID_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
+    CHECKSUM_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    HAS_CHILDREN_FIELD_NUMBER: _ClassVar[int]
+    kind: PathEntryKind
+    name: str
+    path: str
+    parent_folder: str
+    file_id: str
+    content_type: str
+    size_bytes: int
+    checksum: str
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    has_children: bool
+    def __init__(self, kind: _Optional[_Union[PathEntryKind, str]] = ..., name: _Optional[str] = ..., path: _Optional[str] = ..., parent_folder: _Optional[str] = ..., file_id: _Optional[str] = ..., content_type: _Optional[str] = ..., size_bytes: _Optional[int] = ..., checksum: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., has_children: bool = ...) -> None: ...
+
+class ListFolderRequest(_message.Message):
+    __slots__ = ("folder", "page_size", "page_token", "include_files", "include_directories")
+    FOLDER_FIELD_NUMBER: _ClassVar[int]
+    PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_FILES_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_DIRECTORIES_FIELD_NUMBER: _ClassVar[int]
+    folder: str
+    page_size: int
+    page_token: str
+    include_files: bool
+    include_directories: bool
+    def __init__(self, folder: _Optional[str] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ..., include_files: bool = ..., include_directories: bool = ...) -> None: ...
+
+class ListFolderResponse(_message.Message):
+    __slots__ = ("entries", "next_page_token", "total_count")
+    ENTRIES_FIELD_NUMBER: _ClassVar[int]
+    NEXT_PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    TOTAL_COUNT_FIELD_NUMBER: _ClassVar[int]
+    entries: _containers.RepeatedCompositeFieldContainer[PathEntry]
+    next_page_token: str
+    total_count: int
+    def __init__(self, entries: _Optional[_Iterable[_Union[PathEntry, _Mapping]]] = ..., next_page_token: _Optional[str] = ..., total_count: _Optional[int] = ...) -> None: ...
+
+class GetPathInfoRequest(_message.Message):
+    __slots__ = ("selector",)
+    SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    selector: PathSelector
+    def __init__(self, selector: _Optional[_Union[PathSelector, _Mapping]] = ...) -> None: ...
+
+class GetPathInfoResponse(_message.Message):
+    __slots__ = ("entry",)
+    ENTRY_FIELD_NUMBER: _ClassVar[int]
+    entry: PathEntry
+    def __init__(self, entry: _Optional[_Union[PathEntry, _Mapping]] = ...) -> None: ...
+
+class ReadTextFileRequest(_message.Message):
+    __slots__ = ("selector", "max_bytes", "fail_if_binary")
+    SELECTOR_FIELD_NUMBER: _ClassVar[int]
+    MAX_BYTES_FIELD_NUMBER: _ClassVar[int]
+    FAIL_IF_BINARY_FIELD_NUMBER: _ClassVar[int]
+    selector: PathSelector
+    max_bytes: int
+    fail_if_binary: bool
+    def __init__(self, selector: _Optional[_Union[PathSelector, _Mapping]] = ..., max_bytes: _Optional[int] = ..., fail_if_binary: bool = ...) -> None: ...
+
+class ReadTextFileResponse(_message.Message):
+    __slots__ = ("entry", "text", "content_type", "size_bytes", "checksum", "updated_at", "truncated", "lossy")
+    ENTRY_FIELD_NUMBER: _ClassVar[int]
+    TEXT_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
+    CHECKSUM_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    TRUNCATED_FIELD_NUMBER: _ClassVar[int]
+    LOSSY_FIELD_NUMBER: _ClassVar[int]
+    entry: PathEntry
+    text: str
+    content_type: str
+    size_bytes: int
+    checksum: str
+    updated_at: _timestamp_pb2.Timestamp
+    truncated: bool
+    lossy: bool
+    def __init__(self, entry: _Optional[_Union[PathEntry, _Mapping]] = ..., text: _Optional[str] = ..., content_type: _Optional[str] = ..., size_bytes: _Optional[int] = ..., checksum: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., truncated: bool = ..., lossy: bool = ...) -> None: ...
