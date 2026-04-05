@@ -365,6 +365,41 @@ async def main():
 asyncio.run(main())
 ```
 
+资产导出：
+
+```python
+import asyncio
+from stew import AssetBrowserClient
+
+async def main():
+    async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+        exported = await client.export_entry(
+            asset_space="configs",
+            asset_id="my-app",
+            version_id="v20260401",
+            path="/templates",
+        )
+        print(exported.filename, exported.content_type, len(exported.data))
+
+        saved = await client.export_entry_to_path(
+            asset_space="configs",
+            asset_id="my-app",
+            version_id="v20260401",
+            path="/templates",
+            output_path="./templates.zip",
+            replace_existing=True,
+        )
+        print("saved to:", saved.path)
+
+asyncio.run(main())
+```
+
+导出语义：
+
+- `path` 指向文件时：返回文件原始内容
+- `path` 指向目录时：服务端递归打包为 zip
+- `path` 留空时：导出整个版本根目录的 zip
+
 同步用法：
 
 ```python
@@ -512,7 +547,26 @@ with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 |------|----------|------|
 | `activate_version(*, asset_space, asset_id, target_version_id, previous_version_id)` | `ActivateAssetVersionResponse` | 激活指定版本 |
 
+**资产导出：**
+
+| 方法 | 返回类型 | 说明 |
+|------|----------|------|
+| `export_entry(*, asset_space, asset_id, version_id, path)` | `ExportedAsset` | 导出文件或目录；目录自动返回 zip |
+| `export_entry_to_path(*, asset_space, asset_id, version_id, path, output_path, replace_existing)` | `SavedExportedAsset` | 导出并直接写入本地文件 |
+
 `SyncAssetBrowserClient` 提供上述所有方法的同步版本，使用方式与 `SyncFileStorageClient` 一致。
+
+`ExportedAsset` / `SavedExportedAsset` 字段说明：
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `data` | `bytes` | 导出的二进制内容，仅 `ExportedAsset` 提供 |
+| `content_type` | `str` | 服务端返回的 MIME 类型；目录导出通常为 `application/zip` |
+| `filename` | `str` | 服务端建议的下载文件名 |
+| `content_disposition` | `str` | 下载头里的 `Content-Disposition` |
+| `etag` | `str` | 服务端返回的 ETag |
+| `path` | `str` | 实际保存路径，仅 `SavedExportedAsset` 提供 |
+| `bytes_written` | `int` | 已写入本地文件的字节数，仅 `SavedExportedAsset` 提供 |
 
 所有返回的模型类型定义在 `stew.api.v1.business_asset_browser_model` 中，由 protoc-gen-pydantic 自动生成。
 

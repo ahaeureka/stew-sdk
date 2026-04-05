@@ -1,20 +1,29 @@
 import asyncio
+import os
+import tempfile
 
 import pytest
+from google.api import httpbody_pb2
+from google.protobuf.any_pb2 import Any as AnyMessage
 
 from stew import (
     AssetBrowserClient,
     AssetBrowserError,
+    ExportedAsset,
+    SavedExportedAsset,
     SyncAssetBrowserClient,
 )
 from stew.api.v1 import business_asset_browser_model as ab_model
 from stew.api.v1 import business_asset_browser_pb2 as ab_pb
+from stew.api.v1 import file_storage_pb2 as fs_pb
 
 
 def test_asset_browser_client_is_exported() -> None:
     assert AssetBrowserClient is not None
     assert SyncAssetBrowserClient is not None
     assert AssetBrowserError is not None
+    assert ExportedAsset is not None
+    assert SavedExportedAsset is not None
 
 
 def test_client_raises_when_not_connected() -> None:
@@ -328,6 +337,78 @@ def test_activate_version() -> None:
     assert result.active_version.is_active is True
 
 
+def test_export_entry() -> None:
+    metadata_pb = fs_pb.DownloadFileHttpMetadata(
+        filename="templates.zip",
+        content_disposition='attachment; filename="templates.zip"',
+        etag='"zip-etag"',
+    )
+    extension = AnyMessage()
+    extension.Pack(metadata_pb)
+    response_pb = httpbody_pb2.HttpBody(
+        content_type="application/zip",
+        data=b"zip-bytes",
+        extensions=[extension],
+    )
+
+    class Stub:
+        async def ExportAssetEntry(self, request, metadata, timeout):
+            assert request.asset_space == "configs"
+            assert request.asset_id == "my-app"
+            assert request.version_id == "v1"
+            assert request.path == "/templates"
+            return response_pb
+
+    client = AssetBrowserClient("127.0.0.1:3012", app_secret="ak_test")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.export_entry(
+            asset_space="configs",
+            asset_id="my-app",
+            version_id="v1",
+            path="/templates",
+        )
+    )
+    assert isinstance(result, ExportedAsset)
+    assert result.data == b"zip-bytes"
+    assert result.content_type == "application/zip"
+    assert result.filename == "templates.zip"
+    assert result.etag == '"zip-etag"'
+
+
+def test_export_entry_to_path() -> None:
+    response_pb = httpbody_pb2.HttpBody(
+        content_type="text/plain",
+        data=b"hello export",
+    )
+
+    class Stub:
+        async def ExportAssetEntry(self, request, metadata, timeout):
+            return response_pb
+
+    client = AssetBrowserClient("127.0.0.1:3012", app_secret="ak_test")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = os.path.join(tmpdir, "exported.txt")
+        result = asyncio.run(
+            client.export_entry_to_path(
+                asset_space="configs",
+                asset_id="my-app",
+                version_id="v1",
+                path="/hello.txt",
+                output_path=output_path,
+            )
+        )
+
+        assert isinstance(result, SavedExportedAsset)
+        assert result.path == output_path
+        assert result.bytes_written == len(b"hello export")
+        with open(output_path, "rb") as fh:
+            assert fh.read() == b"hello export"
+
+
 def test_metadata_includes_api_key() -> None:
     client = AssetBrowserClient("127.0.0.1:3012", app_secret="ak_secret")
     meta = client._meta()
@@ -355,4 +436,30 @@ def test_sync_client_delegates() -> None:
     )
     assert isinstance(result, ab_model.AssetCollection)
     assert result.display_name == "My App"
+    sync_client._loop.close()
+
+
+def test_sync_client_export_entry_delegates() -> None:
+    response_pb = httpbody_pb2.HttpBody(
+        content_type="application/zip",
+        data=b"sync-export",
+    )
+
+    class Stub:
+        async def ExportAssetEntry(self, request, metadata, timeout):
+            return response_pb
+
+    sync_client = SyncAssetBrowserClient(
+        "127.0.0.1:3012", app_secret="ak_test"
+    )
+    sync_client._client._stub = Stub()  # type: ignore[assignment]
+
+    result = sync_client.export_entry(
+        asset_space="configs",
+        asset_id="my-app",
+        version_id="v1",
+        path="/templates",
+    )
+    assert isinstance(result, ExportedAsset)
+    assert result.data == b"sync-export"
     sync_client._loop.close()

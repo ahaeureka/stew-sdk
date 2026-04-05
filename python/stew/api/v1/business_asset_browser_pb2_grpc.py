@@ -4,6 +4,7 @@ import grpc
 import warnings
 
 from . import business_asset_browser_pb2 as business__asset__browser__pb2
+from google.api import httpbody_pb2 as google_dot_api_dot_httpbody__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
@@ -117,6 +118,11 @@ class BusinessAssetBrowserServiceStub(object):
                 request_serializer=business__asset__browser__pb2.ActivateAssetVersionRequest.SerializeToString,
                 response_deserializer=business__asset__browser__pb2.ActivateAssetVersionResponse.FromString,
                 _registered_method=True)
+        self.ExportAssetEntry = channel.unary_unary(
+                '/stew.api.v1.BusinessAssetBrowserService/ExportAssetEntry',
+                request_serializer=business__asset__browser__pb2.ExportAssetEntryRequest.SerializeToString,
+                response_deserializer=google_dot_api_dot_httpbody__pb2.HttpBody.FromString,
+                _registered_method=True)
 
 
 class BusinessAssetBrowserServiceServicer(object):
@@ -220,6 +226,12 @@ class BusinessAssetBrowserServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ExportAssetEntry(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_BusinessAssetBrowserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -302,6 +314,11 @@ def add_BusinessAssetBrowserServiceServicer_to_server(servicer, server):
                     servicer.ActivateAssetVersion,
                     request_deserializer=business__asset__browser__pb2.ActivateAssetVersionRequest.FromString,
                     response_serializer=business__asset__browser__pb2.ActivateAssetVersionResponse.SerializeToString,
+            ),
+            'ExportAssetEntry': grpc.unary_unary_rpc_method_handler(
+                    servicer.ExportAssetEntry,
+                    request_deserializer=business__asset__browser__pb2.ExportAssetEntryRequest.FromString,
+                    response_serializer=google_dot_api_dot_httpbody__pb2.HttpBody.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -738,6 +755,33 @@ class BusinessAssetBrowserService(object):
             '/stew.api.v1.BusinessAssetBrowserService/ActivateAssetVersion',
             business__asset__browser__pb2.ActivateAssetVersionRequest.SerializeToString,
             business__asset__browser__pb2.ActivateAssetVersionResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ExportAssetEntry(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BusinessAssetBrowserService/ExportAssetEntry',
+            business__asset__browser__pb2.ExportAssetEntryRequest.SerializeToString,
+            google_dot_api_dot_httpbody__pb2.HttpBody.FromString,
             options,
             channel_credentials,
             insecure,

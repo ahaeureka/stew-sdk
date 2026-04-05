@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import os
 from collections.abc import Sequence
+from dataclasses import dataclass
 from types import TracebackType
 from typing import Any
 
@@ -14,11 +15,58 @@ import grpc.aio
 from stew.api.v1 import business_asset_browser_model as _ab_model
 from stew.api.v1 import business_asset_browser_pb2 as _ab_pb
 from stew.api.v1 import business_asset_browser_pb2_grpc as _ab_grpc
+from stew.api.v1 import file_storage_model as _fs_model
+from stew.api.v1 import file_storage_pb2 as _fs_pb
 
 from ._discovery.errors import ConflictError, DiscoveryError
 from ._discovery.helpers import make_metadata, wrap_rpc_error
 
 AssetBrowserError = DiscoveryError
+
+
+@dataclass
+class ExportedAsset:
+    data: bytes
+    content_type: str
+    filename: str = ""
+    content_disposition: str = ""
+    etag: str = ""
+    metadata: _fs_model.DownloadFileHttpMetadata | None = None
+
+
+@dataclass
+class SavedExportedAsset:
+    path: str
+    bytes_written: int
+    content_type: str
+    filename: str = ""
+    content_disposition: str = ""
+    etag: str = ""
+    metadata: _fs_model.DownloadFileHttpMetadata | None = None
+
+
+def _extract_export_metadata(response: Any) -> _fs_model.DownloadFileHttpMetadata | None:
+    for extension in response.extensions:
+        metadata = _fs_pb.DownloadFileHttpMetadata()
+        if extension.Unpack(metadata):
+            return _fs_model.DownloadFileHttpMetadata.from_protobuf(metadata)
+    return None
+
+
+def _resolve_export_filename(
+    *,
+    asset_id: str,
+    path: str,
+    metadata: _fs_model.DownloadFileHttpMetadata | None,
+) -> str:
+    if metadata is not None and metadata.filename:
+        return metadata.filename
+
+    normalized_path = path.strip("/")
+    if normalized_path:
+        return normalized_path.split("/")[-1]
+
+    return f"{asset_id}.bin"
 
 
 class AssetBrowserClient:
@@ -492,6 +540,85 @@ class AssetBrowserClient:
         )
         return _ab_model.ActivateAssetVersionResponse.from_protobuf(response)
 
+    async def export_entry(
+        self,
+        *,
+        asset_space: str,
+        asset_id: str,
+        version_id: str = "",
+        path: str = "",
+    ) -> ExportedAsset:
+        response = await self._call(
+            self._s.ExportAssetEntry(
+                _ab_pb.ExportAssetEntryRequest(
+                    asset_space=asset_space,
+                    asset_id=asset_id,
+                    version_id=version_id,
+                    path=path,
+                ),
+                metadata=self._meta(),
+                timeout=self._timeout,
+            )
+        )
+        metadata = _extract_export_metadata(response)
+        return ExportedAsset(
+            data=response.data,
+            content_type=response.content_type,
+            filename=_resolve_export_filename(
+                asset_id=asset_id,
+                path=path,
+                metadata=metadata,
+            ),
+            content_disposition=(
+                metadata.content_disposition
+                if metadata is not None and metadata.content_disposition
+                else ""
+            ),
+            etag=metadata.etag if metadata is not None and metadata.etag else "",
+            metadata=metadata,
+        )
+
+    async def export_entry_to_path(
+        self,
+        *,
+        asset_space: str,
+        asset_id: str,
+        version_id: str = "",
+        path: str = "",
+        output_path: str = "",
+        replace_existing: bool = False,
+    ) -> SavedExportedAsset:
+        exported = await self.export_entry(
+            asset_space=asset_space,
+            asset_id=asset_id,
+            version_id=version_id,
+            path=path,
+        )
+        resolved_output_path = output_path or exported.filename or f"{asset_id}.bin"
+
+        parent = os.path.dirname(os.path.abspath(resolved_output_path))
+        if parent:
+            os.makedirs(parent, exist_ok=True)
+
+        if os.path.exists(resolved_output_path) and not replace_existing:
+            raise FileExistsError(
+                f"Output file already exists: {resolved_output_path}. "
+                "Pass replace_existing=True to overwrite it."
+            )
+
+        with open(resolved_output_path, "wb") as fh:
+            fh.write(exported.data)
+
+        return SavedExportedAsset(
+            path=resolved_output_path,
+            bytes_written=len(exported.data),
+            content_type=exported.content_type,
+            filename=exported.filename,
+            content_disposition=exported.content_disposition,
+            etag=exported.etag,
+            metadata=exported.metadata,
+        )
+
 
 class SyncAssetBrowserClient:
     """Synchronous facade over :class:`AssetBrowserClient`."""
@@ -586,9 +713,17 @@ class SyncAssetBrowserClient:
     ) -> _ab_model.ActivateAssetVersionResponse:
         return self._run(self._client.activate_version(**kwargs))
 
+    def export_entry(self, **kwargs: Any) -> ExportedAsset:
+        return self._run(self._client.export_entry(**kwargs))
+
+    def export_entry_to_path(self, **kwargs: Any) -> SavedExportedAsset:
+        return self._run(self._client.export_entry_to_path(**kwargs))
+
 
 __all__ = [
     "AssetBrowserClient",
     "AssetBrowserError",
+    "ExportedAsset",
+    "SavedExportedAsset",
     "SyncAssetBrowserClient",
 ]

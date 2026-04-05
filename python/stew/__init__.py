@@ -37,6 +37,8 @@ from stew.file_storage_client import (
 from stew.asset_browser_client import (
     AssetBrowserClient,
     AssetBrowserError,
+    ExportedAsset,
+    SavedExportedAsset,
     SyncAssetBrowserClient,
 )
 
@@ -71,5 +73,7 @@ __all__ = [
     "NotFoundError",
     "AssetBrowserClient",
     "AssetBrowserError",
+    "ExportedAsset",
+    "SavedExportedAsset",
     "SyncAssetBrowserClient",
 ]

@@ -1,6 +1,7 @@
 import datetime
 
 from google.api import annotations_pb2 as _annotations_pb2
+from google.api import httpbody_pb2 as _httpbody_pb2
 from google.protobuf import empty_pb2 as _empty_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
@@ -674,6 +675,18 @@ class ActivateAssetVersionRequest(_message.Message):
     target_version_id: str
     previous_version_id: str
     def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., target_version_id: _Optional[str] = ..., previous_version_id: _Optional[str] = ...) -> None: ...
+
+class ExportAssetEntryRequest(_message.Message):
+    __slots__ = ("asset_space", "asset_id", "version_id", "path")
+    ASSET_SPACE_FIELD_NUMBER: _ClassVar[int]
+    ASSET_ID_FIELD_NUMBER: _ClassVar[int]
+    VERSION_ID_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    asset_space: str
+    asset_id: str
+    version_id: str
+    path: str
+    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., version_id: _Optional[str] = ..., path: _Optional[str] = ...) -> None: ...
 
 class ActivateAssetVersionResponse(_message.Message):
     __slots__ = ("collection", "active_version_id", "active_version")
