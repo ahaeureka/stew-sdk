@@ -131,7 +131,16 @@ def grpc_context_passthrough(context_or_metadata: Any) -> Iterator[list[Metadata
     try:
         yield list(_PASSTHROUGH_METADATA.get())
     finally:
-        reset_grpc_context_metadata(token)
+        try:
+            reset_grpc_context_metadata(token)
+        except ValueError:
+            # Async generator cleanup (GeneratorExit triggered by client
+            # disconnect) may run in a different contextvars.Context than
+            # where the token was created.  In that case reset() raises
+            # ValueError because the token does not belong to the current
+            # context — the ContextVar was never modified here, so there
+            # is nothing to clean up.
+            pass
 
 
 def _resolve_context_argument(
