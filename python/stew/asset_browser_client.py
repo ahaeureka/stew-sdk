@@ -1,4 +1,11 @@
-"""Stew Gateway business asset browser gRPC clients."""
+"""Stew Gateway business asset browser gRPC clients.
+
+Public version-related fields and parameters use the business version ID from
+``asset_versions.version_id`` instead of the internal database UUID. The
+gateway still accepts internal UUIDs in request parameters for backward
+compatibility, but new integrations should persist and pass the business
+version IDs only.
+"""
 
 from __future__ import annotations
 
@@ -70,7 +77,11 @@ def _resolve_export_filename(
 
 
 class AssetBrowserClient:
-    """Async gRPC client for stew.api.v1.BusinessAssetBrowserService."""
+    """Async gRPC client for stew.api.v1.BusinessAssetBrowserService.
+
+    All public version_id, active_version_id, draft_version_id and
+    base_version_id values exposed by this client are business version IDs.
+    """
 
     def __init__(
         self,
@@ -647,7 +658,11 @@ class AssetBrowserClient:
 
 
 class SyncAssetBrowserClient:
-    """Synchronous facade over :class:`AssetBrowserClient`."""
+    """Synchronous facade over :class:`AssetBrowserClient`.
+
+    Version-related fields keep the same business-ID semantics as the async
+    client.
+    """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._client = AssetBrowserClient(*args, **kwargs)

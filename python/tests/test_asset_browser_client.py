@@ -73,6 +73,7 @@ def test_get_collection() -> None:
         asset_space="docs",
         asset_id="readme",
         display_name="README",
+        active_version_id="v20260401",
         total_versions=1,
     )
 
@@ -90,6 +91,59 @@ def test_get_collection() -> None:
     )
     assert isinstance(result, ab_model.AssetCollection)
     assert result.display_name == "README"
+    assert result.active_version_id == "v20260401"
+
+
+def test_list_versions_uses_business_version_ids() -> None:
+    response_pb = ab_pb.ListAssetVersionsResponse(
+        collection=ab_pb.AssetCollection(
+            asset_space="configs",
+            asset_id="my-app",
+            active_version_id="v2",
+            draft_version_id="draft-001",
+        ),
+        versions=[
+            ab_pb.AssetVersionSummary(
+                asset_space="configs",
+                asset_id="my-app",
+                version_id="v2",
+                status=ab_pb.ASSET_VERSION_STATUS_READY,
+                is_active=True,
+                base_version_id="v1",
+            ),
+            ab_pb.AssetVersionSummary(
+                asset_space="configs",
+                asset_id="my-app",
+                version_id="draft-001",
+                status=ab_pb.ASSET_VERSION_STATUS_DRAFT,
+                is_draft=True,
+                base_version_id="v2",
+            ),
+        ],
+        active_version_id="v2",
+        draft_version_id="draft-001",
+    )
+
+    class Stub:
+        async def ListAssetVersions(self, request, metadata, timeout):
+            assert request.asset_space == "configs"
+            assert request.asset_id == "my-app"
+            return response_pb
+
+    client = AssetBrowserClient("127.0.0.1:3012", app_secret="ak_test")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.list_versions(asset_space="configs", asset_id="my-app")
+    )
+    assert isinstance(result, ab_model.ListAssetVersionsResponse)
+    assert result.active_version_id == "v2"
+    assert result.draft_version_id == "draft-001"
+    assert result.collection.active_version_id == "v2"
+    assert result.versions[0].version_id == "v2"
+    assert result.versions[0].base_version_id == "v1"
+    assert result.versions[1].version_id == "draft-001"
+    assert result.versions[1].base_version_id == "v2"
 
 
 def test_create_draft() -> None:

@@ -296,6 +296,12 @@ asyncio.run(main())
 其中 `collection` 可以理解为一个逻辑资产仓库，由 `asset_space + asset_id` 唯一标识。
 后续的草稿、发布、目录树、Diff 等操作，都是围绕这个 collection 进行。
 
+版本字段语义：
+
+- `version_id`、`active_version_id`、`draft_version_id`、`base_version_id` 对外都表示业务版本号，也就是 `asset_versions.version_id`
+- SDK 返回值不会暴露内部数据库 UUID
+- 为兼容历史调用，网关入参暂时仍接受 UUID，但新接入应统一传业务版本号
+
 如果你要为一个新资产首次写入内容，先调用 `ensure_collection()`。
 这个接口是幂等的：collection 已存在时返回现有集合，不存在时自动创建。
 
@@ -312,7 +318,7 @@ async def main():
 
         # 浏览目录树
         tree = await client.list_tree(
-            asset_space="configs", asset_id="my-app", folder="/templates"
+            asset_space="configs", asset_id="my-app", folder="/"
         )
         for entry in tree.entries:
             print(entry.entry_kind, entry.path, entry.size_bytes)
@@ -387,6 +393,7 @@ asyncio.run(main())
 - `get_collection()` / `create_draft()` 等接口要求 collection 已存在
 - 对新资产，推荐固定使用 `ensure_collection()` 作为工作流第一步
 - `ensure_collection()` 适合在发布前重复调用，不需要额外判断“是否已经创建”
+- 所有版本相关参数与返回值都应按业务版本号理解，例如 `v20260401`、`draft-20260405`
 
 资产导出：
 
@@ -536,7 +543,7 @@ with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 
 | 方法 | 返回类型 | 说明 |
 |------|----------|------|
-| `list_tree(*, asset_space, asset_id, version_id, folder, page_size, page_token, include_files, include_directories)` | `ListAssetTreeResponse` | 浏览指定版本的目录树 |
+| `list_tree(*, asset_space, asset_id, version_id, folder, page_size, page_token, include_files, include_directories)` | `ListAssetTreeResponse` | 浏览指定版本的目录树；`folder="/"` 返回整棵子树的平铺条目，非根目录返回直接子项 |
 
 **版本管理：**
 
