@@ -183,6 +183,32 @@ class AssetBrowserClient:
         )
         return _ab_model.AssetCollection.from_protobuf(response)
 
+    async def ensure_collection(
+        self,
+        *,
+        asset_space: str,
+        asset_id: str,
+        scope_kind: _ab_model.AssetScopeKind = _ab_model.AssetScopeKind.ASSET_SCOPE_KIND_SERVICE,
+        scope_value: str = "",
+        display_name: str = "",
+        description: str = "",
+    ) -> _ab_model.AssetCollection:
+        response = await self._call(
+            self._s.EnsureAssetCollection(
+                _ab_pb.EnsureAssetCollectionRequest(
+                    asset_space=asset_space,
+                    asset_id=asset_id,
+                    scope_kind=scope_kind.value,
+                    scope_value=scope_value,
+                    display_name=display_name,
+                    description=description,
+                ),
+                metadata=self._meta(),
+                timeout=self._timeout,
+            )
+        )
+        return _ab_model.AssetCollection.from_protobuf(response)
+
     # ===== Tree =====
 
     async def list_tree(
@@ -650,6 +676,9 @@ class SyncAssetBrowserClient:
 
     def get_collection(self, **kwargs: Any) -> _ab_model.AssetCollection:
         return self._run(self._client.get_collection(**kwargs))
+
+    def ensure_collection(self, **kwargs: Any) -> _ab_model.AssetCollection:
+        return self._run(self._client.ensure_collection(**kwargs))
 
     def list_tree(self, **kwargs: Any) -> _ab_model.ListAssetTreeResponse:
         return self._run(self._client.list_tree(**kwargs))

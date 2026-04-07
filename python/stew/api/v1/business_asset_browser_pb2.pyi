@@ -697,3 +697,19 @@ class ActivateAssetVersionResponse(_message.Message):
     active_version_id: str
     active_version: AssetVersionSummary
     def __init__(self, collection: _Optional[_Union[AssetCollection, _Mapping]] = ..., active_version_id: _Optional[str] = ..., active_version: _Optional[_Union[AssetVersionSummary, _Mapping]] = ...) -> None: ...
+
+class EnsureAssetCollectionRequest(_message.Message):
+    __slots__ = ("asset_space", "asset_id", "scope_kind", "scope_value", "display_name", "description")
+    ASSET_SPACE_FIELD_NUMBER: _ClassVar[int]
+    ASSET_ID_FIELD_NUMBER: _ClassVar[int]
+    SCOPE_KIND_FIELD_NUMBER: _ClassVar[int]
+    SCOPE_VALUE_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    asset_space: str
+    asset_id: str
+    scope_kind: AssetScopeKind
+    scope_value: str
+    display_name: str
+    description: str
+    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., scope_kind: _Optional[_Union[AssetScopeKind, str]] = ..., scope_value: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...

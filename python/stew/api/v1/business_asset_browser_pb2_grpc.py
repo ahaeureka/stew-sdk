@@ -123,6 +123,11 @@ class BusinessAssetBrowserServiceStub(object):
                 request_serializer=business__asset__browser__pb2.ExportAssetEntryRequest.SerializeToString,
                 response_deserializer=google_dot_api_dot_httpbody__pb2.HttpBody.FromString,
                 _registered_method=True)
+        self.EnsureAssetCollection = channel.unary_unary(
+                '/stew.api.v1.BusinessAssetBrowserService/EnsureAssetCollection',
+                request_serializer=business__asset__browser__pb2.EnsureAssetCollectionRequest.SerializeToString,
+                response_deserializer=business__asset__browser__pb2.AssetCollection.FromString,
+                _registered_method=True)
 
 
 class BusinessAssetBrowserServiceServicer(object):
@@ -232,6 +237,13 @@ class BusinessAssetBrowserServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def EnsureAssetCollection(self, request, context):
+        """Ensure a collection exists (upsert). Creates if missing, returns existing otherwise.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_BusinessAssetBrowserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -319,6 +331,11 @@ def add_BusinessAssetBrowserServiceServicer_to_server(servicer, server):
                     servicer.ExportAssetEntry,
                     request_deserializer=business__asset__browser__pb2.ExportAssetEntryRequest.FromString,
                     response_serializer=google_dot_api_dot_httpbody__pb2.HttpBody.SerializeToString,
+            ),
+            'EnsureAssetCollection': grpc.unary_unary_rpc_method_handler(
+                    servicer.EnsureAssetCollection,
+                    request_deserializer=business__asset__browser__pb2.EnsureAssetCollectionRequest.FromString,
+                    response_serializer=business__asset__browser__pb2.AssetCollection.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -782,6 +799,33 @@ class BusinessAssetBrowserService(object):
             '/stew.api.v1.BusinessAssetBrowserService/ExportAssetEntry',
             business__asset__browser__pb2.ExportAssetEntryRequest.SerializeToString,
             google_dot_api_dot_httpbody__pb2.HttpBody.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def EnsureAssetCollection(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BusinessAssetBrowserService/EnsureAssetCollection',
+            business__asset__browser__pb2.EnsureAssetCollectionRequest.SerializeToString,
+            business__asset__browser__pb2.AssetCollection.FromString,
             options,
             channel_credentials,
             insecure,
