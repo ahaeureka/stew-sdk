@@ -293,9 +293,15 @@ asyncio.run(main())
 
 `BusinessAssetBrowserService` 提供资产集合、版本快照、草稿编辑、变更 Diff 等能力，通过 `AssetBrowserClient` 或 `SyncAssetBrowserClient` 调用。
 
+其中 `collection` 可以理解为一个逻辑资产仓库，由 `asset_space + asset_id` 唯一标识。
+后续的草稿、发布、目录树、Diff 等操作，都是围绕这个 collection 进行。
+
+如果你要为一个新资产首次写入内容，先调用 `ensure_collection()`。
+这个接口是幂等的：collection 已存在时返回现有集合，不存在时自动创建。
+
 ```python
 import asyncio
-from stew import AssetBrowserClient
+from stew import AssetBrowserClient, AssetScopeKind
 
 async def main():
     async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
@@ -330,14 +336,25 @@ from stew import AssetBrowserClient
 
 async def main():
     async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
-        # 1. 创建草稿
+        # 1. 首次接入时，先确保 collection 存在
+        collection = await client.ensure_collection(
+            asset_space="configs",
+            asset_id="my-app",
+            scope_kind=AssetScopeKind.ASSET_SCOPE_KIND_SERVICE,
+            scope_value="skills-app",
+            display_name="My App Config",
+            description="Configuration assets for my app",
+        )
+        print("collection:", collection.asset_id, collection.display_name)
+
+        # 2. 创建草稿
         draft = await client.create_draft(
             asset_space="configs", asset_id="my-app",
             description="Update templates",
         )
         draft_vid = draft.draft_version.version_id
 
-        # 2. 编辑文件（使用乐观锁 expected_entry_revision）
+        # 3. 编辑文件（使用乐观锁 expected_entry_revision）
         saved = await client.update_draft_text(
             asset_space="configs", asset_id="my-app",
             draft_version_id=draft_vid,
@@ -347,14 +364,14 @@ async def main():
         )
         print("saved revision:", saved.entry_revision)
 
-        # 3. 查看变更
+        # 4. 查看变更
         diff = await client.diff_draft(
             asset_space="configs", asset_id="my-app",
             draft_version_id=draft_vid,
         )
         print("changes:", diff.summary.total_changes)
 
-        # 4. 发布
+        # 5. 发布
         pub = await client.publish_draft(
             asset_space="configs", asset_id="my-app",
             draft_version_id=draft_vid,
@@ -364,6 +381,12 @@ async def main():
 
 asyncio.run(main())
 ```
+
+说明：
+
+- `get_collection()` / `create_draft()` 等接口要求 collection 已存在
+- 对新资产，推荐固定使用 `ensure_collection()` 作为工作流第一步
+- `ensure_collection()` 适合在发布前重复调用，不需要额外判断“是否已经创建”
 
 资产导出：
 
@@ -406,6 +429,11 @@ asyncio.run(main())
 from stew import SyncAssetBrowserClient
 
 with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
+    client.ensure_collection(
+        asset_space="configs",
+        asset_id="my-app",
+        scope_value="skills-app",
+    )
     result = client.list_collections(asset_space="configs")
     for col in result.collections:
         print(col.asset_id, col.display_name)
@@ -502,6 +530,7 @@ with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 |------|----------|------|
 | `list_collections(*, asset_space, scope_kind, scope_value, page_size, page_token)` | `ListAssetCollectionsResponse` | 列出资产集合，支持作用域过滤和分页 |
 | `get_collection(*, asset_space, asset_id)` | `AssetCollection` | 获取单个集合详情 |
+| `ensure_collection(*, asset_space, asset_id, scope_kind, scope_value, display_name, description)` | `AssetCollection` | 幂等确保集合存在；不存在时创建，存在时返回现有集合 |
 
 **目录树：**
 
@@ -520,7 +549,7 @@ with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 
 | 方法 | 返回类型 | 说明 |
 |------|----------|------|
-| `create_draft(*, asset_space, asset_id, base_version_id, draft_version_id, description)` | `CreateDraftVersionResponse` | 创建草稿；每个集合同时只能有一个草稿 |
+| `create_draft(*, asset_space, asset_id, base_version_id, draft_version_id, description)` | `CreateDraftVersionResponse` | 创建草稿；要求 collection 已存在，每个集合同时只能有一个草稿 |
 | `discard_draft(*, asset_space, asset_id, draft_version_id)` | `None` | 丢弃草稿 |
 | `publish_draft(*, asset_space, asset_id, draft_version_id, version_id, description, previous_version_id)` | `PublishDraftVersionResponse` | 发布草稿为 ready 版本 |
 
