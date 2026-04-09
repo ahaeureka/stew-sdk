@@ -18,6 +18,14 @@ from .types import Endpoint, EndpointBinding, RegistrationConfig
 log = logging.getLogger(__name__)
 
 
+def _blocks_registration(exc: DiscoveryError) -> bool:
+    return exc.code in {
+        grpc.StatusCode.UNAVAILABLE,
+        grpc.StatusCode.UNAUTHENTICATED,
+        grpc.StatusCode.PERMISSION_DENIED,
+    }
+
+
 class GatewayClient:
     """One-stop client for endpoint registration, descriptor upload, and keepalive."""
 
@@ -151,9 +159,9 @@ class GatewayClient:
             )
             return True
         except DiscoveryError as exc:
-            if exc.code == grpc.StatusCode.UNAVAILABLE:
+            if _blocks_registration(exc):
                 log.warning(
-                    "gateway unreachable during descriptor upload [%s]: %s",
+                    "descriptor upload blocked registration [%s]: %s",
                     self._service_name,
                     exc,
                 )
@@ -315,9 +323,9 @@ class GatewayClient:
                 )
                 continue
             except DiscoveryError as exc:
-                if exc.code == grpc.StatusCode.UNAVAILABLE:
+                if _blocks_registration(exc):
                     log.warning(
-                        "gateway unreachable during endpoint registration [%s]: %s",
+                        "endpoint registration blocked startup [%s]: %s",
                         self._service_name,
                         exc,
                     )
@@ -391,9 +399,9 @@ class GatewayClient:
                 self._service_name, healthy_only=False
             )
         except DiscoveryError as exc:
-            if exc.code == grpc.StatusCode.UNAVAILABLE:
+            if _blocks_registration(exc):
                 log.warning(
-                    "gateway unreachable during instance query [%s]: %s",
+                    "instance query blocked registration [%s]: %s",
                     self._service_name,
                     exc,
                 )
