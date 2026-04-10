@@ -1,4 +1,1334 @@
 {
+    "ServiceBillingConfig": {
+        "enabled": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "policy_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_mode": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "preauth_mode": {
+            "type": "BillingPreauthMode",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingPreauthMode(0)"
+            },
+            "description": ""
+        },
+        "allow_anonymous_subject": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "missing_report_action": {
+            "type": "BillingMissingReportAction",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingMissingReportAction(0)"
+            },
+            "description": ""
+        },
+        "release_timeout_seconds": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "report_transport": {
+            "type": "BillingReportTransport",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingReportTransport(0)"
+            },
+            "description": ""
+        },
+        "report_header_prefix": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "factor_schema_version": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "max_reservation_ttl_seconds": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "idempotency_window_seconds": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "capture_requires_report": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "reconcile_scan_interval_seconds": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "max_report_size_bytes": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "strict_policy_snapshot": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        }
+    },
+    "AuthorizationContext": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "policy_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "factor_schema_version": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "BillingUsageTotals": {
+        "prompt_tokens": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "completion_tokens": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "embedding_tokens": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "ocr_pages": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "asr_minutes": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "infra_units": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        }
+    },
+    "BillingCostBreakdown": {
+        "chat_in_micros": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "chat_out_micros": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "embed_micros": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "media_micros": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "infra_micros": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        }
+    },
+    "EstimateChargeResponse": {
+        "success": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "estimated_points": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "message": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "BillingAuthorizationResponse": {
+        "success": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "held_points": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "message": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "SettlementDecision": {
+        "success": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "transaction_type": {
+            "type": "BillingTransactionType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingTransactionType(0)"
+            },
+            "description": ""
+        },
+        "points": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "face_value_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "recognized_revenue_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "budget_consumed_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "message": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "ReleaseRequest": {
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "reason": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "RefundRequest": {
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "reason": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "QueryBalanceRequest": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "BalanceSnapshot": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "available_balance": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "held_balance": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "total_granted": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "total_consumed": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "updated_at": {
+            "type": "datetime.datetime",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "None"
+            },
+            "description": ""
+        }
+    },
+    "CreditGrant": {
+        "grant_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "credit_type": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "amount": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "consumed": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "expires_at": {
+            "type": "datetime.datetime",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "None"
+            },
+            "description": ""
+        },
+        "status": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "GrantCreditsRequest": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "credit_type": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "amount": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        }
+    },
+    "ListGrantsRequest": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "BillingTransaction": {
+        "transaction_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "transaction_type": {
+            "type": "BillingTransactionType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingTransactionType(0)"
+            },
+            "description": ""
+        },
+        "points": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "face_value_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "recognized_revenue_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "budget_consumed_minor": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "created_at": {
+            "type": "datetime.datetime",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "None"
+            },
+            "description": ""
+        }
+    },
+    "QueryTransactionsRequest": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "subject_type": {
+            "type": "BillingSubjectType",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingSubjectType(0)"
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "UsageCostSnapshot": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "usage_snapshot": {
+            "type": "Struct",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "cost_snapshot": {
+            "type": "Struct",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "business_factors": {
+            "type": "Struct",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "policy_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "created_at": {
+            "type": "datetime.datetime",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "None"
+            },
+            "description": ""
+        }
+    },
+    "QuerySnapshotRequest": {
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "ManualReconcileRequest": {
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "reason": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "ManualReconcileResponse": {
+        "success": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "message": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "EstimateChargeRequest": {
+        "context": {
+            "type": "AuthorizationContext",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "request_factors": {
+            "type": "Struct",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        }
+    },
+    "AuthorizeRequest": {
+        "context": {
+            "type": "AuthorizationContext",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "estimated_points": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        }
+    },
+    "BillingReport": {
+        "business_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "authorization_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "request_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "user_id": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "usage_source": {
+            "type": "BillingUsageSource",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingUsageSource(0)"
+            },
+            "description": ""
+        },
+        "final_status": {
+            "type": "BillingFinalStatus",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "BillingFinalStatus(0)"
+            },
+            "description": ""
+        },
+        "raw_usage_totals": {
+            "type": "BillingUsageTotals",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "cost_breakdown": {
+            "type": "BillingCostBreakdown",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "business_factors": {
+            "type": "Struct",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "billed_points_candidate": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "refund_reason": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "dedupe_key": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "ListGrantsResponse": {
+        "grants": {
+            "type": "CreditGrant",
+            "repeated": true,
+            "required": false,
+            "ext": {
+                "default": []
+            },
+            "description": ""
+        }
+    },
+    "QueryTransactionsResponse": {
+        "transactions": {
+            "type": "BillingTransaction",
+            "repeated": true,
+            "required": false,
+            "ext": {
+                "default": []
+            },
+            "description": ""
+        }
+    },
+    "FinalizeRequest": {
+        "context": {
+            "type": "AuthorizationContext",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "report": {
+            "type": "BillingReport",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        }
+    },
     "AiGuardFieldOptions": {
         "is_messages_array": {
             "type": "bool",

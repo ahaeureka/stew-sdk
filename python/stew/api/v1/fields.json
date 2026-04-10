@@ -1,4 +1,198 @@
 {
+    "ServiceBillingConfig": {
+        "enabled": "",
+        "business_id": "",
+        "policy_id": "",
+        "subject_mode": "",
+        "preauth_mode": "",
+        "allow_anonymous_subject": "",
+        "missing_report_action": "",
+        "release_timeout_seconds": "",
+        "report_transport": "",
+        "report_header_prefix": "",
+        "factor_schema_version": "",
+        "max_reservation_ttl_seconds": "",
+        "idempotency_window_seconds": "",
+        "capture_requires_report": "",
+        "reconcile_scan_interval_seconds": "",
+        "max_report_size_bytes": "",
+        "strict_policy_snapshot": ""
+    },
+    "AuthorizationContext": {
+        "business_id": "",
+        "user_id": "",
+        "authorization_id": "",
+        "request_id": "",
+        "policy_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "factor_schema_version": ""
+    },
+    "BillingUsageTotals": {
+        "prompt_tokens": "",
+        "completion_tokens": "",
+        "embedding_tokens": "",
+        "ocr_pages": "",
+        "asr_minutes": "",
+        "infra_units": ""
+    },
+    "BillingCostBreakdown": {
+        "chat_in_micros": "",
+        "chat_out_micros": "",
+        "embed_micros": "",
+        "media_micros": "",
+        "infra_micros": ""
+    },
+    "EstimateChargeResponse": {
+        "success": "",
+        "estimated_points": "",
+        "message": ""
+    },
+    "BillingAuthorizationResponse": {
+        "success": "",
+        "authorization_id": "",
+        "held_points": "",
+        "message": ""
+    },
+    "SettlementDecision": {
+        "success": "",
+        "transaction_type": "",
+        "points": "",
+        "face_value_minor": "",
+        "recognized_revenue_minor": "",
+        "budget_consumed_minor": "",
+        "message": ""
+    },
+    "ReleaseRequest": {
+        "authorization_id": "",
+        "request_id": "",
+        "reason": ""
+    },
+    "RefundRequest": {
+        "authorization_id": "",
+        "request_id": "",
+        "reason": ""
+    },
+    "QueryBalanceRequest": {
+        "business_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "user_id": ""
+    },
+    "BalanceSnapshot": {
+        "business_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "user_id": "",
+        "available_balance": "",
+        "held_balance": "",
+        "total_granted": "",
+        "total_consumed": "",
+        "updated_at": ""
+    },
+    "CreditGrant": {
+        "grant_id": "",
+        "business_id": "",
+        "user_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "credit_type": "",
+        "amount": "",
+        "consumed": "",
+        "expires_at": "",
+        "status": ""
+    },
+    "GrantCreditsRequest": {
+        "business_id": "",
+        "user_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "credit_type": "",
+        "amount": ""
+    },
+    "ListGrantsRequest": {
+        "business_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "user_id": ""
+    },
+    "BillingTransaction": {
+        "transaction_id": "",
+        "business_id": "",
+        "user_id": "",
+        "authorization_id": "",
+        "request_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "transaction_type": "",
+        "points": "",
+        "face_value_minor": "",
+        "recognized_revenue_minor": "",
+        "budget_consumed_minor": "",
+        "created_at": ""
+    },
+    "QueryTransactionsRequest": {
+        "business_id": "",
+        "request_id": "",
+        "authorization_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "user_id": ""
+    },
+    "UsageCostSnapshot": {
+        "business_id": "",
+        "user_id": "",
+        "request_id": "",
+        "usage_snapshot": "",
+        "cost_snapshot": "",
+        "business_factors": "",
+        "policy_id": "",
+        "created_at": ""
+    },
+    "QuerySnapshotRequest": {
+        "request_id": ""
+    },
+    "ManualReconcileRequest": {
+        "request_id": "",
+        "authorization_id": "",
+        "reason": ""
+    },
+    "ManualReconcileResponse": {
+        "success": "",
+        "message": ""
+    },
+    "EstimateChargeRequest": {
+        "context": "",
+        "request_factors": ""
+    },
+    "AuthorizeRequest": {
+        "context": "",
+        "estimated_points": ""
+    },
+    "BillingReport": {
+        "business_id": "",
+        "authorization_id": "",
+        "request_id": "",
+        "user_id": "",
+        "usage_source": "",
+        "final_status": "",
+        "raw_usage_totals": "",
+        "cost_breakdown": "",
+        "business_factors": "",
+        "billed_points_candidate": "",
+        "refund_reason": "",
+        "dedupe_key": ""
+    },
+    "ListGrantsResponse": {
+        "grants": ""
+    },
+    "QueryTransactionsResponse": {
+        "transactions": ""
+    },
+    "FinalizeRequest": {
+        "context": "",
+        "report": ""
+    },
     "AiGuardFieldOptions": {
         "is_messages_array": "",
         "is_role_field": "",

@@ -137,7 +137,7 @@ class AssetCollection(_message.Message):
     def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., display_name: _Optional[str] = ..., description: _Optional[str] = ..., scope_kind: _Optional[_Union[AssetScopeKind, str]] = ..., scope_value: _Optional[str] = ..., active_version_id: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., has_draft: bool = ..., total_versions: _Optional[int] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., capabilities: _Optional[_Union[AssetCapabilities, _Mapping]] = ...) -> None: ...
 
 class AssetVersionSummary(_message.Message):
-    __slots__ = ("asset_space", "asset_id", "version_id", "status", "description", "created_by", "created_at", "is_active", "is_draft", "base_version_id", "version_hash", "entry_count", "total_bytes", "manifest_path", "has_unpublished_changes", "capabilities")
+    __slots__ = ("asset_space", "asset_id", "version_id", "status", "description", "created_by", "created_at", "is_active", "is_draft", "base_version_id", "version_hash", "entry_count", "total_bytes", "manifest_path", "has_unpublished_changes", "capabilities", "display_version")
     ASSET_SPACE_FIELD_NUMBER: _ClassVar[int]
     ASSET_ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_ID_FIELD_NUMBER: _ClassVar[int]
@@ -154,6 +154,7 @@ class AssetVersionSummary(_message.Message):
     MANIFEST_PATH_FIELD_NUMBER: _ClassVar[int]
     HAS_UNPUBLISHED_CHANGES_FIELD_NUMBER: _ClassVar[int]
     CAPABILITIES_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_VERSION_FIELD_NUMBER: _ClassVar[int]
     asset_space: str
     asset_id: str
     version_id: str
@@ -170,7 +171,8 @@ class AssetVersionSummary(_message.Message):
     manifest_path: str
     has_unpublished_changes: bool
     capabilities: AssetCapabilities
-    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., version_id: _Optional[str] = ..., status: _Optional[_Union[AssetVersionStatus, str]] = ..., description: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., is_active: bool = ..., is_draft: bool = ..., base_version_id: _Optional[str] = ..., version_hash: _Optional[str] = ..., entry_count: _Optional[int] = ..., total_bytes: _Optional[int] = ..., manifest_path: _Optional[str] = ..., has_unpublished_changes: bool = ..., capabilities: _Optional[_Union[AssetCapabilities, _Mapping]] = ...) -> None: ...
+    display_version: str
+    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., version_id: _Optional[str] = ..., status: _Optional[_Union[AssetVersionStatus, str]] = ..., description: _Optional[str] = ..., created_by: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., is_active: bool = ..., is_draft: bool = ..., base_version_id: _Optional[str] = ..., version_hash: _Optional[str] = ..., entry_count: _Optional[int] = ..., total_bytes: _Optional[int] = ..., manifest_path: _Optional[str] = ..., has_unpublished_changes: bool = ..., capabilities: _Optional[_Union[AssetCapabilities, _Mapping]] = ..., display_version: _Optional[str] = ...) -> None: ...
 
 class AssetTreeEntry(_message.Message):
     __slots__ = ("entry_kind", "path", "parent_path", "name", "file_id", "content_type", "size_bytes", "checksum", "has_children", "is_text_previewable", "language_hint", "entry_revision", "created_at", "updated_at", "capabilities")
@@ -379,18 +381,20 @@ class GetAssetVersionResponse(_message.Message):
     def __init__(self, collection: _Optional[_Union[AssetCollection, _Mapping]] = ..., version: _Optional[_Union[AssetVersionSummary, _Mapping]] = ..., base_version: _Optional[_Union[AssetVersionSummary, _Mapping]] = ..., draft_diff_summary: _Optional[_Union[AssetDiffSummary, _Mapping]] = ...) -> None: ...
 
 class CreateDraftVersionRequest(_message.Message):
-    __slots__ = ("asset_space", "asset_id", "base_version_id", "draft_version_id", "description")
+    __slots__ = ("asset_space", "asset_id", "base_version_id", "draft_version_id", "description", "display_version")
     ASSET_SPACE_FIELD_NUMBER: _ClassVar[int]
     ASSET_ID_FIELD_NUMBER: _ClassVar[int]
     BASE_VERSION_ID_FIELD_NUMBER: _ClassVar[int]
     DRAFT_VERSION_ID_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_VERSION_FIELD_NUMBER: _ClassVar[int]
     asset_space: str
     asset_id: str
     base_version_id: str
     draft_version_id: str
     description: str
-    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., base_version_id: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., description: _Optional[str] = ...) -> None: ...
+    display_version: str
+    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., base_version_id: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., description: _Optional[str] = ..., display_version: _Optional[str] = ...) -> None: ...
 
 class CreateDraftVersionResponse(_message.Message):
     __slots__ = ("collection", "draft_version", "base_version")
@@ -637,20 +641,22 @@ class GetAssetDiffEntryDetailResponse(_message.Message):
     def __init__(self, entry: _Optional[_Union[AssetDiffEntry, _Mapping]] = ..., left_text: _Optional[str] = ..., right_text: _Optional[str] = ..., left_truncated: bool = ..., right_truncated: bool = ..., language_hint: _Optional[str] = ...) -> None: ...
 
 class PublishDraftVersionRequest(_message.Message):
-    __slots__ = ("asset_space", "asset_id", "draft_version_id", "version_id", "description", "previous_version_id")
+    __slots__ = ("asset_space", "asset_id", "draft_version_id", "version_id", "description", "previous_version_id", "display_version")
     ASSET_SPACE_FIELD_NUMBER: _ClassVar[int]
     ASSET_ID_FIELD_NUMBER: _ClassVar[int]
     DRAFT_VERSION_ID_FIELD_NUMBER: _ClassVar[int]
     VERSION_ID_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     PREVIOUS_VERSION_ID_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_VERSION_FIELD_NUMBER: _ClassVar[int]
     asset_space: str
     asset_id: str
     draft_version_id: str
     version_id: str
     description: str
     previous_version_id: str
-    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., version_id: _Optional[str] = ..., description: _Optional[str] = ..., previous_version_id: _Optional[str] = ...) -> None: ...
+    display_version: str
+    def __init__(self, asset_space: _Optional[str] = ..., asset_id: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., version_id: _Optional[str] = ..., description: _Optional[str] = ..., previous_version_id: _Optional[str] = ..., display_version: _Optional[str] = ...) -> None: ...
 
 class PublishDraftVersionResponse(_message.Message):
     __slots__ = ("collection", "published_version", "active_version_id", "summary")
