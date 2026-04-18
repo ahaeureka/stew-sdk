@@ -16,8 +16,7 @@
         "capture_requires_report": "",
         "reconcile_scan_interval_seconds": "",
         "max_report_size_bytes": "",
-        "strict_policy_snapshot": "",
-        "policy_id_by_plan": ""
+        "strict_policy_snapshot": ""
     },
     "AuthorizationContext": {
         "business_id": "",
@@ -155,12 +154,16 @@
         "subject_type": "",
         "user_id": ""
     },
-    "CreditTypeBalance": {
-        "credit_type": "",
+    "BalanceSnapshot": {
+        "business_id": "",
+        "subject_id": "",
+        "subject_type": "",
+        "user_id": "",
         "available_balance": "",
         "held_balance": "",
         "total_granted": "",
-        "total_consumed": ""
+        "total_consumed": "",
+        "updated_at": ""
     },
     "CreditGrant": {
         "grant_id": "",
@@ -180,10 +183,7 @@
         "subject_id": "",
         "subject_type": "",
         "credit_type": "",
-        "amount": "",
-        "expires_at_epoch_seconds": "",
-        "idempotency_key": "",
-        "metadata": ""
+        "amount": ""
     },
     "ListGrantsRequest": {
         "business_id": "",
@@ -212,11 +212,7 @@
         "authorization_id": "",
         "subject_id": "",
         "subject_type": "",
-        "user_id": "",
-        "start_time_epoch_seconds": "",
-        "end_time_epoch_seconds": "",
-        "page_size": "",
-        "page_token": ""
+        "user_id": ""
     },
     "QuerySnapshotRequest": {
         "request_id": ""
@@ -285,270 +281,14 @@
     "ListBillingPolicyBundlesResponse": {
         "bundles": ""
     },
-    "BalanceSnapshot": {
-        "business_id": "",
-        "subject_id": "",
-        "subject_type": "",
-        "user_id": "",
-        "available_balance": "",
-        "held_balance": "",
-        "total_granted": "",
-        "total_consumed": "",
-        "updated_at": "",
-        "breakdown": ""
-    },
     "ListGrantsResponse": {
         "grants": ""
     },
     "QueryTransactionsResponse": {
-        "transactions": "",
-        "next_page_token": ""
+        "transactions": ""
     },
     "FinalizeRequest": {
         "context": "",
         "report": ""
-    },
-    "AiGuardFieldOptions": {
-        "is_messages_array": "",
-        "is_role_field": "",
-        "is_content_field": "",
-        "role_filter": "",
-        "is_prompt": "",
-        "is_model": "",
-        "is_max_tokens": ""
-    },
-    "Tenant": {
-        "sub": "",
-        "name": "",
-        "tenant_id": "",
-        "roles": "",
-        "permissions": "",
-        "departments": "",
-        "attributes": ""
-    },
-    "ClientContext": {
-        "ip": "",
-        "device": "",
-        "location": "",
-        "token": "",
-        "tenant": "",
-        "ua": "",
-        "referer": "",
-        "origin": "",
-        "host": "",
-        "browser": "",
-        "os": "",
-        "country": "",
-        "region": "",
-        "additional": ""
-    },
-    "ServiceSubscriptionConfig": {
-        "enabled": "",
-        "business_id": "",
-        "default_plan_id": "",
-        "auto_create_subscription": "",
-        "inject_features": "",
-        "inject_quotas": "",
-        "feature_gate_mode": "",
-        "require_active_subscription": "",
-        "endpoint_features": ""
-    },
-    "PlanFeature": {
-        "feature_key": "",
-        "enabled": "",
-        "config": ""
-    },
-    "PlanQuota": {
-        "quota_key": "",
-        "quota_limit": "",
-        "quota_unit": "",
-        "reset_period": ""
-    },
-    "Subscription": {
-        "id": "",
-        "business_id": "",
-        "subject_id": "",
-        "subject_type": "",
-        "plan_id": "",
-        "status": "",
-        "billing_cycle": "",
-        "current_period_start": "",
-        "current_period_end": "",
-        "metadata": ""
-    },
-    "QuotaUsage": {
-        "business_id": "",
-        "subject_id": "",
-        "quota_key": "",
-        "period_start": "",
-        "period_end": "",
-        "used": ""
-    },
-    "GetPlanRequest": {
-        "business_id": "",
-        "plan_id": ""
-    },
-    "ListPlansRequest": {
-        "business_id": "",
-        "active_only": ""
-    },
-    "CreateSubscriptionRequest": {
-        "business_id": "",
-        "subject_id": "",
-        "subject_type": "",
-        "plan_id": "",
-        "billing_cycle": "",
-        "current_period_start": "",
-        "current_period_end": "",
-        "metadata": ""
-    },
-    "GetSubscriptionRequest": {
-        "business_id": "",
-        "subscription_id": ""
-    },
-    "GetSubscriptionBySubjectRequest": {
-        "business_id": "",
-        "subject_id": ""
-    },
-    "UpdateSubscriptionRequest": {
-        "business_id": "",
-        "subscription_id": "",
-        "plan_id": "",
-        "status": "",
-        "billing_cycle": "",
-        "current_period_start": "",
-        "current_period_end": "",
-        "metadata": ""
-    },
-    "CancelSubscriptionRequest": {
-        "business_id": "",
-        "subscription_id": ""
-    },
-    "GetQuotaUsageRequest": {
-        "business_id": "",
-        "subject_id": "",
-        "quota_key": ""
-    },
-    "IncrementQuotaRequest": {
-        "business_id": "",
-        "subject_id": "",
-        "quota_key": "",
-        "delta": ""
-    },
-    "CheckQuotaRequest": {
-        "business_id": "",
-        "subject_id": "",
-        "quota_key": ""
-    },
-    "CheckQuotaResponse": {
-        "used": "",
-        "limit": ""
-    },
-    "GetMyEntitlementRequest": {
-        "business_id": "",
-        "subject_id": ""
-    },
-    "CheckFeatureRequest": {
-        "business_id": "",
-        "subject_id": "",
-        "feature_key": ""
-    },
-    "CheckFeatureResponse": {
-        "enabled": "",
-        "feature_key": "",
-        "plan_id": "",
-        "config": ""
-    },
-    "EntitlementPlan": {
-        "id": "",
-        "business_id": "",
-        "name": "",
-        "description": "",
-        "is_active": "",
-        "sort_order": "",
-        "features": "",
-        "quotas": "",
-        "metadata": ""
-    },
-    "CreatePlanRequest": {
-        "business_id": "",
-        "name": "",
-        "description": "",
-        "is_active": "",
-        "sort_order": "",
-        "features": "",
-        "quotas": "",
-        "metadata": ""
-    },
-    "UpdatePlanRequest": {
-        "business_id": "",
-        "plan_id": "",
-        "name": "",
-        "description": "",
-        "is_active": "",
-        "sort_order": "",
-        "features": "",
-        "quotas": "",
-        "metadata": ""
-    },
-    "ListPlansResponse": {
-        "plans": ""
-    },
-    "ResolvedEntitlementResponse": {
-        "subscription": "",
-        "plan": "",
-        "quota_usages": ""
-    },
-    "Resource": {
-        "ID": "",
-        "ResourceKey": "",
-        "ResourceName": "",
-        "ResourceTable": "",
-        "uid": "",
-        "created_at": "",
-        "updated_at": ""
-    },
-    "APIResponse": {
-        "message": "",
-        "code": "",
-        "response_type": "",
-        "data": ""
-    },
-    "HttpResponse": {
-        "message": "",
-        "code": "",
-        "data": ""
-    },
-    "EventStreamResponse": {
-        "event": "",
-        "data": "",
-        "id": "",
-        "retry": ""
-    },
-    "RedirectResponse": {
-        "url": "",
-        "code": ""
-    },
-    "Errors": {
-        "code": "",
-        "message": "",
-        "action": "",
-        "file": "",
-        "line": "",
-        "fn": "",
-        "stack": "",
-        "to_client_message": ""
-    },
-    "Headers": {
-        "Uid": "",
-        "authentication": "",
-        "filename": "",
-        "token": ""
-    },
-    "EventStream": {
-        "event": "",
-        "data": "",
-        "id": "",
-        "retry": ""
     }
 }

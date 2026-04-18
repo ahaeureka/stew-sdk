@@ -26,7 +26,8 @@ if _version_not_supported:
 
 
 class BillingServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """BillingService exposes billing authorization, settlement, balance, and snapshot APIs.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -79,10 +80,40 @@ class BillingServiceStub(object):
                 request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.QueryTransactionsRequest.SerializeToString,
                 response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.QueryTransactionsResponse.FromString,
                 _registered_method=True)
+        self.CreatePolicyArtifact = channel.unary_unary(
+                '/stew.api.v1.BillingService/CreatePolicyArtifact',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.CreateBillingPolicyArtifactRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.FromString,
+                _registered_method=True)
+        self.GetPolicyArtifact = channel.unary_unary(
+                '/stew.api.v1.BillingService/GetPolicyArtifact',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyArtifactRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.FromString,
+                _registered_method=True)
+        self.ListPolicyArtifacts = channel.unary_unary(
+                '/stew.api.v1.BillingService/ListPolicyArtifacts',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsResponse.FromString,
+                _registered_method=True)
+        self.PublishPolicyBundle = channel.unary_unary(
+                '/stew.api.v1.BillingService/PublishPolicyBundle',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.PublishBillingPolicyBundleRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.FromString,
+                _registered_method=True)
+        self.GetPolicyBundle = channel.unary_unary(
+                '/stew.api.v1.BillingService/GetPolicyBundle',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyBundleRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.FromString,
+                _registered_method=True)
+        self.ListPolicyBundles = channel.unary_unary(
+                '/stew.api.v1.BillingService/ListPolicyBundles',
+                request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesRequest.SerializeToString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesResponse.FromString,
+                _registered_method=True)
         self.QuerySnapshot = channel.unary_unary(
                 '/stew.api.v1.BillingService/QuerySnapshot',
                 request_serializer=stew_dot_api_dot_v1_dot_billing__pb2.QuerySnapshotRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.UsageCostSnapshot.FromString,
+                response_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingSettlementSnapshot.FromString,
                 _registered_method=True)
         self.ManualReconcile = channel.unary_unary(
                 '/stew.api.v1.BillingService/ManualReconcile',
@@ -92,70 +123,124 @@ class BillingServiceStub(object):
 
 
 class BillingServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """BillingService exposes billing authorization, settlement, balance, and snapshot APIs.
+    """
 
     def EstimateCharge(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """EstimateCharge computes a request-side point estimate for pre-authorization.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Authorize(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Authorize holds points for a request before business execution starts.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Finalize(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Finalize settles an authorization from business-reported usage facts.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Release(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Release releases held points without capture.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Refund(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Refund compensates a captured authorization or releases an uncaptured hold.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def QueryBalance(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """QueryBalance returns the current derived balance snapshot for a subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GrantCredits(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """GrantCredits grants credits to a billing subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListGrants(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ListGrants lists credit grants for a billing subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def QueryTransactions(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """QueryTransactions lists matching billing transactions.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreatePolicyArtifact(self, request, context):
+        """CreatePolicyArtifact creates or returns an immutable policy artifact version.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetPolicyArtifact(self, request, context):
+        """GetPolicyArtifact returns a single immutable policy artifact.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListPolicyArtifacts(self, request, context):
+        """ListPolicyArtifacts lists policy artifacts under a business, optionally filtered by policy and type.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def PublishPolicyBundle(self, request, context):
+        """PublishPolicyBundle publishes a concrete bundle and makes it the active version for the policy_id.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetPolicyBundle(self, request, context):
+        """GetPolicyBundle returns a concrete published bundle version.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListPolicyBundles(self, request, context):
+        """ListPolicyBundles lists published bundle versions, or only active bundles when requested.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def QuerySnapshot(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """QuerySnapshot returns the immutable settlement snapshot for a finalized request.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ManualReconcile(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """ManualReconcile triggers a reconciliation pass for a request and authorization pair.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -208,10 +293,40 @@ def add_BillingServiceServicer_to_server(servicer, server):
                     request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.QueryTransactionsRequest.FromString,
                     response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.QueryTransactionsResponse.SerializeToString,
             ),
+            'CreatePolicyArtifact': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreatePolicyArtifact,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.CreateBillingPolicyArtifactRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.SerializeToString,
+            ),
+            'GetPolicyArtifact': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPolicyArtifact,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyArtifactRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.SerializeToString,
+            ),
+            'ListPolicyArtifacts': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListPolicyArtifacts,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsResponse.SerializeToString,
+            ),
+            'PublishPolicyBundle': grpc.unary_unary_rpc_method_handler(
+                    servicer.PublishPolicyBundle,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.PublishBillingPolicyBundleRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.SerializeToString,
+            ),
+            'GetPolicyBundle': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPolicyBundle,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyBundleRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.SerializeToString,
+            ),
+            'ListPolicyBundles': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListPolicyBundles,
+                    request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesRequest.FromString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesResponse.SerializeToString,
+            ),
             'QuerySnapshot': grpc.unary_unary_rpc_method_handler(
                     servicer.QuerySnapshot,
                     request_deserializer=stew_dot_api_dot_v1_dot_billing__pb2.QuerySnapshotRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.UsageCostSnapshot.SerializeToString,
+                    response_serializer=stew_dot_api_dot_v1_dot_billing__pb2.BillingSettlementSnapshot.SerializeToString,
             ),
             'ManualReconcile': grpc.unary_unary_rpc_method_handler(
                     servicer.ManualReconcile,
@@ -227,7 +342,8 @@ def add_BillingServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class BillingService(object):
-    """Missing associated documentation comment in .proto file."""
+    """BillingService exposes billing authorization, settlement, balance, and snapshot APIs.
+    """
 
     @staticmethod
     def EstimateCharge(request,
@@ -473,6 +589,168 @@ class BillingService(object):
             _registered_method=True)
 
     @staticmethod
+    def CreatePolicyArtifact(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/CreatePolicyArtifact',
+            stew_dot_api_dot_v1_dot_billing__pb2.CreateBillingPolicyArtifactRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetPolicyArtifact(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/GetPolicyArtifact',
+            stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyArtifactRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyArtifact.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListPolicyArtifacts(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/ListPolicyArtifacts',
+            stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyArtifactsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def PublishPolicyBundle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/PublishPolicyBundle',
+            stew_dot_api_dot_v1_dot_billing__pb2.PublishBillingPolicyBundleRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetPolicyBundle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/GetPolicyBundle',
+            stew_dot_api_dot_v1_dot_billing__pb2.GetBillingPolicyBundleRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.BillingPolicyBundle.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListPolicyBundles(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/ListPolicyBundles',
+            stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesRequest.SerializeToString,
+            stew_dot_api_dot_v1_dot_billing__pb2.ListBillingPolicyBundlesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def QuerySnapshot(request,
             target,
             options=(),
@@ -488,7 +766,7 @@ class BillingService(object):
             target,
             '/stew.api.v1.BillingService/QuerySnapshot',
             stew_dot_api_dot_v1_dot_billing__pb2.QuerySnapshotRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_billing__pb2.UsageCostSnapshot.FromString,
+            stew_dot_api_dot_v1_dot_billing__pb2.BillingSettlementSnapshot.FromString,
             options,
             channel_credentials,
             insecure,
