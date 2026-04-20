@@ -29,7 +29,8 @@ if _version_not_supported:
 
 
 class AuthServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """AuthService handles login flows, logout flows, and session lifecycle APIs.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -85,7 +86,8 @@ class AuthServiceStub(object):
 
 
 class AuthServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """AuthService handles login flows, logout flows, and session lifecycle APIs.
+    """
 
     def Callback(self, request, context):
         """OpenID Connect callback endpoint
@@ -95,25 +97,29 @@ class AuthServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def Login(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Start the interactive login flow.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Context(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Store client context before the user is authenticated.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Logout(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Start the logout flow for the current authenticated session.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def LogoutCallback(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Complete the OpenID Connect logout callback flow.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -205,7 +211,8 @@ def add_AuthServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class AuthService(object):
-    """Missing associated documentation comment in .proto file."""
+    """AuthService handles login flows, logout flows, and session lifecycle APIs.
+    """
 
     @staticmethod
     def Callback(request,

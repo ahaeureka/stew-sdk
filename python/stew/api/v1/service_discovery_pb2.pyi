@@ -6,8 +6,7 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import empty_pb2 as _empty_pb2
 from protobuf_pydantic_gen import pydantic_pb2 as _pydantic_pb2
-from stew.api.v1 import billing_pb2 as _billing_pb2
-from stew.api.v1 import entitlement_pb2 as _entitlement_pb2
+import billing_pb2 as _billing_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
 from stew.api.v1 import web_pb2 as _web_pb2
 from google.protobuf.internal import containers as _containers
@@ -313,6 +312,35 @@ class AiGuardEndpointConfig(_message.Message):
     body_map: AiBodyFieldMap
     def __init__(self, endpoint_id: _Optional[str] = ..., exact_paths: _Optional[_Iterable[str]] = ..., prefix_paths: _Optional[_Iterable[str]] = ..., pattern_paths: _Optional[_Iterable[str]] = ..., disabled: bool = ..., mode: _Optional[str] = ..., request_body_max_bytes: _Optional[int] = ..., max_input_tokens: _Optional[int] = ..., max_output_tokens: _Optional[int] = ..., max_context_tokens: _Optional[int] = ..., history_policy: _Optional[str] = ..., daily_token_quota: _Optional[int] = ..., daily_request_quota: _Optional[int] = ..., minute_request_quota: _Optional[int] = ..., quota_window_secs: _Optional[int] = ..., allow_free_chat: bool = ..., allowed_topics: _Optional[_Iterable[str]] = ..., deny_keywords: _Optional[_Iterable[str]] = ..., enable_audit: bool = ..., classifier_type: _Optional[str] = ..., llm_endpoint: _Optional[str] = ..., llm_model: _Optional[str] = ..., llm_system_prompt: _Optional[str] = ..., business_description: _Optional[str] = ..., valid_intent_examples: _Optional[_Iterable[str]] = ..., invalid_intent_examples: _Optional[_Iterable[str]] = ..., llm_timeout_ms: _Optional[int] = ..., llm_confidence_threshold: _Optional[float] = ..., body_map: _Optional[_Union[AiBodyFieldMap, _Mapping]] = ...) -> None: ...
 
+class ServiceSubscriptionConfig(_message.Message):
+    __slots__ = ("enabled", "business_id", "default_plan_id", "auto_create_subscription", "inject_features", "inject_quotas", "feature_gate_mode", "require_active_subscription", "endpoint_features")
+    class EndpointFeaturesEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTO_CREATE_SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    INJECT_FEATURES_FIELD_NUMBER: _ClassVar[int]
+    INJECT_QUOTAS_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_GATE_MODE_FIELD_NUMBER: _ClassVar[int]
+    REQUIRE_ACTIVE_SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    ENDPOINT_FEATURES_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    business_id: str
+    default_plan_id: str
+    auto_create_subscription: bool
+    inject_features: bool
+    inject_quotas: bool
+    feature_gate_mode: str
+    require_active_subscription: bool
+    endpoint_features: _containers.ScalarMap[str, str]
+    def __init__(self, enabled: bool = ..., business_id: _Optional[str] = ..., default_plan_id: _Optional[str] = ..., auto_create_subscription: bool = ..., inject_features: bool = ..., inject_quotas: bool = ..., feature_gate_mode: _Optional[str] = ..., require_active_subscription: bool = ..., endpoint_features: _Optional[_Mapping[str, str]] = ...) -> None: ...
+
 class ServiceMiddlewareConfig(_message.Message):
     __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile", "ai_guard_enabled", "ai_guard", "billing_enabled", "billing", "subscription_enabled", "subscription")
     RATE_LIMIT_ENABLED_FIELD_NUMBER: _ClassVar[int]
@@ -344,8 +372,8 @@ class ServiceMiddlewareConfig(_message.Message):
     billing_enabled: bool
     billing: _billing_pb2.ServiceBillingConfig
     subscription_enabled: bool
-    subscription: _entitlement_pb2.ServiceSubscriptionConfig
-    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[_entitlement_pb2.ServiceSubscriptionConfig, _Mapping]] = ...) -> None: ...
+    subscription: ServiceSubscriptionConfig
+    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ...) -> None: ...
 
 class ServiceInstance(_message.Message):
     __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")

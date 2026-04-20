@@ -27,7 +27,8 @@ if _version_not_supported:
 
 
 class UserServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+    """UserService exposes authenticated endpoints for the current user's profile.
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -53,7 +54,8 @@ class UserServiceStub(object):
 
 
 class UserServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+    """UserService exposes authenticated endpoints for the current user's profile.
+    """
 
     def Get(self, request, context):
         """rpc Register(PostUserRequest) returns (User){
@@ -113,7 +115,8 @@ def add_UserServiceServicer_to_server(servicer, server):
 
  # This class is part of an EXPERIMENTAL API.
 class UserService(object):
-    """Missing associated documentation comment in .proto file."""
+    """UserService exposes authenticated endpoints for the current user's profile.
+    """
 
     @staticmethod
     def Get(request,

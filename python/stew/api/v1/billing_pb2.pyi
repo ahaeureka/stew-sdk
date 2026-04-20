@@ -4,6 +4,7 @@ from google.api import annotations_pb2 as _annotations_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from protobuf_pydantic_gen import pydantic_pb2 as _pydantic_pb2
+from stew.api.v1 import options_pb2 as _options_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
@@ -210,168 +211,8 @@ class BillingCostBreakdown(_message.Message):
     total_cost_micros: int
     def __init__(self, chat_in_micros: _Optional[int] = ..., chat_out_micros: _Optional[int] = ..., embed_micros: _Optional[int] = ..., media_micros: _Optional[int] = ..., infra_micros: _Optional[int] = ..., total_cost_micros: _Optional[int] = ...) -> None: ...
 
-class BillingPointBreakdown(_message.Message):
-    __slots__ = ("base_points", "factor_points", "final_points", "min_points", "point_policy_artifact_id", "point_policy_version")
-    BASE_POINTS_FIELD_NUMBER: _ClassVar[int]
-    FACTOR_POINTS_FIELD_NUMBER: _ClassVar[int]
-    FINAL_POINTS_FIELD_NUMBER: _ClassVar[int]
-    MIN_POINTS_FIELD_NUMBER: _ClassVar[int]
-    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    POINT_POLICY_VERSION_FIELD_NUMBER: _ClassVar[int]
-    base_points: int
-    factor_points: int
-    final_points: int
-    min_points: int
-    point_policy_artifact_id: str
-    point_policy_version: str
-    def __init__(self, base_points: _Optional[int] = ..., factor_points: _Optional[int] = ..., final_points: _Optional[int] = ..., min_points: _Optional[int] = ..., point_policy_artifact_id: _Optional[str] = ..., point_policy_version: _Optional[str] = ...) -> None: ...
-
-class BillingMoneySnapshot(_message.Message):
-    __slots__ = ("face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "face_value_minor_per_point", "recognized_revenue_minor_per_point", "budget_minor_per_point", "money_policy_artifact_id", "money_policy_version")
-    FACE_VALUE_MINOR_FIELD_NUMBER: _ClassVar[int]
-    RECOGNIZED_REVENUE_MINOR_FIELD_NUMBER: _ClassVar[int]
-    BUDGET_CONSUMED_MINOR_FIELD_NUMBER: _ClassVar[int]
-    FACE_VALUE_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
-    RECOGNIZED_REVENUE_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
-    BUDGET_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
-    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    MONEY_POLICY_VERSION_FIELD_NUMBER: _ClassVar[int]
-    face_value_minor: int
-    recognized_revenue_minor: int
-    budget_consumed_minor: int
-    face_value_minor_per_point: int
-    recognized_revenue_minor_per_point: int
-    budget_minor_per_point: int
-    money_policy_artifact_id: str
-    money_policy_version: str
-    def __init__(self, face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., face_value_minor_per_point: _Optional[int] = ..., recognized_revenue_minor_per_point: _Optional[int] = ..., budget_minor_per_point: _Optional[int] = ..., money_policy_artifact_id: _Optional[str] = ..., money_policy_version: _Optional[str] = ...) -> None: ...
-
-class BillingPolicyArtifact(_message.Message):
-    __slots__ = ("artifact_id", "business_id", "artifact_type", "artifact_version", "content", "content_hash", "created_at")
-    ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
-    ARTIFACT_VERSION_FIELD_NUMBER: _ClassVar[int]
-    CONTENT_FIELD_NUMBER: _ClassVar[int]
-    CONTENT_HASH_FIELD_NUMBER: _ClassVar[int]
-    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
-    artifact_id: str
-    business_id: str
-    artifact_type: BillingPolicyArtifactType
-    artifact_version: str
-    content: _struct_pb2.Struct
-    content_hash: str
-    created_at: _timestamp_pb2.Timestamp
-    def __init__(self, artifact_id: _Optional[str] = ..., business_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ..., artifact_version: _Optional[str] = ..., content: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., content_hash: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
-
-class BillingPolicyBundle(_message.Message):
-    __slots__ = ("policy_id", "business_id", "bundle_version", "factor_schema_version", "provider_rate_card_artifact_id", "point_policy_artifact_id", "money_policy_artifact_id", "estimator_artifact_id", "status", "published_at")
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
-    FACTOR_SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
-    PROVIDER_RATE_CARD_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    ESTIMATOR_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    STATUS_FIELD_NUMBER: _ClassVar[int]
-    PUBLISHED_AT_FIELD_NUMBER: _ClassVar[int]
-    policy_id: str
-    business_id: str
-    bundle_version: int
-    factor_schema_version: str
-    provider_rate_card_artifact_id: str
-    point_policy_artifact_id: str
-    money_policy_artifact_id: str
-    estimator_artifact_id: str
-    status: str
-    published_at: _timestamp_pb2.Timestamp
-    def __init__(self, policy_id: _Optional[str] = ..., business_id: _Optional[str] = ..., bundle_version: _Optional[int] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ..., status: _Optional[str] = ..., published_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
-
-class CreateBillingPolicyArtifactRequest(_message.Message):
-    __slots__ = ("business_id", "policy_id", "artifact_type", "artifact_version", "content")
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
-    ARTIFACT_VERSION_FIELD_NUMBER: _ClassVar[int]
-    CONTENT_FIELD_NUMBER: _ClassVar[int]
-    business_id: str
-    policy_id: str
-    artifact_type: BillingPolicyArtifactType
-    artifact_version: str
-    content: _struct_pb2.Struct
-    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ..., artifact_version: _Optional[str] = ..., content: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
-
-class GetBillingPolicyArtifactRequest(_message.Message):
-    __slots__ = ("artifact_id",)
-    ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    artifact_id: str
-    def __init__(self, artifact_id: _Optional[str] = ...) -> None: ...
-
-class ListBillingPolicyArtifactsRequest(_message.Message):
-    __slots__ = ("business_id", "policy_id", "artifact_type")
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
-    business_id: str
-    policy_id: str
-    artifact_type: BillingPolicyArtifactType
-    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ...) -> None: ...
-
-class ListBillingPolicyArtifactsResponse(_message.Message):
-    __slots__ = ("artifacts",)
-    ARTIFACTS_FIELD_NUMBER: _ClassVar[int]
-    artifacts: _containers.RepeatedCompositeFieldContainer[BillingPolicyArtifact]
-    def __init__(self, artifacts: _Optional[_Iterable[_Union[BillingPolicyArtifact, _Mapping]]] = ...) -> None: ...
-
-class PublishBillingPolicyBundleRequest(_message.Message):
-    __slots__ = ("business_id", "policy_id", "bundle_version", "factor_schema_version", "provider_rate_card_artifact_id", "point_policy_artifact_id", "money_policy_artifact_id", "estimator_artifact_id")
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
-    FACTOR_SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
-    PROVIDER_RATE_CARD_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    ESTIMATOR_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
-    business_id: str
-    policy_id: str
-    bundle_version: int
-    factor_schema_version: str
-    provider_rate_card_artifact_id: str
-    point_policy_artifact_id: str
-    money_policy_artifact_id: str
-    estimator_artifact_id: str
-    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., bundle_version: _Optional[int] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ...) -> None: ...
-
-class GetBillingPolicyBundleRequest(_message.Message):
-    __slots__ = ("business_id", "policy_id", "bundle_version")
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
-    business_id: str
-    policy_id: str
-    bundle_version: int
-    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., bundle_version: _Optional[int] = ...) -> None: ...
-
-class ListBillingPolicyBundlesRequest(_message.Message):
-    __slots__ = ("business_id", "policy_id", "active_only")
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
-    ACTIVE_ONLY_FIELD_NUMBER: _ClassVar[int]
-    business_id: str
-    policy_id: str
-    active_only: bool
-    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., active_only: bool = ...) -> None: ...
-
-class ListBillingPolicyBundlesResponse(_message.Message):
-    __slots__ = ("bundles",)
-    BUNDLES_FIELD_NUMBER: _ClassVar[int]
-    bundles: _containers.RepeatedCompositeFieldContainer[BillingPolicyBundle]
-    def __init__(self, bundles: _Optional[_Iterable[_Union[BillingPolicyBundle, _Mapping]]] = ...) -> None: ...
-
 class BillingReport(_message.Message):
-    __slots__ = ("business_id", "authorization_id", "request_id", "user_id", "usage_source", "final_status", "raw_usage_totals", "provider_usage_facts", "business_factors", "execution_hints", "refund_reason", "dedupe_key")
+    __slots__ = ("business_id", "authorization_id", "request_id", "user_id", "usage_source", "final_status", "raw_usage_totals", "cost_breakdown", "business_factors", "billed_points_candidate", "refund_reason", "dedupe_key", "provider_usage_facts", "execution_hints")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
@@ -379,11 +220,13 @@ class BillingReport(_message.Message):
     USAGE_SOURCE_FIELD_NUMBER: _ClassVar[int]
     FINAL_STATUS_FIELD_NUMBER: _ClassVar[int]
     RAW_USAGE_TOTALS_FIELD_NUMBER: _ClassVar[int]
-    PROVIDER_USAGE_FACTS_FIELD_NUMBER: _ClassVar[int]
+    COST_BREAKDOWN_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_FACTORS_FIELD_NUMBER: _ClassVar[int]
-    EXECUTION_HINTS_FIELD_NUMBER: _ClassVar[int]
+    BILLED_POINTS_CANDIDATE_FIELD_NUMBER: _ClassVar[int]
     REFUND_REASON_FIELD_NUMBER: _ClassVar[int]
     DEDUPE_KEY_FIELD_NUMBER: _ClassVar[int]
+    PROVIDER_USAGE_FACTS_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_HINTS_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     authorization_id: str
     request_id: str
@@ -391,12 +234,14 @@ class BillingReport(_message.Message):
     usage_source: BillingUsageSource
     final_status: BillingFinalStatus
     raw_usage_totals: BillingUsageTotals
-    provider_usage_facts: _struct_pb2.Struct
+    cost_breakdown: BillingCostBreakdown
     business_factors: _struct_pb2.Struct
-    execution_hints: _struct_pb2.Struct
+    billed_points_candidate: int
     refund_reason: str
     dedupe_key: str
-    def __init__(self, business_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., user_id: _Optional[str] = ..., usage_source: _Optional[_Union[BillingUsageSource, str]] = ..., final_status: _Optional[_Union[BillingFinalStatus, str]] = ..., raw_usage_totals: _Optional[_Union[BillingUsageTotals, _Mapping]] = ..., provider_usage_facts: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., execution_hints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., refund_reason: _Optional[str] = ..., dedupe_key: _Optional[str] = ...) -> None: ...
+    provider_usage_facts: _struct_pb2.Struct
+    execution_hints: _struct_pb2.Struct
+    def __init__(self, business_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., user_id: _Optional[str] = ..., usage_source: _Optional[_Union[BillingUsageSource, str]] = ..., final_status: _Optional[_Union[BillingFinalStatus, str]] = ..., raw_usage_totals: _Optional[_Union[BillingUsageTotals, _Mapping]] = ..., cost_breakdown: _Optional[_Union[BillingCostBreakdown, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., billed_points_candidate: _Optional[int] = ..., refund_reason: _Optional[str] = ..., dedupe_key: _Optional[str] = ..., provider_usage_facts: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., execution_hints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class EstimateChargeRequest(_message.Message):
     __slots__ = ("context", "request_factors")
@@ -463,24 +308,32 @@ class SettlementDecision(_message.Message):
     def __init__(self, success: bool = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ..., points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
 
 class ReleaseRequest(_message.Message):
-    __slots__ = ("authorization_id", "request_id", "reason")
+    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subject_id: str
     authorization_id: str
     request_id: str
     reason: str
-    def __init__(self, authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class RefundRequest(_message.Message):
-    __slots__ = ("authorization_id", "request_id", "reason")
+    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subject_id: str
     authorization_id: str
     request_id: str
     reason: str
-    def __init__(self, authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class QueryBalanceRequest(_message.Message):
     __slots__ = ("business_id", "subject_id", "subject_type", "user_id")
@@ -633,8 +486,16 @@ class BillingTransaction(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     def __init__(self, transaction_id: _Optional[str] = ..., business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ..., points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
+class GetBillingTransactionRequest(_message.Message):
+    __slots__ = ("business_id", "request_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    request_id: str
+    def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ...) -> None: ...
+
 class QueryTransactionsRequest(_message.Message):
-    __slots__ = ("business_id", "request_id", "authorization_id", "subject_id", "subject_type", "user_id", "start_time_epoch_seconds", "end_time_epoch_seconds", "page_size", "page_token")
+    __slots__ = ("business_id", "request_id", "authorization_id", "subject_id", "subject_type", "user_id", "start_time_epoch_seconds", "end_time_epoch_seconds", "page_size", "page_token", "transaction_type")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
@@ -645,6 +506,7 @@ class QueryTransactionsRequest(_message.Message):
     END_TIME_EPOCH_SECONDS_FIELD_NUMBER: _ClassVar[int]
     PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
     PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    TRANSACTION_TYPE_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     request_id: str
     authorization_id: str
@@ -655,7 +517,8 @@ class QueryTransactionsRequest(_message.Message):
     end_time_epoch_seconds: int
     page_size: int
     page_token: str
-    def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ..., start_time_epoch_seconds: _Optional[int] = ..., end_time_epoch_seconds: _Optional[int] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
+    transaction_type: BillingTransactionType
+    def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ..., start_time_epoch_seconds: _Optional[int] = ..., end_time_epoch_seconds: _Optional[int] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ...) -> None: ...
 
 class QueryTransactionsResponse(_message.Message):
     __slots__ = ("transactions", "next_page_token")
@@ -664,6 +527,216 @@ class QueryTransactionsResponse(_message.Message):
     transactions: _containers.RepeatedCompositeFieldContainer[BillingTransaction]
     next_page_token: str
     def __init__(self, transactions: _Optional[_Iterable[_Union[BillingTransaction, _Mapping]]] = ..., next_page_token: _Optional[str] = ...) -> None: ...
+
+class UsageCostSnapshot(_message.Message):
+    __slots__ = ("business_id", "user_id", "request_id", "usage_snapshot", "cost_snapshot", "business_factors", "policy_id", "created_at")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    USAGE_SNAPSHOT_FIELD_NUMBER: _ClassVar[int]
+    COST_SNAPSHOT_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_FACTORS_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    user_id: str
+    request_id: str
+    usage_snapshot: _struct_pb2.Struct
+    cost_snapshot: _struct_pb2.Struct
+    business_factors: _struct_pb2.Struct
+    policy_id: str
+    created_at: _timestamp_pb2.Timestamp
+    def __init__(self, business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., request_id: _Optional[str] = ..., usage_snapshot: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., cost_snapshot: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., policy_id: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class QuerySnapshotRequest(_message.Message):
+    __slots__ = ("business_id", "request_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    request_id: str
+    def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ...) -> None: ...
+
+class ManualReconcileRequest(_message.Message):
+    __slots__ = ("business_id", "subject_id", "request_id", "authorization_id", "reason")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    REASON_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subject_id: str
+    request_id: str
+    authorization_id: str
+    reason: str
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+
+class ManualReconcileResponse(_message.Message):
+    __slots__ = ("success", "message")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
+class BillingPolicyArtifact(_message.Message):
+    __slots__ = ("artifact_id", "business_id", "artifact_type", "artifact_version", "content", "content_hash", "created_at")
+    ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_VERSION_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_HASH_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    artifact_id: str
+    business_id: str
+    artifact_type: BillingPolicyArtifactType
+    artifact_version: str
+    content: _struct_pb2.Struct
+    content_hash: str
+    created_at: _timestamp_pb2.Timestamp
+    def __init__(self, artifact_id: _Optional[str] = ..., business_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ..., artifact_version: _Optional[str] = ..., content: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., content_hash: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class CreateBillingPolicyArtifactRequest(_message.Message):
+    __slots__ = ("business_id", "artifact_type", "artifact_version", "content", "policy_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_VERSION_FIELD_NUMBER: _ClassVar[int]
+    CONTENT_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    artifact_type: BillingPolicyArtifactType
+    artifact_version: str
+    content: _struct_pb2.Struct
+    policy_id: str
+    def __init__(self, business_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ..., artifact_version: _Optional[str] = ..., content: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., policy_id: _Optional[str] = ...) -> None: ...
+
+class GetBillingPolicyArtifactRequest(_message.Message):
+    __slots__ = ("artifact_id",)
+    ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    artifact_id: str
+    def __init__(self, artifact_id: _Optional[str] = ...) -> None: ...
+
+class ListBillingPolicyArtifactsRequest(_message.Message):
+    __slots__ = ("business_id", "artifact_type", "policy_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    ARTIFACT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    artifact_type: BillingPolicyArtifactType
+    policy_id: str
+    def __init__(self, business_id: _Optional[str] = ..., artifact_type: _Optional[_Union[BillingPolicyArtifactType, str]] = ..., policy_id: _Optional[str] = ...) -> None: ...
+
+class ListBillingPolicyArtifactsResponse(_message.Message):
+    __slots__ = ("artifacts",)
+    ARTIFACTS_FIELD_NUMBER: _ClassVar[int]
+    artifacts: _containers.RepeatedCompositeFieldContainer[BillingPolicyArtifact]
+    def __init__(self, artifacts: _Optional[_Iterable[_Union[BillingPolicyArtifact, _Mapping]]] = ...) -> None: ...
+
+class BillingPolicyBundle(_message.Message):
+    __slots__ = ("policy_id", "business_id", "bundle_version", "factor_schema_version", "provider_rate_card_artifact_id", "point_policy_artifact_id", "money_policy_artifact_id", "estimator_artifact_id", "status", "published_at")
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    FACTOR_SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
+    PROVIDER_RATE_CARD_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATOR_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PUBLISHED_AT_FIELD_NUMBER: _ClassVar[int]
+    policy_id: str
+    business_id: str
+    bundle_version: int
+    factor_schema_version: str
+    provider_rate_card_artifact_id: str
+    point_policy_artifact_id: str
+    money_policy_artifact_id: str
+    estimator_artifact_id: str
+    status: str
+    published_at: _timestamp_pb2.Timestamp
+    def __init__(self, policy_id: _Optional[str] = ..., business_id: _Optional[str] = ..., bundle_version: _Optional[int] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ..., status: _Optional[str] = ..., published_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class PublishBillingPolicyBundleRequest(_message.Message):
+    __slots__ = ("business_id", "policy_id", "factor_schema_version", "provider_rate_card_artifact_id", "point_policy_artifact_id", "money_policy_artifact_id", "estimator_artifact_id", "bundle_version")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    FACTOR_SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
+    PROVIDER_RATE_CARD_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    ESTIMATOR_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    policy_id: str
+    factor_schema_version: str
+    provider_rate_card_artifact_id: str
+    point_policy_artifact_id: str
+    money_policy_artifact_id: str
+    estimator_artifact_id: str
+    bundle_version: int
+    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ..., bundle_version: _Optional[int] = ...) -> None: ...
+
+class GetBillingPolicyBundleRequest(_message.Message):
+    __slots__ = ("business_id", "policy_id", "bundle_version")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    policy_id: str
+    bundle_version: int
+    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., bundle_version: _Optional[int] = ...) -> None: ...
+
+class ListBillingPolicyBundlesRequest(_message.Message):
+    __slots__ = ("business_id", "policy_id", "active_only")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    ACTIVE_ONLY_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    policy_id: str
+    active_only: bool
+    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., active_only: bool = ...) -> None: ...
+
+class ListBillingPolicyBundlesResponse(_message.Message):
+    __slots__ = ("bundles",)
+    BUNDLES_FIELD_NUMBER: _ClassVar[int]
+    bundles: _containers.RepeatedCompositeFieldContainer[BillingPolicyBundle]
+    def __init__(self, bundles: _Optional[_Iterable[_Union[BillingPolicyBundle, _Mapping]]] = ...) -> None: ...
+
+class BillingPointBreakdown(_message.Message):
+    __slots__ = ("base_points", "factor_points", "final_points", "min_points", "point_policy_artifact_id", "point_policy_version")
+    BASE_POINTS_FIELD_NUMBER: _ClassVar[int]
+    FACTOR_POINTS_FIELD_NUMBER: _ClassVar[int]
+    FINAL_POINTS_FIELD_NUMBER: _ClassVar[int]
+    MIN_POINTS_FIELD_NUMBER: _ClassVar[int]
+    POINT_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    POINT_POLICY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    base_points: int
+    factor_points: int
+    final_points: int
+    min_points: int
+    point_policy_artifact_id: str
+    point_policy_version: str
+    def __init__(self, base_points: _Optional[int] = ..., factor_points: _Optional[int] = ..., final_points: _Optional[int] = ..., min_points: _Optional[int] = ..., point_policy_artifact_id: _Optional[str] = ..., point_policy_version: _Optional[str] = ...) -> None: ...
+
+class BillingMoneySnapshot(_message.Message):
+    __slots__ = ("face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "face_value_minor_per_point", "recognized_revenue_minor_per_point", "budget_minor_per_point", "money_policy_artifact_id", "money_policy_version")
+    FACE_VALUE_MINOR_FIELD_NUMBER: _ClassVar[int]
+    RECOGNIZED_REVENUE_MINOR_FIELD_NUMBER: _ClassVar[int]
+    BUDGET_CONSUMED_MINOR_FIELD_NUMBER: _ClassVar[int]
+    FACE_VALUE_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
+    RECOGNIZED_REVENUE_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
+    BUDGET_MINOR_PER_POINT_FIELD_NUMBER: _ClassVar[int]
+    MONEY_POLICY_ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    MONEY_POLICY_VERSION_FIELD_NUMBER: _ClassVar[int]
+    face_value_minor: int
+    recognized_revenue_minor: int
+    budget_consumed_minor: int
+    face_value_minor_per_point: int
+    recognized_revenue_minor_per_point: int
+    budget_minor_per_point: int
+    money_policy_artifact_id: str
+    money_policy_version: str
+    def __init__(self, face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., face_value_minor_per_point: _Optional[int] = ..., recognized_revenue_minor_per_point: _Optional[int] = ..., budget_minor_per_point: _Optional[int] = ..., money_policy_artifact_id: _Optional[str] = ..., money_policy_version: _Optional[str] = ...) -> None: ...
 
 class BillingSettlementSnapshot(_message.Message):
     __slots__ = ("business_id", "user_id", "authorization_id", "request_id", "subject_id", "subject_type", "usage_snapshot", "provider_usage_facts", "business_factors", "execution_hints", "raw_cost_snapshot", "point_breakdown", "money_snapshot", "policy_id", "policy_bundle_version", "factor_schema_version", "provider_rate_card_artifact_id", "point_policy_artifact_id", "money_policy_artifact_id", "estimator_artifact_id", "applied_points", "face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "created_at")
@@ -718,27 +791,3 @@ class BillingSettlementSnapshot(_message.Message):
     budget_consumed_minor: int
     created_at: _timestamp_pb2.Timestamp
     def __init__(self, business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., usage_snapshot: _Optional[_Union[BillingUsageTotals, _Mapping]] = ..., provider_usage_facts: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., execution_hints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., raw_cost_snapshot: _Optional[_Union[BillingCostBreakdown, _Mapping]] = ..., point_breakdown: _Optional[_Union[BillingPointBreakdown, _Mapping]] = ..., money_snapshot: _Optional[_Union[BillingMoneySnapshot, _Mapping]] = ..., policy_id: _Optional[str] = ..., policy_bundle_version: _Optional[int] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ..., applied_points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
-
-class QuerySnapshotRequest(_message.Message):
-    __slots__ = ("request_id",)
-    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
-    request_id: str
-    def __init__(self, request_id: _Optional[str] = ...) -> None: ...
-
-class ManualReconcileRequest(_message.Message):
-    __slots__ = ("request_id", "authorization_id", "reason")
-    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
-    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
-    REASON_FIELD_NUMBER: _ClassVar[int]
-    request_id: str
-    authorization_id: str
-    reason: str
-    def __init__(self, request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
-
-class ManualReconcileResponse(_message.Message):
-    __slots__ = ("success", "message")
-    SUCCESS_FIELD_NUMBER: _ClassVar[int]
-    MESSAGE_FIELD_NUMBER: _ClassVar[int]
-    success: bool
-    message: str
-    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...

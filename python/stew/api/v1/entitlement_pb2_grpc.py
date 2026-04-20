@@ -3,7 +3,8 @@
 import grpc
 import warnings
 
-from stew.api.v1 import entitlement_pb2 as stew_dot_api_dot_v1_dot_entitlement__pb2
+from . import entitlement_pb2 as entitlement__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +19,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in stew/api/v1/entitlement_pb2_grpc.py depends on'
+        + ' but the generated code in entitlement_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,73 +38,123 @@ class EntitlementServiceStub(object):
         """
         self.CreatePlan = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/CreatePlan',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CreatePlanRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+                request_serializer=entitlement__pb2.CreatePlanRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
                 _registered_method=True)
         self.GetPlan = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/GetPlan',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetPlanRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+                request_serializer=entitlement__pb2.GetPlanRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
                 _registered_method=True)
         self.ListPlans = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/ListPlans',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansResponse.FromString,
+                request_serializer=entitlement__pb2.ListPlansRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.ListPlansResponse.FromString,
                 _registered_method=True)
         self.UpdatePlan = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/UpdatePlan',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.UpdatePlanRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+                request_serializer=entitlement__pb2.UpdatePlanRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
+                _registered_method=True)
+        self.DeletePlan = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/DeletePlan',
+                request_serializer=entitlement__pb2.DeletePlanRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
+        self.UpsertPlanFeature = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/UpsertPlanFeature',
+                request_serializer=entitlement__pb2.UpsertPlanFeatureRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
+                _registered_method=True)
+        self.DeletePlanFeature = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/DeletePlanFeature',
+                request_serializer=entitlement__pb2.DeletePlanFeatureRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
+                _registered_method=True)
+        self.UpsertPlanQuota = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/UpsertPlanQuota',
+                request_serializer=entitlement__pb2.UpsertPlanQuotaRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
+                _registered_method=True)
+        self.DeletePlanQuota = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/DeletePlanQuota',
+                request_serializer=entitlement__pb2.DeletePlanQuotaRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.EntitlementPlan.FromString,
                 _registered_method=True)
         self.CreateSubscription = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/CreateSubscription',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CreateSubscriptionRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+                request_serializer=entitlement__pb2.CreateSubscriptionRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
                 _registered_method=True)
         self.GetSubscription = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/GetSubscription',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+                request_serializer=entitlement__pb2.GetSubscriptionRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
                 _registered_method=True)
         self.GetSubscriptionBySubject = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/GetSubscriptionBySubject',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionBySubjectRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+                request_serializer=entitlement__pb2.GetSubscriptionBySubjectRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
                 _registered_method=True)
         self.UpdateSubscription = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/UpdateSubscription',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.UpdateSubscriptionRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+                request_serializer=entitlement__pb2.UpdateSubscriptionRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
                 _registered_method=True)
         self.CancelSubscription = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/CancelSubscription',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CancelSubscriptionRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+                request_serializer=entitlement__pb2.CancelSubscriptionRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
+                _registered_method=True)
+        self.ListSubscriptions = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/ListSubscriptions',
+                request_serializer=entitlement__pb2.ListSubscriptionsRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.ListSubscriptionsResponse.FromString,
+                _registered_method=True)
+        self.RenewSubscriptions = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/RenewSubscriptions',
+                request_serializer=entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.RenewSubscriptionsResponse.FromString,
                 _registered_method=True)
         self.GetQuotaUsage = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/GetQuotaUsage',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetQuotaUsageRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.FromString,
+                request_serializer=entitlement__pb2.GetQuotaUsageRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.QuotaUsage.FromString,
                 _registered_method=True)
         self.IncrementQuota = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/IncrementQuota',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.IncrementQuotaRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.FromString,
+                request_serializer=entitlement__pb2.IncrementQuotaRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.QuotaUsage.FromString,
                 _registered_method=True)
         self.CheckQuota = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/CheckQuota',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaResponse.FromString,
+                request_serializer=entitlement__pb2.CheckQuotaRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.CheckQuotaResponse.FromString,
                 _registered_method=True)
         self.GetMyEntitlement = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/GetMyEntitlement',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetMyEntitlementRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ResolvedEntitlementResponse.FromString,
+                request_serializer=entitlement__pb2.GetMyEntitlementRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.ResolvedEntitlementResponse.FromString,
                 _registered_method=True)
         self.CheckFeature = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/CheckFeature',
-                request_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureRequest.SerializeToString,
-                response_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureResponse.FromString,
+                request_serializer=entitlement__pb2.CheckFeatureRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.CheckFeatureResponse.FromString,
+                _registered_method=True)
+        self.ChangePlan = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/ChangePlan',
+                request_serializer=entitlement__pb2.ChangePlanRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.ChangePlanResponse.FromString,
+                _registered_method=True)
+        self.ListPlanChanges = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/ListPlanChanges',
+                request_serializer=entitlement__pb2.ListPlanChangesRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.ListPlanChangesResponse.FromString,
+                _registered_method=True)
+        self.CancelPlanChange = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/CancelPlanChange',
+                request_serializer=entitlement__pb2.CancelPlanChangeRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.PlanChangeRecord.FromString,
                 _registered_method=True)
 
 
@@ -112,73 +163,134 @@ class EntitlementServiceServicer(object):
     """
 
     def CreatePlan(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Create a subscription plan for a business.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetPlan(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Fetch a subscription plan by business ID and plan ID.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def ListPlans(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """List all plans defined for a business.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def UpdatePlan(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Update an existing subscription plan.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeletePlan(self, request, context):
+        """Delete a subscription plan.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpsertPlanFeature(self, request, context):
+        """Upsert a feature configuration on a plan.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeletePlanFeature(self, request, context):
+        """Delete a feature configuration from a plan.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpsertPlanQuota(self, request, context):
+        """Upsert a quota definition on a plan.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeletePlanQuota(self, request, context):
+        """Delete a quota definition from a plan.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CreateSubscription(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Create a subscription bound to a business subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetSubscription(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Fetch a subscription by business ID and subscription ID.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetSubscriptionBySubject(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Resolve the active subscription for a specific subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def UpdateSubscription(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Update a subscription record.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CancelSubscription(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Cancel an active subscription.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListSubscriptions(self, request, context):
+        """List subscriptions for a business.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RenewSubscriptions(self, request, context):
+        """Trigger subscription renewal processing.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetQuotaUsage(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Fetch quota usage for a subject and quota key.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def IncrementQuota(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Increment quota consumption for a subject.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def CheckQuota(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """Check whether a subject can consume more quota.
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -197,78 +309,150 @@ class EntitlementServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ChangePlan(self, request, context):
+        """Change the plan bound to a subscription (upgrade/downgrade/crossgrade).
+        Supports immediate execution or scheduling for end of current period.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListPlanChanges(self, request, context):
+        """List plan change history for a subscription or subject.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CancelPlanChange(self, request, context):
+        """Cancel a pending (end_of_period) plan change before it takes effect.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_EntitlementServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CreatePlan': grpc.unary_unary_rpc_method_handler(
                     servicer.CreatePlan,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CreatePlanRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.SerializeToString,
+                    request_deserializer=entitlement__pb2.CreatePlanRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
             ),
             'GetPlan': grpc.unary_unary_rpc_method_handler(
                     servicer.GetPlan,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetPlanRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.SerializeToString,
+                    request_deserializer=entitlement__pb2.GetPlanRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
             ),
             'ListPlans': grpc.unary_unary_rpc_method_handler(
                     servicer.ListPlans,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansResponse.SerializeToString,
+                    request_deserializer=entitlement__pb2.ListPlansRequest.FromString,
+                    response_serializer=entitlement__pb2.ListPlansResponse.SerializeToString,
             ),
             'UpdatePlan': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdatePlan,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.UpdatePlanRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.SerializeToString,
+                    request_deserializer=entitlement__pb2.UpdatePlanRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
+            ),
+            'DeletePlan': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePlan,
+                    request_deserializer=entitlement__pb2.DeletePlanRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
+            'UpsertPlanFeature': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpsertPlanFeature,
+                    request_deserializer=entitlement__pb2.UpsertPlanFeatureRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
+            ),
+            'DeletePlanFeature': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePlanFeature,
+                    request_deserializer=entitlement__pb2.DeletePlanFeatureRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
+            ),
+            'UpsertPlanQuota': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpsertPlanQuota,
+                    request_deserializer=entitlement__pb2.UpsertPlanQuotaRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
+            ),
+            'DeletePlanQuota': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePlanQuota,
+                    request_deserializer=entitlement__pb2.DeletePlanQuotaRequest.FromString,
+                    response_serializer=entitlement__pb2.EntitlementPlan.SerializeToString,
             ),
             'CreateSubscription': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateSubscription,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CreateSubscriptionRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.SerializeToString,
+                    request_deserializer=entitlement__pb2.CreateSubscriptionRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
             ),
             'GetSubscription': grpc.unary_unary_rpc_method_handler(
                     servicer.GetSubscription,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.SerializeToString,
+                    request_deserializer=entitlement__pb2.GetSubscriptionRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
             ),
             'GetSubscriptionBySubject': grpc.unary_unary_rpc_method_handler(
                     servicer.GetSubscriptionBySubject,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionBySubjectRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.SerializeToString,
+                    request_deserializer=entitlement__pb2.GetSubscriptionBySubjectRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
             ),
             'UpdateSubscription': grpc.unary_unary_rpc_method_handler(
                     servicer.UpdateSubscription,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.UpdateSubscriptionRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.SerializeToString,
+                    request_deserializer=entitlement__pb2.UpdateSubscriptionRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
             ),
             'CancelSubscription': grpc.unary_unary_rpc_method_handler(
                     servicer.CancelSubscription,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CancelSubscriptionRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.SerializeToString,
+                    request_deserializer=entitlement__pb2.CancelSubscriptionRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
+            ),
+            'ListSubscriptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListSubscriptions,
+                    request_deserializer=entitlement__pb2.ListSubscriptionsRequest.FromString,
+                    response_serializer=entitlement__pb2.ListSubscriptionsResponse.SerializeToString,
+            ),
+            'RenewSubscriptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.RenewSubscriptions,
+                    request_deserializer=entitlement__pb2.RenewSubscriptionsRequest.FromString,
+                    response_serializer=entitlement__pb2.RenewSubscriptionsResponse.SerializeToString,
             ),
             'GetQuotaUsage': grpc.unary_unary_rpc_method_handler(
                     servicer.GetQuotaUsage,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetQuotaUsageRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.SerializeToString,
+                    request_deserializer=entitlement__pb2.GetQuotaUsageRequest.FromString,
+                    response_serializer=entitlement__pb2.QuotaUsage.SerializeToString,
             ),
             'IncrementQuota': grpc.unary_unary_rpc_method_handler(
                     servicer.IncrementQuota,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.IncrementQuotaRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.SerializeToString,
+                    request_deserializer=entitlement__pb2.IncrementQuotaRequest.FromString,
+                    response_serializer=entitlement__pb2.QuotaUsage.SerializeToString,
             ),
             'CheckQuota': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckQuota,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaResponse.SerializeToString,
+                    request_deserializer=entitlement__pb2.CheckQuotaRequest.FromString,
+                    response_serializer=entitlement__pb2.CheckQuotaResponse.SerializeToString,
             ),
             'GetMyEntitlement': grpc.unary_unary_rpc_method_handler(
                     servicer.GetMyEntitlement,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.GetMyEntitlementRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.ResolvedEntitlementResponse.SerializeToString,
+                    request_deserializer=entitlement__pb2.GetMyEntitlementRequest.FromString,
+                    response_serializer=entitlement__pb2.ResolvedEntitlementResponse.SerializeToString,
             ),
             'CheckFeature': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckFeature,
-                    request_deserializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureRequest.FromString,
-                    response_serializer=stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureResponse.SerializeToString,
+                    request_deserializer=entitlement__pb2.CheckFeatureRequest.FromString,
+                    response_serializer=entitlement__pb2.CheckFeatureResponse.SerializeToString,
+            ),
+            'ChangePlan': grpc.unary_unary_rpc_method_handler(
+                    servicer.ChangePlan,
+                    request_deserializer=entitlement__pb2.ChangePlanRequest.FromString,
+                    response_serializer=entitlement__pb2.ChangePlanResponse.SerializeToString,
+            ),
+            'ListPlanChanges': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListPlanChanges,
+                    request_deserializer=entitlement__pb2.ListPlanChangesRequest.FromString,
+                    response_serializer=entitlement__pb2.ListPlanChangesResponse.SerializeToString,
+            ),
+            'CancelPlanChange': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelPlanChange,
+                    request_deserializer=entitlement__pb2.CancelPlanChangeRequest.FromString,
+                    response_serializer=entitlement__pb2.PlanChangeRecord.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -297,8 +481,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/CreatePlan',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CreatePlanRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+            entitlement__pb2.CreatePlanRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
             options,
             channel_credentials,
             insecure,
@@ -324,8 +508,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/GetPlan',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.GetPlanRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+            entitlement__pb2.GetPlanRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
             options,
             channel_credentials,
             insecure,
@@ -351,8 +535,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/ListPlans',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.ListPlansResponse.FromString,
+            entitlement__pb2.ListPlansRequest.SerializeToString,
+            entitlement__pb2.ListPlansResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -378,8 +562,143 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/UpdatePlan',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.UpdatePlanRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.EntitlementPlan.FromString,
+            entitlement__pb2.UpdatePlanRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeletePlan(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/DeletePlan',
+            entitlement__pb2.DeletePlanRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpsertPlanFeature(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/UpsertPlanFeature',
+            entitlement__pb2.UpsertPlanFeatureRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeletePlanFeature(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/DeletePlanFeature',
+            entitlement__pb2.DeletePlanFeatureRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpsertPlanQuota(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/UpsertPlanQuota',
+            entitlement__pb2.UpsertPlanQuotaRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeletePlanQuota(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/DeletePlanQuota',
+            entitlement__pb2.DeletePlanQuotaRequest.SerializeToString,
+            entitlement__pb2.EntitlementPlan.FromString,
             options,
             channel_credentials,
             insecure,
@@ -405,8 +724,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/CreateSubscription',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CreateSubscriptionRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+            entitlement__pb2.CreateSubscriptionRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
             options,
             channel_credentials,
             insecure,
@@ -432,8 +751,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/GetSubscription',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+            entitlement__pb2.GetSubscriptionRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
             options,
             channel_credentials,
             insecure,
@@ -459,8 +778,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/GetSubscriptionBySubject',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.GetSubscriptionBySubjectRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+            entitlement__pb2.GetSubscriptionBySubjectRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
             options,
             channel_credentials,
             insecure,
@@ -486,8 +805,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/UpdateSubscription',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.UpdateSubscriptionRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+            entitlement__pb2.UpdateSubscriptionRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
             options,
             channel_credentials,
             insecure,
@@ -513,8 +832,62 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/CancelSubscription',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CancelSubscriptionRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.Subscription.FromString,
+            entitlement__pb2.CancelSubscriptionRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListSubscriptions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/ListSubscriptions',
+            entitlement__pb2.ListSubscriptionsRequest.SerializeToString,
+            entitlement__pb2.ListSubscriptionsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RenewSubscriptions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/RenewSubscriptions',
+            entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
+            entitlement__pb2.RenewSubscriptionsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -540,8 +913,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/GetQuotaUsage',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.GetQuotaUsageRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.FromString,
+            entitlement__pb2.GetQuotaUsageRequest.SerializeToString,
+            entitlement__pb2.QuotaUsage.FromString,
             options,
             channel_credentials,
             insecure,
@@ -567,8 +940,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/IncrementQuota',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.IncrementQuotaRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.QuotaUsage.FromString,
+            entitlement__pb2.IncrementQuotaRequest.SerializeToString,
+            entitlement__pb2.QuotaUsage.FromString,
             options,
             channel_credentials,
             insecure,
@@ -594,8 +967,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/CheckQuota',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CheckQuotaResponse.FromString,
+            entitlement__pb2.CheckQuotaRequest.SerializeToString,
+            entitlement__pb2.CheckQuotaResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -621,8 +994,8 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/GetMyEntitlement',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.GetMyEntitlementRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.ResolvedEntitlementResponse.FromString,
+            entitlement__pb2.GetMyEntitlementRequest.SerializeToString,
+            entitlement__pb2.ResolvedEntitlementResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -648,8 +1021,89 @@ class EntitlementService(object):
             request,
             target,
             '/stew.api.v1.EntitlementService/CheckFeature',
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureRequest.SerializeToString,
-            stew_dot_api_dot_v1_dot_entitlement__pb2.CheckFeatureResponse.FromString,
+            entitlement__pb2.CheckFeatureRequest.SerializeToString,
+            entitlement__pb2.CheckFeatureResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ChangePlan(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/ChangePlan',
+            entitlement__pb2.ChangePlanRequest.SerializeToString,
+            entitlement__pb2.ChangePlanResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListPlanChanges(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/ListPlanChanges',
+            entitlement__pb2.ListPlanChangesRequest.SerializeToString,
+            entitlement__pb2.ListPlanChangesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CancelPlanChange(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/CancelPlanChange',
+            entitlement__pb2.CancelPlanChangeRequest.SerializeToString,
+            entitlement__pb2.PlanChangeRecord.FromString,
             options,
             channel_credentials,
             insecure,

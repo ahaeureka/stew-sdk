@@ -2,6 +2,7 @@ from google.api import annotations_pb2 as _annotations_pb2
 from google.api import http_pb2 as _http_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
+from google.protobuf import empty_pb2 as _empty_pb2
 from protobuf_pydantic_gen import pydantic_pb2 as _pydantic_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
@@ -10,35 +11,6 @@ from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
-
-class ServiceSubscriptionConfig(_message.Message):
-    __slots__ = ("enabled", "business_id", "default_plan_id", "auto_create_subscription", "inject_features", "inject_quotas", "feature_gate_mode", "require_active_subscription", "endpoint_features")
-    class EndpointFeaturesEntry(_message.Message):
-        __slots__ = ("key", "value")
-        KEY_FIELD_NUMBER: _ClassVar[int]
-        VALUE_FIELD_NUMBER: _ClassVar[int]
-        key: str
-        value: str
-        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
-    ENABLED_FIELD_NUMBER: _ClassVar[int]
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
-    DEFAULT_PLAN_ID_FIELD_NUMBER: _ClassVar[int]
-    AUTO_CREATE_SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
-    INJECT_FEATURES_FIELD_NUMBER: _ClassVar[int]
-    INJECT_QUOTAS_FIELD_NUMBER: _ClassVar[int]
-    FEATURE_GATE_MODE_FIELD_NUMBER: _ClassVar[int]
-    REQUIRE_ACTIVE_SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
-    ENDPOINT_FEATURES_FIELD_NUMBER: _ClassVar[int]
-    enabled: bool
-    business_id: str
-    default_plan_id: str
-    auto_create_subscription: bool
-    inject_features: bool
-    inject_quotas: bool
-    feature_gate_mode: str
-    require_active_subscription: bool
-    endpoint_features: _containers.ScalarMap[str, str]
-    def __init__(self, enabled: bool = ..., business_id: _Optional[str] = ..., default_plan_id: _Optional[str] = ..., auto_create_subscription: bool = ..., inject_features: bool = ..., inject_quotas: bool = ..., feature_gate_mode: _Optional[str] = ..., require_active_subscription: bool = ..., endpoint_features: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class EntitlementPlan(_message.Message):
     __slots__ = ("id", "business_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata")
@@ -294,6 +266,106 @@ class CancelSubscriptionRequest(_message.Message):
     subscription_id: str
     def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ...) -> None: ...
 
+class ListSubscriptionsRequest(_message.Message):
+    __slots__ = ("business_id", "status", "plan_id", "page_size", "page_token")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    status: str
+    plan_id: str
+    page_size: int
+    page_token: str
+    def __init__(self, business_id: _Optional[str] = ..., status: _Optional[str] = ..., plan_id: _Optional[str] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
+
+class ListSubscriptionsResponse(_message.Message):
+    __slots__ = ("subscriptions", "next_page_token")
+    SUBSCRIPTIONS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    subscriptions: _containers.RepeatedCompositeFieldContainer[Subscription]
+    next_page_token: str
+    def __init__(self, subscriptions: _Optional[_Iterable[_Union[Subscription, _Mapping]]] = ..., next_page_token: _Optional[str] = ...) -> None: ...
+
+class RenewSubscriptionsRequest(_message.Message):
+    __slots__ = ("subscription_ids", "horizon_seconds")
+    SUBSCRIPTION_IDS_FIELD_NUMBER: _ClassVar[int]
+    HORIZON_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    subscription_ids: _containers.RepeatedScalarFieldContainer[str]
+    horizon_seconds: int
+    def __init__(self, subscription_ids: _Optional[_Iterable[str]] = ..., horizon_seconds: _Optional[int] = ...) -> None: ...
+
+class RenewSubscriptionResult(_message.Message):
+    __slots__ = ("subscription_id", "succeeded", "error_message", "subscription")
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUCCEEDED_FIELD_NUMBER: _ClassVar[int]
+    ERROR_MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    subscription_id: str
+    succeeded: bool
+    error_message: str
+    subscription: Subscription
+    def __init__(self, subscription_id: _Optional[str] = ..., succeeded: bool = ..., error_message: _Optional[str] = ..., subscription: _Optional[_Union[Subscription, _Mapping]] = ...) -> None: ...
+
+class RenewSubscriptionsResponse(_message.Message):
+    __slots__ = ("results", "succeeded_count", "failed_count")
+    RESULTS_FIELD_NUMBER: _ClassVar[int]
+    SUCCEEDED_COUNT_FIELD_NUMBER: _ClassVar[int]
+    FAILED_COUNT_FIELD_NUMBER: _ClassVar[int]
+    results: _containers.RepeatedCompositeFieldContainer[RenewSubscriptionResult]
+    succeeded_count: int
+    failed_count: int
+    def __init__(self, results: _Optional[_Iterable[_Union[RenewSubscriptionResult, _Mapping]]] = ..., succeeded_count: _Optional[int] = ..., failed_count: _Optional[int] = ...) -> None: ...
+
+class DeletePlanRequest(_message.Message):
+    __slots__ = ("business_id", "plan_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    plan_id: str
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ...) -> None: ...
+
+class UpsertPlanFeatureRequest(_message.Message):
+    __slots__ = ("business_id", "plan_id", "feature")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    plan_id: str
+    feature: PlanFeature
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., feature: _Optional[_Union[PlanFeature, _Mapping]] = ...) -> None: ...
+
+class DeletePlanFeatureRequest(_message.Message):
+    __slots__ = ("business_id", "plan_id", "feature_key")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_KEY_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    plan_id: str
+    feature_key: str
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., feature_key: _Optional[str] = ...) -> None: ...
+
+class UpsertPlanQuotaRequest(_message.Message):
+    __slots__ = ("business_id", "plan_id", "quota")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    QUOTA_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    plan_id: str
+    quota: PlanQuota
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., quota: _Optional[_Union[PlanQuota, _Mapping]] = ...) -> None: ...
+
+class DeletePlanQuotaRequest(_message.Message):
+    __slots__ = ("business_id", "plan_id", "quota_key")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    QUOTA_KEY_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    plan_id: str
+    quota_key: str
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., quota_key: _Optional[str] = ...) -> None: ...
+
 class GetQuotaUsageRequest(_message.Message):
     __slots__ = ("business_id", "subject_id", "quota_key")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
@@ -333,6 +405,104 @@ class CheckQuotaResponse(_message.Message):
     used: int
     limit: int
     def __init__(self, used: _Optional[int] = ..., limit: _Optional[int] = ...) -> None: ...
+
+class PlanChangeRecord(_message.Message):
+    __slots__ = ("id", "business_id", "subscription_id", "subject_id", "previous_plan_id", "new_plan_id", "change_type", "change_mode", "status", "effective_at", "executed_at", "metadata")
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    ID_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    PREVIOUS_PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    NEW_PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_TYPE_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_MODE_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    EFFECTIVE_AT_FIELD_NUMBER: _ClassVar[int]
+    EXECUTED_AT_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    id: str
+    business_id: str
+    subscription_id: str
+    subject_id: str
+    previous_plan_id: str
+    new_plan_id: str
+    change_type: str
+    change_mode: str
+    status: str
+    effective_at: int
+    executed_at: int
+    metadata: _containers.ScalarMap[str, str]
+    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., previous_plan_id: _Optional[str] = ..., new_plan_id: _Optional[str] = ..., change_type: _Optional[str] = ..., change_mode: _Optional[str] = ..., status: _Optional[str] = ..., effective_at: _Optional[int] = ..., executed_at: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+
+class ChangePlanRequest(_message.Message):
+    __slots__ = ("business_id", "subscription_id", "subject_id", "new_plan_id", "change_mode", "reset_quota", "metadata")
+    class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    NEW_PLAN_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_MODE_FIELD_NUMBER: _ClassVar[int]
+    RESET_QUOTA_FIELD_NUMBER: _ClassVar[int]
+    METADATA_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subscription_id: str
+    subject_id: str
+    new_plan_id: str
+    change_mode: str
+    reset_quota: bool
+    metadata: _containers.ScalarMap[str, str]
+    def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., new_plan_id: _Optional[str] = ..., change_mode: _Optional[str] = ..., reset_quota: bool = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+
+class ChangePlanResponse(_message.Message):
+    __slots__ = ("subscription", "change_record")
+    SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_RECORD_FIELD_NUMBER: _ClassVar[int]
+    subscription: Subscription
+    change_record: PlanChangeRecord
+    def __init__(self, subscription: _Optional[_Union[Subscription, _Mapping]] = ..., change_record: _Optional[_Union[PlanChangeRecord, _Mapping]] = ...) -> None: ...
+
+class ListPlanChangesRequest(_message.Message):
+    __slots__ = ("business_id", "subscription_id", "subject_id", "page_size", "page_token")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subscription_id: str
+    subject_id: str
+    page_size: int
+    page_token: str
+    def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
+
+class ListPlanChangesResponse(_message.Message):
+    __slots__ = ("changes", "next_page_token")
+    CHANGES_FIELD_NUMBER: _ClassVar[int]
+    NEXT_PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    changes: _containers.RepeatedCompositeFieldContainer[PlanChangeRecord]
+    next_page_token: str
+    def __init__(self, changes: _Optional[_Iterable[_Union[PlanChangeRecord, _Mapping]]] = ..., next_page_token: _Optional[str] = ...) -> None: ...
+
+class CancelPlanChangeRequest(_message.Message):
+    __slots__ = ("business_id", "change_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    CHANGE_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    change_id: str
+    def __init__(self, business_id: _Optional[str] = ..., change_id: _Optional[str] = ...) -> None: ...
 
 class ResolvedEntitlementResponse(_message.Message):
     __slots__ = ("subscription", "plan", "quota_usages")
