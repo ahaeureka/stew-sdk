@@ -251,7 +251,7 @@ class PatchUserRequest(_message.Message):
     def __init__(self, uid: _Optional[str] = ..., name: _Optional[str] = ..., password: _Optional[str] = ..., email: _Optional[str] = ..., phone: _Optional[str] = ..., role: _Optional[_Union[Role, str]] = ..., status: _Optional[_Union[USER_STATUS, str]] = ..., dept: _Optional[str] = ..., owner: _Optional[str] = ..., avatar: _Optional[str] = ..., update_mask: _Optional[_Union[_field_mask_pb2.FieldMask, _Mapping]] = ...) -> None: ...
 
 class UpdateUserRequest(_message.Message):
-    __slots__ = ("display_name", "preferred_username", "locale", "zoneinfo", "website", "picture", "given_name", "family_name", "nickname", "gender", "birthdate")
+    __slots__ = ("display_name", "preferred_username", "locale", "zoneinfo", "website", "picture", "given_name", "family_name", "nickname", "gender", "birthdate", "phone_number", "email", "password")
     DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     PREFERRED_USERNAME_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
@@ -263,6 +263,9 @@ class UpdateUserRequest(_message.Message):
     NICKNAME_FIELD_NUMBER: _ClassVar[int]
     GENDER_FIELD_NUMBER: _ClassVar[int]
     BIRTHDATE_FIELD_NUMBER: _ClassVar[int]
+    PHONE_NUMBER_FIELD_NUMBER: _ClassVar[int]
+    EMAIL_FIELD_NUMBER: _ClassVar[int]
+    PASSWORD_FIELD_NUMBER: _ClassVar[int]
     display_name: str
     preferred_username: str
     locale: str
@@ -274,7 +277,10 @@ class UpdateUserRequest(_message.Message):
     nickname: str
     gender: str
     birthdate: str
-    def __init__(self, display_name: _Optional[str] = ..., preferred_username: _Optional[str] = ..., locale: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., website: _Optional[str] = ..., picture: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., nickname: _Optional[str] = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ...) -> None: ...
+    phone_number: str
+    email: str
+    password: str
+    def __init__(self, display_name: _Optional[str] = ..., preferred_username: _Optional[str] = ..., locale: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., website: _Optional[str] = ..., picture: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., nickname: _Optional[str] = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ..., phone_number: _Optional[str] = ..., email: _Optional[str] = ..., password: _Optional[str] = ...) -> None: ...
 
 class UploadAvatarRequest(_message.Message):
     __slots__ = ("avatar_data", "filename")

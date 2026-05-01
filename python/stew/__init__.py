@@ -41,6 +41,11 @@ from stew.asset_browser_client import (
     SavedExportedAsset,
     SyncAssetBrowserClient,
 )
+from stew.identity import (
+    AuthMode,
+    GatewayIdentity,
+    IdentityInterceptor,
+)
 
 __all__ = [
     "DiscoveryClient",
@@ -76,4 +81,7 @@ __all__ = [
     "ExportedAsset",
     "SavedExportedAsset",
     "SyncAssetBrowserClient",
+    "AuthMode",
+    "GatewayIdentity",
+    "IdentityInterceptor",
 ]

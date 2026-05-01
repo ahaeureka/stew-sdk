@@ -256,3 +256,93 @@ class HealthCheckResponse(_message.Message):
     components: _struct_pb2.Struct
     version: str
     def __init__(self, status: _Optional[_Union[HealthCheckResponse.ServingStatus, str]] = ..., components: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., version: _Optional[str] = ...) -> None: ...
+
+class PlatformPermission(_message.Message):
+    __slots__ = ("resource", "action")
+    RESOURCE_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    resource: str
+    action: str
+    def __init__(self, resource: _Optional[str] = ..., action: _Optional[str] = ...) -> None: ...
+
+class PlatformRole(_message.Message):
+    __slots__ = ("name", "permissions", "user_count")
+    NAME_FIELD_NUMBER: _ClassVar[int]
+    PERMISSIONS_FIELD_NUMBER: _ClassVar[int]
+    USER_COUNT_FIELD_NUMBER: _ClassVar[int]
+    name: str
+    permissions: _containers.RepeatedCompositeFieldContainer[PlatformPermission]
+    user_count: int
+    def __init__(self, name: _Optional[str] = ..., permissions: _Optional[_Iterable[_Union[PlatformPermission, _Mapping]]] = ..., user_count: _Optional[int] = ...) -> None: ...
+
+class GetPlatformRolesRequest(_message.Message):
+    __slots__ = ()
+    def __init__(self) -> None: ...
+
+class GetPlatformRolesResponse(_message.Message):
+    __slots__ = ("roles",)
+    ROLES_FIELD_NUMBER: _ClassVar[int]
+    roles: _containers.RepeatedCompositeFieldContainer[PlatformRole]
+    def __init__(self, roles: _Optional[_Iterable[_Union[PlatformRole, _Mapping]]] = ...) -> None: ...
+
+class GetUserPlatformRolesRequest(_message.Message):
+    __slots__ = ("user_id",)
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    def __init__(self, user_id: _Optional[str] = ...) -> None: ...
+
+class GetUserPlatformRolesResponse(_message.Message):
+    __slots__ = ("user_id", "roles")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLES_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    roles: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, user_id: _Optional[str] = ..., roles: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class AssignPlatformRoleRequest(_message.Message):
+    __slots__ = ("user_id", "role")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    role: str
+    def __init__(self, user_id: _Optional[str] = ..., role: _Optional[str] = ...) -> None: ...
+
+class AssignPlatformRoleResponse(_message.Message):
+    __slots__ = ("success", "message")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
+class RemovePlatformRoleRequest(_message.Message):
+    __slots__ = ("user_id", "role")
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    ROLE_FIELD_NUMBER: _ClassVar[int]
+    user_id: str
+    role: str
+    def __init__(self, user_id: _Optional[str] = ..., role: _Optional[str] = ...) -> None: ...
+
+class RemovePlatformRoleResponse(_message.Message):
+    __slots__ = ("success", "message")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    message: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+
+class CheckPlatformPermissionRequest(_message.Message):
+    __slots__ = ("subject", "resource", "action")
+    SUBJECT_FIELD_NUMBER: _ClassVar[int]
+    RESOURCE_FIELD_NUMBER: _ClassVar[int]
+    ACTION_FIELD_NUMBER: _ClassVar[int]
+    subject: str
+    resource: str
+    action: str
+    def __init__(self, subject: _Optional[str] = ..., resource: _Optional[str] = ..., action: _Optional[str] = ...) -> None: ...
+
+class CheckPlatformPermissionResponse(_message.Message):
+    __slots__ = ("allowed",)
+    ALLOWED_FIELD_NUMBER: _ClassVar[int]
+    allowed: bool
+    def __init__(self, allowed: bool = ...) -> None: ...

@@ -341,8 +341,40 @@ class ServiceSubscriptionConfig(_message.Message):
     endpoint_features: _containers.ScalarMap[str, str]
     def __init__(self, enabled: bool = ..., business_id: _Optional[str] = ..., default_plan_id: _Optional[str] = ..., auto_create_subscription: bool = ..., inject_features: bool = ..., inject_quotas: bool = ..., feature_gate_mode: _Optional[str] = ..., require_active_subscription: bool = ..., endpoint_features: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
+class ServiceRbacPolicyRule(_message.Message):
+    __slots__ = ("pattern", "methods", "roles", "permissions", "groups")
+    PATTERN_FIELD_NUMBER: _ClassVar[int]
+    METHODS_FIELD_NUMBER: _ClassVar[int]
+    ROLES_FIELD_NUMBER: _ClassVar[int]
+    PERMISSIONS_FIELD_NUMBER: _ClassVar[int]
+    GROUPS_FIELD_NUMBER: _ClassVar[int]
+    pattern: str
+    methods: _containers.RepeatedScalarFieldContainer[str]
+    roles: _containers.RepeatedScalarFieldContainer[str]
+    permissions: _containers.RepeatedScalarFieldContainer[str]
+    groups: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, pattern: _Optional[str] = ..., methods: _Optional[_Iterable[str]] = ..., roles: _Optional[_Iterable[str]] = ..., permissions: _Optional[_Iterable[str]] = ..., groups: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class ServiceRbacConfig(_message.Message):
+    __slots__ = ("enabled", "default_action", "admin_bypass", "roles_claim_path", "permissions_claim_path", "groups_claim_path", "rules")
+    ENABLED_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_ACTION_FIELD_NUMBER: _ClassVar[int]
+    ADMIN_BYPASS_FIELD_NUMBER: _ClassVar[int]
+    ROLES_CLAIM_PATH_FIELD_NUMBER: _ClassVar[int]
+    PERMISSIONS_CLAIM_PATH_FIELD_NUMBER: _ClassVar[int]
+    GROUPS_CLAIM_PATH_FIELD_NUMBER: _ClassVar[int]
+    RULES_FIELD_NUMBER: _ClassVar[int]
+    enabled: bool
+    default_action: str
+    admin_bypass: bool
+    roles_claim_path: str
+    permissions_claim_path: str
+    groups_claim_path: str
+    rules: _containers.RepeatedCompositeFieldContainer[ServiceRbacPolicyRule]
+    def __init__(self, enabled: bool = ..., default_action: _Optional[str] = ..., admin_bypass: bool = ..., roles_claim_path: _Optional[str] = ..., permissions_claim_path: _Optional[str] = ..., groups_claim_path: _Optional[str] = ..., rules: _Optional[_Iterable[_Union[ServiceRbacPolicyRule, _Mapping]]] = ...) -> None: ...
+
 class ServiceMiddlewareConfig(_message.Message):
-    __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile", "ai_guard_enabled", "ai_guard", "billing_enabled", "billing", "subscription_enabled", "subscription")
+    __slots__ = ("rate_limit_enabled", "rate_limit_rpm", "rate_limit_user_rpm", "cors_enabled", "cors", "risk_enabled", "risk", "turnstile_enabled", "turnstile", "ai_guard_enabled", "ai_guard", "billing_enabled", "billing", "subscription_enabled", "subscription", "rbac_enabled", "rbac")
     RATE_LIMIT_ENABLED_FIELD_NUMBER: _ClassVar[int]
     RATE_LIMIT_RPM_FIELD_NUMBER: _ClassVar[int]
     RATE_LIMIT_USER_RPM_FIELD_NUMBER: _ClassVar[int]
@@ -358,6 +390,8 @@ class ServiceMiddlewareConfig(_message.Message):
     BILLING_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIPTION_ENABLED_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    RBAC_ENABLED_FIELD_NUMBER: _ClassVar[int]
+    RBAC_FIELD_NUMBER: _ClassVar[int]
     rate_limit_enabled: bool
     rate_limit_rpm: int
     rate_limit_user_rpm: int
@@ -373,7 +407,9 @@ class ServiceMiddlewareConfig(_message.Message):
     billing: _billing_pb2.ServiceBillingConfig
     subscription_enabled: bool
     subscription: ServiceSubscriptionConfig
-    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ...) -> None: ...
+    rbac_enabled: bool
+    rbac: ServiceRbacConfig
+    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ..., rbac_enabled: bool = ..., rbac: _Optional[_Union[ServiceRbacConfig, _Mapping]] = ...) -> None: ...
 
 class ServiceInstance(_message.Message):
     __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")

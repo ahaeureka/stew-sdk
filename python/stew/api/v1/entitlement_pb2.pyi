@@ -1,8 +1,11 @@
+import datetime
+
 from google.api import annotations_pb2 as _annotations_pb2
 from google.api import http_pb2 as _http_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import empty_pb2 as _empty_pb2
+from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from protobuf_pydantic_gen import pydantic_pb2 as _pydantic_pb2
 from google.protobuf.internal import containers as _containers
 from google.protobuf import descriptor as _descriptor
@@ -13,8 +16,22 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class EntitlementPlan(_message.Message):
-    __slots__ = ("id", "business_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata")
+    __slots__ = ("id", "business_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata", "created_at", "updated_at", "deleted_at", "localized_name", "localized_description")
     class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedDescriptionEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -30,6 +47,11 @@ class EntitlementPlan(_message.Message):
     FEATURES_FIELD_NUMBER: _ClassVar[int]
     QUOTAS_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_NAME_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     id: str
     business_id: str
     name: str
@@ -39,32 +61,71 @@ class EntitlementPlan(_message.Message):
     features: _containers.RepeatedCompositeFieldContainer[PlanFeature]
     quotas: _containers.RepeatedCompositeFieldContainer[PlanQuota]
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    localized_name: _containers.ScalarMap[str, str]
+    localized_description: _containers.ScalarMap[str, str]
+    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., localized_name: _Optional[_Mapping[str, str]] = ..., localized_description: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class PlanFeature(_message.Message):
-    __slots__ = ("feature_key", "enabled", "config")
+    __slots__ = ("feature_key", "enabled", "config", "feature_display_name", "created_at", "updated_at", "deleted_at", "localized_display_name")
+    class LocalizedDisplayNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
     FEATURE_KEY_FIELD_NUMBER: _ClassVar[int]
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     feature_key: str
     enabled: bool
     config: _struct_pb2.Struct
-    def __init__(self, feature_key: _Optional[str] = ..., enabled: bool = ..., config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    feature_display_name: str
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    localized_display_name: _containers.ScalarMap[str, str]
+    def __init__(self, feature_key: _Optional[str] = ..., enabled: bool = ..., config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., feature_display_name: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., localized_display_name: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class PlanQuota(_message.Message):
-    __slots__ = ("quota_key", "quota_limit", "quota_unit", "reset_period")
+    __slots__ = ("quota_key", "quota_limit", "quota_unit", "reset_period", "quota_display_name", "created_at", "updated_at", "deleted_at", "localized_display_name")
+    class LocalizedDisplayNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
     QUOTA_KEY_FIELD_NUMBER: _ClassVar[int]
     QUOTA_LIMIT_FIELD_NUMBER: _ClassVar[int]
     QUOTA_UNIT_FIELD_NUMBER: _ClassVar[int]
     RESET_PERIOD_FIELD_NUMBER: _ClassVar[int]
+    QUOTA_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     quota_key: str
     quota_limit: int
     quota_unit: str
     reset_period: str
-    def __init__(self, quota_key: _Optional[str] = ..., quota_limit: _Optional[int] = ..., quota_unit: _Optional[str] = ..., reset_period: _Optional[str] = ...) -> None: ...
+    quota_display_name: str
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    localized_display_name: _containers.ScalarMap[str, str]
+    def __init__(self, quota_key: _Optional[str] = ..., quota_limit: _Optional[int] = ..., quota_unit: _Optional[str] = ..., reset_period: _Optional[str] = ..., quota_display_name: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., localized_display_name: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class Subscription(_message.Message):
-    __slots__ = ("id", "business_id", "subject_id", "subject_type", "plan_id", "status", "billing_cycle", "current_period_start", "current_period_end", "metadata")
+    __slots__ = ("id", "business_id", "subject_id", "subject_type", "plan_id", "status", "billing_cycle", "current_period_start", "current_period_end", "metadata", "created_at", "updated_at", "deleted_at")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -82,6 +143,9 @@ class Subscription(_message.Message):
     CURRENT_PERIOD_START_FIELD_NUMBER: _ClassVar[int]
     CURRENT_PERIOD_END_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     business_id: str
     subject_id: str
@@ -92,27 +156,61 @@ class Subscription(_message.Message):
     current_period_start: int
     current_period_end: int
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[int] = ..., plan_id: _Optional[str] = ..., status: _Optional[str] = ..., billing_cycle: _Optional[str] = ..., current_period_start: _Optional[int] = ..., current_period_end: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[int] = ..., plan_id: _Optional[str] = ..., status: _Optional[str] = ..., billing_cycle: _Optional[str] = ..., current_period_start: _Optional[int] = ..., current_period_end: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class QuotaUsage(_message.Message):
-    __slots__ = ("business_id", "subject_id", "quota_key", "period_start", "period_end", "used")
+    __slots__ = ("business_id", "subject_id", "quota_key", "period_start", "period_end", "used", "quota_display_name", "created_at", "updated_at", "deleted_at", "localized_display_name")
+    class LocalizedDisplayNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     QUOTA_KEY_FIELD_NUMBER: _ClassVar[int]
     PERIOD_START_FIELD_NUMBER: _ClassVar[int]
     PERIOD_END_FIELD_NUMBER: _ClassVar[int]
     USED_FIELD_NUMBER: _ClassVar[int]
+    QUOTA_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     subject_id: str
     quota_key: str
     period_start: int
     period_end: int
     used: int
-    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., quota_key: _Optional[str] = ..., period_start: _Optional[int] = ..., period_end: _Optional[int] = ..., used: _Optional[int] = ...) -> None: ...
+    quota_display_name: str
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    localized_display_name: _containers.ScalarMap[str, str]
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., quota_key: _Optional[str] = ..., period_start: _Optional[int] = ..., period_end: _Optional[int] = ..., used: _Optional[int] = ..., quota_display_name: _Optional[str] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., localized_display_name: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class CreatePlanRequest(_message.Message):
-    __slots__ = ("business_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata")
+    __slots__ = ("business_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata", "localized_name", "localized_description")
     class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedDescriptionEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -127,6 +225,8 @@ class CreatePlanRequest(_message.Message):
     FEATURES_FIELD_NUMBER: _ClassVar[int]
     QUOTAS_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_NAME_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     name: str
     description: str
@@ -135,7 +235,9 @@ class CreatePlanRequest(_message.Message):
     features: _containers.RepeatedCompositeFieldContainer[PlanFeature]
     quotas: _containers.RepeatedCompositeFieldContainer[PlanQuota]
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, business_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    localized_name: _containers.ScalarMap[str, str]
+    localized_description: _containers.ScalarMap[str, str]
+    def __init__(self, business_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., localized_name: _Optional[_Mapping[str, str]] = ..., localized_description: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class GetPlanRequest(_message.Message):
     __slots__ = ("business_id", "plan_id")
@@ -160,8 +262,22 @@ class ListPlansResponse(_message.Message):
     def __init__(self, plans: _Optional[_Iterable[_Union[EntitlementPlan, _Mapping]]] = ...) -> None: ...
 
 class UpdatePlanRequest(_message.Message):
-    __slots__ = ("business_id", "plan_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata")
+    __slots__ = ("business_id", "plan_id", "name", "description", "is_active", "sort_order", "features", "quotas", "metadata", "localized_name", "localized_description")
     class MetadataEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    class LocalizedDescriptionEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
         VALUE_FIELD_NUMBER: _ClassVar[int]
@@ -177,6 +293,8 @@ class UpdatePlanRequest(_message.Message):
     FEATURES_FIELD_NUMBER: _ClassVar[int]
     QUOTAS_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_NAME_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     plan_id: str
     name: str
@@ -186,7 +304,9 @@ class UpdatePlanRequest(_message.Message):
     features: _containers.RepeatedCompositeFieldContainer[PlanFeature]
     quotas: _containers.RepeatedCompositeFieldContainer[PlanQuota]
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    localized_name: _containers.ScalarMap[str, str]
+    localized_description: _containers.ScalarMap[str, str]
+    def __init__(self, business_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., name: _Optional[str] = ..., description: _Optional[str] = ..., is_active: bool = ..., sort_order: _Optional[int] = ..., features: _Optional[_Iterable[_Union[PlanFeature, _Mapping]]] = ..., quotas: _Optional[_Iterable[_Union[PlanQuota, _Mapping]]] = ..., metadata: _Optional[_Mapping[str, str]] = ..., localized_name: _Optional[_Mapping[str, str]] = ..., localized_description: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class CreateSubscriptionRequest(_message.Message):
     __slots__ = ("business_id", "subject_id", "subject_type", "plan_id", "billing_cycle", "current_period_start", "current_period_end", "metadata")
@@ -259,6 +379,14 @@ class UpdateSubscriptionRequest(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., plan_id: _Optional[str] = ..., status: _Optional[str] = ..., billing_cycle: _Optional[str] = ..., current_period_start: _Optional[int] = ..., current_period_end: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
 
 class CancelSubscriptionRequest(_message.Message):
+    __slots__ = ("business_id", "subscription_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subscription_id: str
+    def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ...) -> None: ...
+
+class DeleteSubscriptionRequest(_message.Message):
     __slots__ = ("business_id", "subscription_id")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
@@ -407,7 +535,7 @@ class CheckQuotaResponse(_message.Message):
     def __init__(self, used: _Optional[int] = ..., limit: _Optional[int] = ...) -> None: ...
 
 class PlanChangeRecord(_message.Message):
-    __slots__ = ("id", "business_id", "subscription_id", "subject_id", "previous_plan_id", "new_plan_id", "change_type", "change_mode", "status", "effective_at", "executed_at", "metadata")
+    __slots__ = ("id", "business_id", "subscription_id", "subject_id", "previous_plan_id", "new_plan_id", "change_type", "change_mode", "status", "effective_at", "executed_at", "metadata", "created_at", "updated_at", "deleted_at")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -427,6 +555,9 @@ class PlanChangeRecord(_message.Message):
     EFFECTIVE_AT_FIELD_NUMBER: _ClassVar[int]
     EXECUTED_AT_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
+    DELETED_AT_FIELD_NUMBER: _ClassVar[int]
     id: str
     business_id: str
     subscription_id: str
@@ -439,7 +570,10 @@ class PlanChangeRecord(_message.Message):
     effective_at: int
     executed_at: int
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., previous_plan_id: _Optional[str] = ..., new_plan_id: _Optional[str] = ..., change_type: _Optional[str] = ..., change_mode: _Optional[str] = ..., status: _Optional[str] = ..., effective_at: _Optional[int] = ..., executed_at: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    created_at: _timestamp_pb2.Timestamp
+    updated_at: _timestamp_pb2.Timestamp
+    deleted_at: _timestamp_pb2.Timestamp
+    def __init__(self, id: _Optional[str] = ..., business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., previous_plan_id: _Optional[str] = ..., new_plan_id: _Optional[str] = ..., change_type: _Optional[str] = ..., change_mode: _Optional[str] = ..., status: _Optional[str] = ..., effective_at: _Optional[int] = ..., executed_at: _Optional[int] = ..., metadata: _Optional[_Mapping[str, str]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class ChangePlanRequest(_message.Message):
     __slots__ = ("business_id", "subscription_id", "subject_id", "new_plan_id", "change_mode", "reset_quota", "metadata")
@@ -533,13 +667,24 @@ class CheckFeatureRequest(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., feature_key: _Optional[str] = ...) -> None: ...
 
 class CheckFeatureResponse(_message.Message):
-    __slots__ = ("enabled", "feature_key", "plan_id", "config")
+    __slots__ = ("enabled", "feature_key", "plan_id", "config", "feature_display_name", "localized_display_name")
+    class LocalizedDisplayNameEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
     ENABLED_FIELD_NUMBER: _ClassVar[int]
     FEATURE_KEY_FIELD_NUMBER: _ClassVar[int]
     PLAN_ID_FIELD_NUMBER: _ClassVar[int]
     CONFIG_FIELD_NUMBER: _ClassVar[int]
+    FEATURE_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
+    LOCALIZED_DISPLAY_NAME_FIELD_NUMBER: _ClassVar[int]
     enabled: bool
     feature_key: str
     plan_id: str
     config: _struct_pb2.Struct
-    def __init__(self, enabled: bool = ..., feature_key: _Optional[str] = ..., plan_id: _Optional[str] = ..., config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    feature_display_name: str
+    localized_display_name: _containers.ScalarMap[str, str]
+    def __init__(self, enabled: bool = ..., feature_key: _Optional[str] = ..., plan_id: _Optional[str] = ..., config: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., feature_display_name: _Optional[str] = ..., localized_display_name: _Optional[_Mapping[str, str]] = ...) -> None: ...

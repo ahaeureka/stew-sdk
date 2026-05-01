@@ -58,6 +58,41 @@ class PaymentGatewayServiceStub(object):
                 request_serializer=payment__pb2.RefundPaymentRequest.SerializeToString,
                 response_deserializer=payment__pb2.RefundPaymentResponse.FromString,
                 _registered_method=True)
+        self.SubmitRefundRequest = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/SubmitRefundRequest',
+                request_serializer=payment__pb2.SubmitRefundRequestRequest.SerializeToString,
+                response_deserializer=payment__pb2.RefundRequestRecord.FromString,
+                _registered_method=True)
+        self.GetRefundRequest = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/GetRefundRequest',
+                request_serializer=payment__pb2.GetRefundRequestRequest.SerializeToString,
+                response_deserializer=payment__pb2.RefundRequestRecord.FromString,
+                _registered_method=True)
+        self.ListRefundReviewLogs = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/ListRefundReviewLogs',
+                request_serializer=payment__pb2.ListRefundReviewLogsRequest.SerializeToString,
+                response_deserializer=payment__pb2.ListRefundReviewLogsResponse.FromString,
+                _registered_method=True)
+        self.ListRefundRequests = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/ListRefundRequests',
+                request_serializer=payment__pb2.ListRefundRequestsRequest.SerializeToString,
+                response_deserializer=payment__pb2.ListRefundRequestsResponse.FromString,
+                _registered_method=True)
+        self.CancelRefundRequest = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/CancelRefundRequest',
+                request_serializer=payment__pb2.CancelRefundRequestRequest.SerializeToString,
+                response_deserializer=payment__pb2.RefundRequestRecord.FromString,
+                _registered_method=True)
+        self.ApproveRefundRequest = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/ApproveRefundRequest',
+                request_serializer=payment__pb2.ApproveRefundRequestRequest.SerializeToString,
+                response_deserializer=payment__pb2.RefundRequestRecord.FromString,
+                _registered_method=True)
+        self.RejectRefundRequest = channel.unary_unary(
+                '/stew.api.v1.PaymentGatewayService/RejectRefundRequest',
+                request_serializer=payment__pb2.RejectRefundRequestRequest.SerializeToString,
+                response_deserializer=payment__pb2.RefundRequestRecord.FromString,
+                _registered_method=True)
         self.HandleWebhook = channel.unary_unary(
                 '/stew.api.v1.PaymentGatewayService/HandleWebhook',
                 request_serializer=payment__pb2.PaymentWebhookRequest.SerializeToString,
@@ -105,6 +140,55 @@ class PaymentGatewayServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SubmitRefundRequest(self, request, context):
+        """Submit a refund request for operator approval.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetRefundRequest(self, request, context):
+        """Get refund request detail.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListRefundReviewLogs(self, request, context):
+        """List audit logs for a refund request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListRefundRequests(self, request, context):
+        """List refund requests with optional filters.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CancelRefundRequest(self, request, context):
+        """Cancel a refund request before it is reviewed.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ApproveRefundRequest(self, request, context):
+        """Approve and execute a refund request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RejectRefundRequest(self, request, context):
+        """Reject a refund request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def HandleWebhook(self, request, context):
         """Receive and process webhook from a payment provider.
         """
@@ -141,6 +225,41 @@ def add_PaymentGatewayServiceServicer_to_server(servicer, server):
                     servicer.RefundPayment,
                     request_deserializer=payment__pb2.RefundPaymentRequest.FromString,
                     response_serializer=payment__pb2.RefundPaymentResponse.SerializeToString,
+            ),
+            'SubmitRefundRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitRefundRequest,
+                    request_deserializer=payment__pb2.SubmitRefundRequestRequest.FromString,
+                    response_serializer=payment__pb2.RefundRequestRecord.SerializeToString,
+            ),
+            'GetRefundRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetRefundRequest,
+                    request_deserializer=payment__pb2.GetRefundRequestRequest.FromString,
+                    response_serializer=payment__pb2.RefundRequestRecord.SerializeToString,
+            ),
+            'ListRefundReviewLogs': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListRefundReviewLogs,
+                    request_deserializer=payment__pb2.ListRefundReviewLogsRequest.FromString,
+                    response_serializer=payment__pb2.ListRefundReviewLogsResponse.SerializeToString,
+            ),
+            'ListRefundRequests': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListRefundRequests,
+                    request_deserializer=payment__pb2.ListRefundRequestsRequest.FromString,
+                    response_serializer=payment__pb2.ListRefundRequestsResponse.SerializeToString,
+            ),
+            'CancelRefundRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelRefundRequest,
+                    request_deserializer=payment__pb2.CancelRefundRequestRequest.FromString,
+                    response_serializer=payment__pb2.RefundRequestRecord.SerializeToString,
+            ),
+            'ApproveRefundRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.ApproveRefundRequest,
+                    request_deserializer=payment__pb2.ApproveRefundRequestRequest.FromString,
+                    response_serializer=payment__pb2.RefundRequestRecord.SerializeToString,
+            ),
+            'RejectRefundRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.RejectRefundRequest,
+                    request_deserializer=payment__pb2.RejectRefundRequestRequest.FromString,
+                    response_serializer=payment__pb2.RefundRequestRecord.SerializeToString,
             ),
             'HandleWebhook': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleWebhook,
@@ -265,6 +384,195 @@ class PaymentGatewayService(object):
             '/stew.api.v1.PaymentGatewayService/RefundPayment',
             payment__pb2.RefundPaymentRequest.SerializeToString,
             payment__pb2.RefundPaymentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubmitRefundRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/SubmitRefundRequest',
+            payment__pb2.SubmitRefundRequestRequest.SerializeToString,
+            payment__pb2.RefundRequestRecord.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetRefundRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/GetRefundRequest',
+            payment__pb2.GetRefundRequestRequest.SerializeToString,
+            payment__pb2.RefundRequestRecord.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListRefundReviewLogs(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/ListRefundReviewLogs',
+            payment__pb2.ListRefundReviewLogsRequest.SerializeToString,
+            payment__pb2.ListRefundReviewLogsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ListRefundRequests(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/ListRefundRequests',
+            payment__pb2.ListRefundRequestsRequest.SerializeToString,
+            payment__pb2.ListRefundRequestsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CancelRefundRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/CancelRefundRequest',
+            payment__pb2.CancelRefundRequestRequest.SerializeToString,
+            payment__pb2.RefundRequestRecord.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ApproveRefundRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/ApproveRefundRequest',
+            payment__pb2.ApproveRefundRequestRequest.SerializeToString,
+            payment__pb2.RefundRequestRecord.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RejectRefundRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.PaymentGatewayService/RejectRefundRequest',
+            payment__pb2.RejectRefundRequestRequest.SerializeToString,
+            payment__pb2.RefundRequestRecord.FromString,
             options,
             channel_credentials,
             insecure,

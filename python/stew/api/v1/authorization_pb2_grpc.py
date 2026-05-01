@@ -77,6 +77,31 @@ class AuthorizationServiceStub(object):
                 request_serializer=authorization__pb2.HealthCheckRequest.SerializeToString,
                 response_deserializer=authorization__pb2.HealthCheckResponse.FromString,
                 _registered_method=True)
+        self.GetPlatformRoles = channel.unary_unary(
+                '/stew.api.v1.AuthorizationService/GetPlatformRoles',
+                request_serializer=authorization__pb2.GetPlatformRolesRequest.SerializeToString,
+                response_deserializer=authorization__pb2.GetPlatformRolesResponse.FromString,
+                _registered_method=True)
+        self.GetUserPlatformRoles = channel.unary_unary(
+                '/stew.api.v1.AuthorizationService/GetUserPlatformRoles',
+                request_serializer=authorization__pb2.GetUserPlatformRolesRequest.SerializeToString,
+                response_deserializer=authorization__pb2.GetUserPlatformRolesResponse.FromString,
+                _registered_method=True)
+        self.AssignPlatformRole = channel.unary_unary(
+                '/stew.api.v1.AuthorizationService/AssignPlatformRole',
+                request_serializer=authorization__pb2.AssignPlatformRoleRequest.SerializeToString,
+                response_deserializer=authorization__pb2.AssignPlatformRoleResponse.FromString,
+                _registered_method=True)
+        self.RemovePlatformRole = channel.unary_unary(
+                '/stew.api.v1.AuthorizationService/RemovePlatformRole',
+                request_serializer=authorization__pb2.RemovePlatformRoleRequest.SerializeToString,
+                response_deserializer=authorization__pb2.RemovePlatformRoleResponse.FromString,
+                _registered_method=True)
+        self.CheckPlatformPermission = channel.unary_unary(
+                '/stew.api.v1.AuthorizationService/CheckPlatformPermission',
+                request_serializer=authorization__pb2.CheckPlatformPermissionRequest.SerializeToString,
+                response_deserializer=authorization__pb2.CheckPlatformPermissionResponse.FromString,
+                _registered_method=True)
 
 
 class AuthorizationServiceServicer(object):
@@ -141,6 +166,43 @@ class AuthorizationServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetPlatformRoles(self, request, context):
+        """── 平台 RBAC 管理 ──
+
+        获取平台角色列表
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetUserPlatformRoles(self, request, context):
+        """获取用户平台角色
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AssignPlatformRole(self, request, context):
+        """分配平台角色
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RemovePlatformRole(self, request, context):
+        """移除平台角色
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CheckPlatformPermission(self, request, context):
+        """检查平台权限
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AuthorizationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -183,6 +245,31 @@ def add_AuthorizationServiceServicer_to_server(servicer, server):
                     servicer.HealthCheck,
                     request_deserializer=authorization__pb2.HealthCheckRequest.FromString,
                     response_serializer=authorization__pb2.HealthCheckResponse.SerializeToString,
+            ),
+            'GetPlatformRoles': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetPlatformRoles,
+                    request_deserializer=authorization__pb2.GetPlatformRolesRequest.FromString,
+                    response_serializer=authorization__pb2.GetPlatformRolesResponse.SerializeToString,
+            ),
+            'GetUserPlatformRoles': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUserPlatformRoles,
+                    request_deserializer=authorization__pb2.GetUserPlatformRolesRequest.FromString,
+                    response_serializer=authorization__pb2.GetUserPlatformRolesResponse.SerializeToString,
+            ),
+            'AssignPlatformRole': grpc.unary_unary_rpc_method_handler(
+                    servicer.AssignPlatformRole,
+                    request_deserializer=authorization__pb2.AssignPlatformRoleRequest.FromString,
+                    response_serializer=authorization__pb2.AssignPlatformRoleResponse.SerializeToString,
+            ),
+            'RemovePlatformRole': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemovePlatformRole,
+                    request_deserializer=authorization__pb2.RemovePlatformRoleRequest.FromString,
+                    response_serializer=authorization__pb2.RemovePlatformRoleResponse.SerializeToString,
+            ),
+            'CheckPlatformPermission': grpc.unary_unary_rpc_method_handler(
+                    servicer.CheckPlatformPermission,
+                    request_deserializer=authorization__pb2.CheckPlatformPermissionRequest.FromString,
+                    response_serializer=authorization__pb2.CheckPlatformPermissionResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -404,6 +491,141 @@ class AuthorizationService(object):
             '/stew.api.v1.AuthorizationService/HealthCheck',
             authorization__pb2.HealthCheckRequest.SerializeToString,
             authorization__pb2.HealthCheckResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetPlatformRoles(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthorizationService/GetPlatformRoles',
+            authorization__pb2.GetPlatformRolesRequest.SerializeToString,
+            authorization__pb2.GetPlatformRolesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetUserPlatformRoles(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthorizationService/GetUserPlatformRoles',
+            authorization__pb2.GetUserPlatformRolesRequest.SerializeToString,
+            authorization__pb2.GetUserPlatformRolesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AssignPlatformRole(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthorizationService/AssignPlatformRole',
+            authorization__pb2.AssignPlatformRoleRequest.SerializeToString,
+            authorization__pb2.AssignPlatformRoleResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RemovePlatformRole(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthorizationService/RemovePlatformRole',
+            authorization__pb2.RemovePlatformRoleRequest.SerializeToString,
+            authorization__pb2.RemovePlatformRoleResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CheckPlatformPermission(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.AuthorizationService/CheckPlatformPermission',
+            authorization__pb2.CheckPlatformPermissionRequest.SerializeToString,
+            authorization__pb2.CheckPlatformPermissionResponse.FromString,
             options,
             channel_credentials,
             insecure,
