@@ -235,14 +235,14 @@ class GetFileInfoRequest(_message.Message):
     def __init__(self, file_id: _Optional[str] = ...) -> None: ...
 
 class CallbackResult(_message.Message):
-    __slots__ = ("accepted", "business_id", "message")
+    __slots__ = ("accepted", "reference_id", "message")
     ACCEPTED_FIELD_NUMBER: _ClassVar[int]
-    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    REFERENCE_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     accepted: bool
-    business_id: str
+    reference_id: str
     message: str
-    def __init__(self, accepted: bool = ..., business_id: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
+    def __init__(self, accepted: bool = ..., reference_id: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
 
 class FileInfo(_message.Message):
     __slots__ = ("id", "filename", "content_type", "file_size", "folder", "owner_id", "checksum", "storage_backend", "created_at", "updated_at", "local_path", "storage_key")

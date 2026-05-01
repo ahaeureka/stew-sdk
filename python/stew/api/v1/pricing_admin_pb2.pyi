@@ -10,16 +10,18 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class GetPricingPagePreviewRequest(_message.Message):
-    __slots__ = ("business_id", "locale", "page_key", "draft_version_id")
+    __slots__ = ("business_id", "locale", "page_key", "draft_version_id", "billing_interval")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
     DRAFT_VERSION_ID_FIELD_NUMBER: _ClassVar[int]
+    BILLING_INTERVAL_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     locale: str
     page_key: str
     draft_version_id: str
-    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ..., draft_version_id: _Optional[str] = ...) -> None: ...
+    billing_interval: str
+    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ..., draft_version_id: _Optional[str] = ..., billing_interval: _Optional[str] = ...) -> None: ...
 
 class PricingPagePreviewResponse(_message.Message):
     __slots__ = ("page", "draft_version_id", "base_version_id", "has_unpublished_changes")

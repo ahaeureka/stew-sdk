@@ -412,7 +412,7 @@ class ServiceMiddlewareConfig(_message.Message):
     def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ..., rbac_enabled: bool = ..., rbac: _Optional[_Union[ServiceRbacConfig, _Mapping]] = ...) -> None: ...
 
 class ServiceInstance(_message.Message):
-    __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config")
+    __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config", "business_id")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -442,6 +442,7 @@ class ServiceInstance(_message.Message):
     TLS_ENABLED_FIELD_NUMBER: _ClassVar[int]
     PROTOBUF_DESCRIPTOR_FIELD_NUMBER: _ClassVar[int]
     MIDDLEWARE_CONFIG_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     service_name: str
     instance_id: str
     lb: LoadBalancer
@@ -457,7 +458,8 @@ class ServiceInstance(_message.Message):
     tls_enabled: bool
     protobuf_descriptor: bytes
     middleware_config: ServiceMiddlewareConfig
-    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Mapping[str, _any_pb2.Any]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ..., middleware_config: _Optional[_Union[ServiceMiddlewareConfig, _Mapping]] = ...) -> None: ...
+    business_id: str
+    def __init__(self, service_name: _Optional[str] = ..., instance_id: _Optional[str] = ..., lb: _Optional[_Union[LoadBalancer, _Mapping]] = ..., version: _Optional[str] = ..., metadata: _Optional[_Mapping[str, _any_pb2.Any]] = ..., health_endpoint: _Optional[str] = ..., health_check_config: _Optional[_Union[HealthCheckConfig, _Mapping]] = ..., registered_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., status: _Optional[_Union[ServiceStatus, str]] = ..., weight: _Optional[int] = ..., tags: _Optional[_Mapping[str, str]] = ..., protocol: _Optional[str] = ..., tls_enabled: bool = ..., protobuf_descriptor: _Optional[bytes] = ..., middleware_config: _Optional[_Union[ServiceMiddlewareConfig, _Mapping]] = ..., business_id: _Optional[str] = ...) -> None: ...
 
 class InitServiceRequest(_message.Message):
     __slots__ = ("service_name", "description", "protocol")
@@ -470,18 +472,20 @@ class InitServiceRequest(_message.Message):
     def __init__(self, service_name: _Optional[str] = ..., description: _Optional[str] = ..., protocol: _Optional[str] = ...) -> None: ...
 
 class InitServiceResponse(_message.Message):
-    __slots__ = ("success", "message", "app_id", "app_secret", "service_name")
+    __slots__ = ("success", "message", "app_id", "app_secret", "service_name", "business_id")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     APP_ID_FIELD_NUMBER: _ClassVar[int]
     APP_SECRET_FIELD_NUMBER: _ClassVar[int]
     SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     success: bool
     message: str
     app_id: str
     app_secret: str
     service_name: str
-    def __init__(self, success: bool = ..., message: _Optional[str] = ..., app_id: _Optional[str] = ..., app_secret: _Optional[str] = ..., service_name: _Optional[str] = ...) -> None: ...
+    business_id: str
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., app_id: _Optional[str] = ..., app_secret: _Optional[str] = ..., service_name: _Optional[str] = ..., business_id: _Optional[str] = ...) -> None: ...
 
 class RegisterServiceRequest(_message.Message):
     __slots__ = ("service", "ttl")
@@ -746,6 +750,52 @@ class GetServiceConfigResponse(_message.Message):
     updated_at: _timestamp_pb2.Timestamp
     description: str
     def __init__(self, config_data: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., config_version: _Optional[str] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., description: _Optional[str] = ...) -> None: ...
+
+class GetServiceRoutesRequest(_message.Message):
+    __slots__ = ("service_name", "descriptor_version")
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTOR_VERSION_FIELD_NUMBER: _ClassVar[int]
+    service_name: str
+    descriptor_version: str
+    def __init__(self, service_name: _Optional[str] = ..., descriptor_version: _Optional[str] = ...) -> None: ...
+
+class ServiceRoute(_message.Message):
+    __slots__ = ("http_method", "path", "service_name", "method_name", "source")
+    HTTP_METHOD_FIELD_NUMBER: _ClassVar[int]
+    PATH_FIELD_NUMBER: _ClassVar[int]
+    SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    METHOD_NAME_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_FIELD_NUMBER: _ClassVar[int]
+    http_method: str
+    path: str
+    service_name: str
+    method_name: str
+    source: str
+    def __init__(self, http_method: _Optional[str] = ..., path: _Optional[str] = ..., service_name: _Optional[str] = ..., method_name: _Optional[str] = ..., source: _Optional[str] = ...) -> None: ...
+
+class ServiceRouteDiagnostics(_message.Message):
+    __slots__ = ("has_http_routes", "missing_http_extension", "services_without_http", "rest_route_count", "grpc_fallback_count")
+    HAS_HTTP_ROUTES_FIELD_NUMBER: _ClassVar[int]
+    MISSING_HTTP_EXTENSION_FIELD_NUMBER: _ClassVar[int]
+    SERVICES_WITHOUT_HTTP_FIELD_NUMBER: _ClassVar[int]
+    REST_ROUTE_COUNT_FIELD_NUMBER: _ClassVar[int]
+    GRPC_FALLBACK_COUNT_FIELD_NUMBER: _ClassVar[int]
+    has_http_routes: bool
+    missing_http_extension: bool
+    services_without_http: _containers.RepeatedScalarFieldContainer[str]
+    rest_route_count: int
+    grpc_fallback_count: int
+    def __init__(self, has_http_routes: bool = ..., missing_http_extension: bool = ..., services_without_http: _Optional[_Iterable[str]] = ..., rest_route_count: _Optional[int] = ..., grpc_fallback_count: _Optional[int] = ...) -> None: ...
+
+class GetServiceRoutesResponse(_message.Message):
+    __slots__ = ("routes", "diagnostics", "descriptor_version")
+    ROUTES_FIELD_NUMBER: _ClassVar[int]
+    DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
+    DESCRIPTOR_VERSION_FIELD_NUMBER: _ClassVar[int]
+    routes: _containers.RepeatedCompositeFieldContainer[ServiceRoute]
+    diagnostics: ServiceRouteDiagnostics
+    descriptor_version: str
+    def __init__(self, routes: _Optional[_Iterable[_Union[ServiceRoute, _Mapping]]] = ..., diagnostics: _Optional[_Union[ServiceRouteDiagnostics, _Mapping]] = ..., descriptor_version: _Optional[str] = ...) -> None: ...
 
 class UploadProtobufDescriptorRequest(_message.Message):
     __slots__ = ("service_name", "descriptor_version", "descriptor_data", "description", "signature", "force", "previous_version")

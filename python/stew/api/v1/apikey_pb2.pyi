@@ -15,7 +15,7 @@ from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ApiKey(_message.Message):
-    __slots__ = ("id", "name", "key", "user_id", "description", "scopes", "created_at", "updated_at", "deleted_at", "expires_at", "last_used_at", "is_active", "metadata")
+    __slots__ = ("id", "name", "key", "user_id", "description", "scopes", "created_at", "updated_at", "deleted_at", "expires_at", "last_used_at", "is_active", "metadata", "local_user_id")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -36,6 +36,7 @@ class ApiKey(_message.Message):
     LAST_USED_AT_FIELD_NUMBER: _ClassVar[int]
     IS_ACTIVE_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
+    LOCAL_USER_ID_FIELD_NUMBER: _ClassVar[int]
     id: str
     name: str
     key: str
@@ -49,7 +50,8 @@ class ApiKey(_message.Message):
     last_used_at: _timestamp_pb2.Timestamp
     is_active: bool
     metadata: _containers.ScalarMap[str, str]
-    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., key: _Optional[str] = ..., user_id: _Optional[str] = ..., description: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_used_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., is_active: bool = ..., metadata: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    local_user_id: int
+    def __init__(self, id: _Optional[str] = ..., name: _Optional[str] = ..., key: _Optional[str] = ..., user_id: _Optional[str] = ..., description: _Optional[str] = ..., scopes: _Optional[_Iterable[str]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., expires_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., last_used_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., is_active: bool = ..., metadata: _Optional[_Mapping[str, str]] = ..., local_user_id: _Optional[int] = ...) -> None: ...
 
 class CreateApiKeyRequest(_message.Message):
     __slots__ = ("name", "user_id", "scopes", "expires_at", "metadata", "description")

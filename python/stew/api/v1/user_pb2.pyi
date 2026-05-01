@@ -78,7 +78,7 @@ class Address(_message.Message):
     def __init__(self, formatted: _Optional[str] = ..., street_address: _Optional[str] = ..., locality: _Optional[str] = ..., region: _Optional[str] = ..., postal_code: _Optional[str] = ..., country: _Optional[str] = ...) -> None: ...
 
 class User(_message.Message):
-    __slots__ = ("sub", "name", "given_name", "family_name", "middle_name", "nickname", "preferred_username", "profile", "picture", "website", "email", "email_verified", "gender", "birthdate", "zoneinfo", "locale", "phone_number", "phone_number_verified", "address", "updated_at", "id", "owner", "type", "password", "password_salt", "password_type", "display_name", "first_name", "last_name", "avatar", "avatar_type", "permanent_avatar", "is_admin", "properties")
+    __slots__ = ("sub", "name", "given_name", "family_name", "middle_name", "nickname", "preferred_username", "profile", "picture", "website", "email", "email_verified", "gender", "birthdate", "zoneinfo", "locale", "phone_number", "phone_number_verified", "address", "updated_at", "id", "owner", "type", "password", "password_salt", "password_type", "display_name", "first_name", "last_name", "avatar", "avatar_type", "permanent_avatar", "is_admin", "properties", "local_user_id", "oidc_sub", "oidc_issuer")
     class PropertiesEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -120,6 +120,9 @@ class User(_message.Message):
     PERMANENT_AVATAR_FIELD_NUMBER: _ClassVar[int]
     IS_ADMIN_FIELD_NUMBER: _ClassVar[int]
     PROPERTIES_FIELD_NUMBER: _ClassVar[int]
+    LOCAL_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    OIDC_SUB_FIELD_NUMBER: _ClassVar[int]
+    OIDC_ISSUER_FIELD_NUMBER: _ClassVar[int]
     sub: str
     name: str
     given_name: str
@@ -154,7 +157,10 @@ class User(_message.Message):
     permanent_avatar: str
     is_admin: bool
     properties: _containers.MessageMap[str, _any_pb2.Any]
-    def __init__(self, sub: _Optional[str] = ..., name: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., middle_name: _Optional[str] = ..., nickname: _Optional[str] = ..., preferred_username: _Optional[str] = ..., profile: _Optional[str] = ..., picture: _Optional[str] = ..., website: _Optional[str] = ..., email: _Optional[str] = ..., email_verified: bool = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., locale: _Optional[str] = ..., phone_number: _Optional[str] = ..., phone_number_verified: bool = ..., address: _Optional[_Iterable[_Union[Address, _Mapping]]] = ..., updated_at: _Optional[int] = ..., id: _Optional[str] = ..., owner: _Optional[str] = ..., type: _Optional[str] = ..., password: _Optional[str] = ..., password_salt: _Optional[str] = ..., password_type: _Optional[str] = ..., display_name: _Optional[str] = ..., first_name: _Optional[str] = ..., last_name: _Optional[str] = ..., avatar: _Optional[str] = ..., avatar_type: _Optional[str] = ..., permanent_avatar: _Optional[str] = ..., is_admin: bool = ..., properties: _Optional[_Mapping[str, _any_pb2.Any]] = ...) -> None: ...
+    local_user_id: int
+    oidc_sub: str
+    oidc_issuer: str
+    def __init__(self, sub: _Optional[str] = ..., name: _Optional[str] = ..., given_name: _Optional[str] = ..., family_name: _Optional[str] = ..., middle_name: _Optional[str] = ..., nickname: _Optional[str] = ..., preferred_username: _Optional[str] = ..., profile: _Optional[str] = ..., picture: _Optional[str] = ..., website: _Optional[str] = ..., email: _Optional[str] = ..., email_verified: bool = ..., gender: _Optional[str] = ..., birthdate: _Optional[str] = ..., zoneinfo: _Optional[str] = ..., locale: _Optional[str] = ..., phone_number: _Optional[str] = ..., phone_number_verified: bool = ..., address: _Optional[_Iterable[_Union[Address, _Mapping]]] = ..., updated_at: _Optional[int] = ..., id: _Optional[str] = ..., owner: _Optional[str] = ..., type: _Optional[str] = ..., password: _Optional[str] = ..., password_salt: _Optional[str] = ..., password_type: _Optional[str] = ..., display_name: _Optional[str] = ..., first_name: _Optional[str] = ..., last_name: _Optional[str] = ..., avatar: _Optional[str] = ..., avatar_type: _Optional[str] = ..., permanent_avatar: _Optional[str] = ..., is_admin: bool = ..., properties: _Optional[_Mapping[str, _any_pb2.Any]] = ..., local_user_id: _Optional[int] = ..., oidc_sub: _Optional[str] = ..., oidc_issuer: _Optional[str] = ...) -> None: ...
 
 class BasicAuth(_message.Message):
     __slots__ = ("uid", "name", "role", "audience", "issuer", "not_before", "expiration", "issued_at", "is_keep_login", "token")
@@ -295,3 +301,29 @@ class UploadAvatarResponse(_message.Message):
     AVATAR_URL_FIELD_NUMBER: _ClassVar[int]
     avatar_url: str
     def __init__(self, avatar_url: _Optional[str] = ...) -> None: ...
+
+class GetUserByLocalIdRequest(_message.Message):
+    __slots__ = ("local_user_id",)
+    LOCAL_USER_ID_FIELD_NUMBER: _ClassVar[int]
+    local_user_id: int
+    def __init__(self, local_user_id: _Optional[int] = ...) -> None: ...
+
+class GetUserByOidcIdentityRequest(_message.Message):
+    __slots__ = ("oidc_sub", "oidc_issuer")
+    OIDC_SUB_FIELD_NUMBER: _ClassVar[int]
+    OIDC_ISSUER_FIELD_NUMBER: _ClassVar[int]
+    oidc_sub: str
+    oidc_issuer: str
+    def __init__(self, oidc_sub: _Optional[str] = ..., oidc_issuer: _Optional[str] = ...) -> None: ...
+
+class BatchGetUsersByLocalIdRequest(_message.Message):
+    __slots__ = ("local_user_ids",)
+    LOCAL_USER_IDS_FIELD_NUMBER: _ClassVar[int]
+    local_user_ids: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, local_user_ids: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class BatchGetUsersResponse(_message.Message):
+    __slots__ = ("users",)
+    USERS_FIELD_NUMBER: _ClassVar[int]
+    users: _containers.RepeatedCompositeFieldContainer[User]
+    def __init__(self, users: _Optional[_Iterable[_Union[User, _Mapping]]] = ...) -> None: ...

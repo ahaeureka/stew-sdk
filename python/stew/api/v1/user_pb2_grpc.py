@@ -51,6 +51,21 @@ class UserServiceStub(object):
                 request_serializer=user__pb2.UploadAvatarRequest.SerializeToString,
                 response_deserializer=user__pb2.UploadAvatarResponse.FromString,
                 _registered_method=True)
+        self.GetUserByLocalId = channel.unary_unary(
+                '/stew.api.v1.UserService/GetUserByLocalId',
+                request_serializer=user__pb2.GetUserByLocalIdRequest.SerializeToString,
+                response_deserializer=user__pb2.User.FromString,
+                _registered_method=True)
+        self.GetUserByOidcIdentity = channel.unary_unary(
+                '/stew.api.v1.UserService/GetUserByOidcIdentity',
+                request_serializer=user__pb2.GetUserByOidcIdentityRequest.SerializeToString,
+                response_deserializer=user__pb2.User.FromString,
+                _registered_method=True)
+        self.BatchGetUsersByLocalId = channel.unary_unary(
+                '/stew.api.v1.UserService/BatchGetUsersByLocalId',
+                request_serializer=user__pb2.BatchGetUsersByLocalIdRequest.SerializeToString,
+                response_deserializer=user__pb2.BatchGetUsersResponse.FromString,
+                _registered_method=True)
 
 
 class UserServiceServicer(object):
@@ -88,6 +103,27 @@ class UserServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetUserByLocalId(self, request, context):
+        """按本地用户 ID 查询用户详情（含 OIDC 关联信息）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetUserByOidcIdentity(self, request, context):
+        """按 OIDC 身份反查本地用户（local_user_id ↔ oidc_sub 双向绑定）
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def BatchGetUsersByLocalId(self, request, context):
+        """批量按本地用户 ID 查询
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_UserServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +141,21 @@ def add_UserServiceServicer_to_server(servicer, server):
                     servicer.UploadAvatar,
                     request_deserializer=user__pb2.UploadAvatarRequest.FromString,
                     response_serializer=user__pb2.UploadAvatarResponse.SerializeToString,
+            ),
+            'GetUserByLocalId': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUserByLocalId,
+                    request_deserializer=user__pb2.GetUserByLocalIdRequest.FromString,
+                    response_serializer=user__pb2.User.SerializeToString,
+            ),
+            'GetUserByOidcIdentity': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetUserByOidcIdentity,
+                    request_deserializer=user__pb2.GetUserByOidcIdentityRequest.FromString,
+                    response_serializer=user__pb2.User.SerializeToString,
+            ),
+            'BatchGetUsersByLocalId': grpc.unary_unary_rpc_method_handler(
+                    servicer.BatchGetUsersByLocalId,
+                    request_deserializer=user__pb2.BatchGetUsersByLocalIdRequest.FromString,
+                    response_serializer=user__pb2.BatchGetUsersResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -189,6 +240,87 @@ class UserService(object):
             '/stew.api.v1.UserService/UploadAvatar',
             user__pb2.UploadAvatarRequest.SerializeToString,
             user__pb2.UploadAvatarResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetUserByLocalId(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.UserService/GetUserByLocalId',
+            user__pb2.GetUserByLocalIdRequest.SerializeToString,
+            user__pb2.User.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetUserByOidcIdentity(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.UserService/GetUserByOidcIdentity',
+            user__pb2.GetUserByOidcIdentityRequest.SerializeToString,
+            user__pb2.User.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def BatchGetUsersByLocalId(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.UserService/BatchGetUsersByLocalId',
+            user__pb2.BatchGetUsersByLocalIdRequest.SerializeToString,
+            user__pb2.BatchGetUsersResponse.FromString,
             options,
             channel_credentials,
             insecure,

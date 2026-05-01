@@ -102,6 +102,11 @@ class ServiceDiscoveryServiceStub(object):
                 request_serializer=service__discovery__pb2.GetServiceConfigRequest.SerializeToString,
                 response_deserializer=service__discovery__pb2.GetServiceConfigResponse.FromString,
                 _registered_method=True)
+        self.GetServiceRoutes = channel.unary_unary(
+                '/stew.api.v1.ServiceDiscoveryService/GetServiceRoutes',
+                request_serializer=service__discovery__pb2.GetServiceRoutesRequest.SerializeToString,
+                response_deserializer=service__discovery__pb2.GetServiceRoutesResponse.FromString,
+                _registered_method=True)
         self.UploadProtobufDescriptor = channel.unary_unary(
                 '/stew.api.v1.ServiceDiscoveryService/UploadProtobufDescriptor',
                 request_serializer=service__discovery__pb2.UploadProtobufDescriptorRequest.SerializeToString,
@@ -226,6 +231,13 @@ class ServiceDiscoveryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetServiceRoutes(self, request, context):
+        """获取服务路由清单
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def UploadProtobufDescriptor(self, request, context):
         """上传 protobuf 描述符
         """
@@ -328,6 +340,11 @@ def add_ServiceDiscoveryServiceServicer_to_server(servicer, server):
                     servicer.GetServiceConfig,
                     request_deserializer=service__discovery__pb2.GetServiceConfigRequest.FromString,
                     response_serializer=service__discovery__pb2.GetServiceConfigResponse.SerializeToString,
+            ),
+            'GetServiceRoutes': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetServiceRoutes,
+                    request_deserializer=service__discovery__pb2.GetServiceRoutesRequest.FromString,
+                    response_serializer=service__discovery__pb2.GetServiceRoutesResponse.SerializeToString,
             ),
             'UploadProtobufDescriptor': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadProtobufDescriptor,
@@ -709,6 +726,33 @@ class ServiceDiscoveryService(object):
             '/stew.api.v1.ServiceDiscoveryService/GetServiceConfig',
             service__discovery__pb2.GetServiceConfigRequest.SerializeToString,
             service__discovery__pb2.GetServiceConfigResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetServiceRoutes(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.ServiceDiscoveryService/GetServiceRoutes',
+            service__discovery__pb2.GetServiceRoutesRequest.SerializeToString,
+            service__discovery__pb2.GetServiceRoutesResponse.FromString,
             options,
             channel_credentials,
             insecure,

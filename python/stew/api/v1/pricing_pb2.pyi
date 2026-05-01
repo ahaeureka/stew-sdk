@@ -134,6 +134,33 @@ class PricingBillingToggleConfig(_message.Message):
     note: LocalizedText
     def __init__(self, enabled: bool = ..., default_interval: _Optional[str] = ..., allowed_intervals: _Optional[_Iterable[str]] = ..., annual_savings_mode: _Optional[str] = ..., annual_savings_label: _Optional[_Union[LocalizedText, _Mapping]] = ..., interval_labels: _Optional[_Iterable[_Union[PricingBillingToggleIntervalLabel, _Mapping]]] = ..., note: _Optional[_Union[LocalizedText, _Mapping]] = ...) -> None: ...
 
+class PricingPlanCardPlanConfig(_message.Message):
+    __slots__ = ("always_visible_quota_keys",)
+    ALWAYS_VISIBLE_QUOTA_KEYS_FIELD_NUMBER: _ClassVar[int]
+    always_visible_quota_keys: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, always_visible_quota_keys: _Optional[_Iterable[str]] = ...) -> None: ...
+
+class PricingPlanCardConfig(_message.Message):
+    __slots__ = ("default_visible_highlights", "default_visible_quotas", "default_visible_capabilities", "always_visible_quota_keys", "plan_overrides")
+    class PlanOverridesEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: PricingPlanCardPlanConfig
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[_Union[PricingPlanCardPlanConfig, _Mapping]] = ...) -> None: ...
+    DEFAULT_VISIBLE_HIGHLIGHTS_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_VISIBLE_QUOTAS_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_VISIBLE_CAPABILITIES_FIELD_NUMBER: _ClassVar[int]
+    ALWAYS_VISIBLE_QUOTA_KEYS_FIELD_NUMBER: _ClassVar[int]
+    PLAN_OVERRIDES_FIELD_NUMBER: _ClassVar[int]
+    default_visible_highlights: int
+    default_visible_quotas: int
+    default_visible_capabilities: int
+    always_visible_quota_keys: _containers.RepeatedScalarFieldContainer[str]
+    plan_overrides: _containers.MessageMap[str, PricingPlanCardPlanConfig]
+    def __init__(self, default_visible_highlights: _Optional[int] = ..., default_visible_quotas: _Optional[int] = ..., default_visible_capabilities: _Optional[int] = ..., always_visible_quota_keys: _Optional[_Iterable[str]] = ..., plan_overrides: _Optional[_Mapping[str, PricingPlanCardPlanConfig]] = ...) -> None: ...
+
 class PricingPlanPresentation(_message.Message):
     __slots__ = ("plan_id", "visible", "audience_label", "headline", "subheadline", "description", "featured", "featured_badge", "tier_tag", "sort_order", "price", "badges", "highlights", "cta", "footnote", "comparison_group", "metadata")
     class MetadataEntry(_message.Message):
@@ -202,18 +229,20 @@ class PricingComparisonPlanValue(_message.Message):
     def __init__(self, plan_id: _Optional[str] = ..., value: _Optional[_Union[PricingComparisonValueConfig, _Mapping]] = ...) -> None: ...
 
 class PricingComparisonRowConfig(_message.Message):
-    __slots__ = ("key", "label", "description", "kind", "values_by_plan")
+    __slots__ = ("key", "label", "description", "kind", "values_by_plan", "priority")
     KEY_FIELD_NUMBER: _ClassVar[int]
     LABEL_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     VALUES_BY_PLAN_FIELD_NUMBER: _ClassVar[int]
+    PRIORITY_FIELD_NUMBER: _ClassVar[int]
     key: str
     label: LocalizedText
     description: LocalizedText
     kind: str
     values_by_plan: _containers.RepeatedCompositeFieldContainer[PricingComparisonPlanValue]
-    def __init__(self, key: _Optional[str] = ..., label: _Optional[_Union[LocalizedText, _Mapping]] = ..., description: _Optional[_Union[LocalizedText, _Mapping]] = ..., kind: _Optional[str] = ..., values_by_plan: _Optional[_Iterable[_Union[PricingComparisonPlanValue, _Mapping]]] = ...) -> None: ...
+    priority: int
+    def __init__(self, key: _Optional[str] = ..., label: _Optional[_Union[LocalizedText, _Mapping]] = ..., description: _Optional[_Union[LocalizedText, _Mapping]] = ..., kind: _Optional[str] = ..., values_by_plan: _Optional[_Iterable[_Union[PricingComparisonPlanValue, _Mapping]]] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class PricingComparisonTableConfig(_message.Message):
     __slots__ = ("enabled", "title", "description", "columns", "rows", "sticky_header", "default_expanded")
@@ -348,7 +377,7 @@ class PricingVisibilityRules(_message.Message):
     def __init__(self, hide_inactive_plans: bool = ..., hide_internal_plans: bool = ..., allowed_plan_ids: _Optional[_Iterable[str]] = ..., blocked_plan_ids: _Optional[_Iterable[str]] = ..., require_metadata_public_true: bool = ...) -> None: ...
 
 class PricingConfig(_message.Message):
-    __slots__ = ("schema_version", "business_id", "page_key", "status", "default_locale", "supported_locales", "page_title", "meta_description", "canonical_path", "hero", "billing_toggle", "plan_presentations", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme_overrides", "purchase_behavior", "visibility_rules")
+    __slots__ = ("schema_version", "business_id", "page_key", "status", "default_locale", "supported_locales", "page_title", "meta_description", "canonical_path", "hero", "billing_toggle", "plan_presentations", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme_overrides", "purchase_behavior", "visibility_rules", "plan_card_config")
     SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
@@ -369,6 +398,7 @@ class PricingConfig(_message.Message):
     THEME_OVERRIDES_FIELD_NUMBER: _ClassVar[int]
     PURCHASE_BEHAVIOR_FIELD_NUMBER: _ClassVar[int]
     VISIBILITY_RULES_FIELD_NUMBER: _ClassVar[int]
+    PLAN_CARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
     schema_version: str
     business_id: str
     page_key: str
@@ -389,17 +419,20 @@ class PricingConfig(_message.Message):
     theme_overrides: PricingThemeOverrideConfig
     purchase_behavior: PricingPurchaseBehaviorConfig
     visibility_rules: PricingVisibilityRules
-    def __init__(self, schema_version: _Optional[str] = ..., business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., status: _Optional[str] = ..., default_locale: _Optional[str] = ..., supported_locales: _Optional[_Iterable[str]] = ..., page_title: _Optional[_Union[LocalizedText, _Mapping]] = ..., meta_description: _Optional[_Union[LocalizedText, _Mapping]] = ..., canonical_path: _Optional[str] = ..., hero: _Optional[_Union[PricingHeroConfig, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleConfig, _Mapping]] = ..., plan_presentations: _Optional[_Iterable[_Union[PricingPlanPresentation, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableConfig, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionConfig, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaConfig, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionConfig, _Mapping]] = ..., footer_note: _Optional[_Union[LocalizedText, _Mapping]] = ..., theme_overrides: _Optional[_Union[PricingThemeOverrideConfig, _Mapping]] = ..., purchase_behavior: _Optional[_Union[PricingPurchaseBehaviorConfig, _Mapping]] = ..., visibility_rules: _Optional[_Union[PricingVisibilityRules, _Mapping]] = ...) -> None: ...
+    plan_card_config: PricingPlanCardConfig
+    def __init__(self, schema_version: _Optional[str] = ..., business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., status: _Optional[str] = ..., default_locale: _Optional[str] = ..., supported_locales: _Optional[_Iterable[str]] = ..., page_title: _Optional[_Union[LocalizedText, _Mapping]] = ..., meta_description: _Optional[_Union[LocalizedText, _Mapping]] = ..., canonical_path: _Optional[str] = ..., hero: _Optional[_Union[PricingHeroConfig, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleConfig, _Mapping]] = ..., plan_presentations: _Optional[_Iterable[_Union[PricingPlanPresentation, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableConfig, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionConfig, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaConfig, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionConfig, _Mapping]] = ..., footer_note: _Optional[_Union[LocalizedText, _Mapping]] = ..., theme_overrides: _Optional[_Union[PricingThemeOverrideConfig, _Mapping]] = ..., purchase_behavior: _Optional[_Union[PricingPurchaseBehaviorConfig, _Mapping]] = ..., visibility_rules: _Optional[_Union[PricingVisibilityRules, _Mapping]] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ...) -> None: ...
 
 class GetPricingPageRequest(_message.Message):
-    __slots__ = ("business_id", "locale", "page_key")
+    __slots__ = ("business_id", "locale", "page_key", "billing_interval")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
+    BILLING_INTERVAL_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     locale: str
     page_key: str
-    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ...) -> None: ...
+    billing_interval: str
+    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ..., billing_interval: _Optional[str] = ...) -> None: ...
 
 class PricingRevisionInfo(_message.Message):
     __slots__ = ("active_version_id", "display_version", "published_at", "etag", "source_mode")
@@ -531,21 +564,35 @@ class PricingFeatureResolved(_message.Message):
     detail: str
     def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., included: bool = ..., detail: _Optional[str] = ...) -> None: ...
 
+class PricingQuotaDisplayValue(_message.Message):
+    __slots__ = ("primary", "secondary", "tone")
+    PRIMARY_FIELD_NUMBER: _ClassVar[int]
+    SECONDARY_FIELD_NUMBER: _ClassVar[int]
+    TONE_FIELD_NUMBER: _ClassVar[int]
+    primary: str
+    secondary: str
+    tone: str
+    def __init__(self, primary: _Optional[str] = ..., secondary: _Optional[str] = ..., tone: _Optional[str] = ...) -> None: ...
+
 class PricingQuotaResolved(_message.Message):
-    __slots__ = ("key", "label", "limit", "unit", "reset_period", "display_text")
+    __slots__ = ("key", "label", "limit", "unit", "reset_period", "display_text", "display_format", "display_value")
     KEY_FIELD_NUMBER: _ClassVar[int]
     LABEL_FIELD_NUMBER: _ClassVar[int]
     LIMIT_FIELD_NUMBER: _ClassVar[int]
     UNIT_FIELD_NUMBER: _ClassVar[int]
     RESET_PERIOD_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_TEXT_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_FORMAT_FIELD_NUMBER: _ClassVar[int]
+    DISPLAY_VALUE_FIELD_NUMBER: _ClassVar[int]
     key: str
     label: str
     limit: float
     unit: str
     reset_period: str
     display_text: str
-    def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., limit: _Optional[float] = ..., unit: _Optional[str] = ..., reset_period: _Optional[str] = ..., display_text: _Optional[str] = ...) -> None: ...
+    display_format: str
+    display_value: PricingQuotaDisplayValue
+    def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., limit: _Optional[float] = ..., unit: _Optional[str] = ..., reset_period: _Optional[str] = ..., display_text: _Optional[str] = ..., display_format: _Optional[str] = ..., display_value: _Optional[_Union[PricingQuotaDisplayValue, _Mapping]] = ...) -> None: ...
 
 class PricingPlanStateResolved(_message.Message):
     __slots__ = ("is_current_plan", "can_purchase", "can_upgrade", "can_downgrade", "requires_sign_in", "action_label", "disabled_reason", "subject_context_present", "subscription_id", "target_billing_interval")
@@ -626,18 +673,20 @@ class PricingComparisonPlanValueResolved(_message.Message):
     def __init__(self, plan_id: _Optional[str] = ..., value: _Optional[_Union[PricingComparisonValueResolved, _Mapping]] = ...) -> None: ...
 
 class PricingComparisonRowResolved(_message.Message):
-    __slots__ = ("key", "label", "description", "kind", "values_by_plan")
+    __slots__ = ("key", "label", "description", "kind", "values_by_plan", "priority")
     KEY_FIELD_NUMBER: _ClassVar[int]
     LABEL_FIELD_NUMBER: _ClassVar[int]
     DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
     KIND_FIELD_NUMBER: _ClassVar[int]
     VALUES_BY_PLAN_FIELD_NUMBER: _ClassVar[int]
+    PRIORITY_FIELD_NUMBER: _ClassVar[int]
     key: str
     label: str
     description: str
     kind: str
     values_by_plan: _containers.RepeatedCompositeFieldContainer[PricingComparisonPlanValueResolved]
-    def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., description: _Optional[str] = ..., kind: _Optional[str] = ..., values_by_plan: _Optional[_Iterable[_Union[PricingComparisonPlanValueResolved, _Mapping]]] = ...) -> None: ...
+    priority: int
+    def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., description: _Optional[str] = ..., kind: _Optional[str] = ..., values_by_plan: _Optional[_Iterable[_Union[PricingComparisonPlanValueResolved, _Mapping]]] = ..., priority: _Optional[int] = ...) -> None: ...
 
 class PricingComparisonTableResolved(_message.Message):
     __slots__ = ("enabled", "title", "description", "columns", "rows", "sticky_header", "default_expanded")
@@ -730,7 +779,7 @@ class PricingThemeResolved(_message.Message):
     def __init__(self, mode: _Optional[str] = ..., accent_color: _Optional[str] = ..., accent_text_color: _Optional[str] = ..., surface_color: _Optional[str] = ..., surface_muted_color: _Optional[str] = ..., border_color: _Optional[str] = ..., hero_background: _Optional[str] = ..., featured_ring_color: _Optional[str] = ..., radius_scale: _Optional[str] = ..., font_family_heading: _Optional[str] = ..., font_family_body: _Optional[str] = ..., compact: bool = ...) -> None: ...
 
 class PricingPageResponse(_message.Message):
-    __slots__ = ("business_id", "page_key", "locale", "default_locale", "revision", "hero", "billing_toggle", "plans", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme", "purchase_mode")
+    __slots__ = ("business_id", "page_key", "locale", "default_locale", "revision", "hero", "billing_toggle", "plans", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme", "purchase_mode", "plan_card_config")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
@@ -746,6 +795,7 @@ class PricingPageResponse(_message.Message):
     FOOTER_NOTE_FIELD_NUMBER: _ClassVar[int]
     THEME_FIELD_NUMBER: _ClassVar[int]
     PURCHASE_MODE_FIELD_NUMBER: _ClassVar[int]
+    PLAN_CARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     page_key: str
     locale: str
@@ -761,4 +811,5 @@ class PricingPageResponse(_message.Message):
     footer_note: str
     theme: PricingThemeResolved
     purchase_mode: str
-    def __init__(self, business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., locale: _Optional[str] = ..., default_locale: _Optional[str] = ..., revision: _Optional[_Union[PricingRevisionInfo, _Mapping]] = ..., hero: _Optional[_Union[PricingHeroResolved, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleResolved, _Mapping]] = ..., plans: _Optional[_Iterable[_Union[PricingPlanResolved, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableResolved, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionResolved, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaResolved, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionResolved, _Mapping]] = ..., footer_note: _Optional[str] = ..., theme: _Optional[_Union[PricingThemeResolved, _Mapping]] = ..., purchase_mode: _Optional[str] = ...) -> None: ...
+    plan_card_config: PricingPlanCardConfig
+    def __init__(self, business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., locale: _Optional[str] = ..., default_locale: _Optional[str] = ..., revision: _Optional[_Union[PricingRevisionInfo, _Mapping]] = ..., hero: _Optional[_Union[PricingHeroResolved, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleResolved, _Mapping]] = ..., plans: _Optional[_Iterable[_Union[PricingPlanResolved, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableResolved, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionResolved, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaResolved, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionResolved, _Mapping]] = ..., footer_note: _Optional[str] = ..., theme: _Optional[_Union[PricingThemeResolved, _Mapping]] = ..., purchase_mode: _Optional[str] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ...) -> None: ...
