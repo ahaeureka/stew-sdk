@@ -448,6 +448,130 @@ with SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as client:
 
 ---
 
+### 权益守卫 (EntitlementGuard)
+
+`EntitlementGuard` 为 gRPC 服务 handler 提供一键式功能开关（feature gate）和配额检查（quota check）。
+它从 gRPC metadata 中自动提取调用方身份，调用网关的 `EntitlementService` 完成校验，校验失败时
+通过 gRPC status 直接拒绝请求。
+
+支持两种使用方式：**命令式**（直接在 handler 中调用 guard 方法）和**声明式**（通过装饰器标注）。
+
+**导入：**
+
+```python
+from stew.entitlement_guard import (
+    EntitlementGuard,
+    require_feature,
+    require_quota,
+    # 非 gRPC 上下文中抛出的异常
+    EntitlementGuardError,
+    FeatureDeniedError,
+    QuotaExceededError,
+)
+```
+
+**命令式（class-based）：**
+
+```python
+from stew.entitlement_guard import EntitlementGuard
+from stew.api.v1.entitlement_pb2_grpc import EntitlementServiceStub
+
+stub = EntitlementServiceStub(channel)
+guard = EntitlementGuard(stub, business_id="skillforge")
+
+class MyService(MyServiceServicer):
+    async def ExtractText(self, request, context):
+        # 功能开关：未开启则 request 被 PERMISSION_DENIED 拒绝
+        await guard.require_feature(context, "extraction.mode.standard")
+
+        # 配额检查：配额不足则 request 被 RESOURCE_EXHAUSTED 拒绝
+        await guard.require_quota(context, "credits.monthly", estimated_points)
+
+        # 只读查询（不 abort）：
+        enabled = await guard.check_feature(context, "extraction.mode.premium")
+        allowed, used, limit = await guard.check_quota(context, "credits.monthly", 10)
+
+        # 原子消耗配额（需先 require_quota 确保可用）：
+        await guard.consume_quota(context, "credits.monthly", actual_credits)
+
+        # ... 业务逻辑 ...
+```
+
+**声明式（decorator）：**
+
+```python
+from stew.entitlement_guard import require_feature, require_quota, EntitlementGuard
+
+class MyService(MyServiceServicer):
+    # 服务初始化时注入
+    entitlement_guard: EntitlementGuard
+
+    @require_feature("extraction.mode.standard")
+    @require_quota("credits.monthly", "estimated_points")  # 从 request 字段读取用量
+    async def ExtractText(self, request, context):
+        # 装饰器已在进入 handler 前完成校验
+        ...
+```
+
+`require_quota` 的 `amount` 参数支持三种形式：固定 `int`、request 字段名（`str`）、可调用对象（`Callable[[request], int]`）。
+
+**`EntitlementGuard` 构造函数：**
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `stub` | `EntitlementServiceStub` | 必填 | 指向网关的 gRPC stub |
+| `business_id` | `str` | 必填 | 业务标识 |
+| `timeout` | `float \| None` | `None` | gRPC 调用超时（秒），`None` 表示无超时 |
+
+**全部方法：**
+
+| 方法 | 返回值 | 失败行为 |
+|------|--------|----------|
+| `require_feature(ctx, key)` | `None` | abort `PERMISSION_DENIED` 或抛出 `FeatureDeniedError` |
+| `check_feature(ctx, key)` | `bool` | 抛出 `grpc.RpcError`（不 abort） |
+| `require_quota(ctx, key, requested)` | `None` | abort `RESOURCE_EXHAUSTED` 或抛出 `QuotaExceededError` |
+| `check_quota(ctx, key, requested)` | `(allowed, used, limit)` | 抛出 `grpc.RpcError`（不 abort） |
+| `consume_quota(ctx, key, amount)` | `None` | abort 上游错误码或抛出 `grpc.RpcError` |
+
+所有 `require_*` 方法遵循 **fail-closed** 原则：如果网关的 EntitlementService 不可达，
+请求会被拒绝而非静默放行。
+
+### 用户身份 (GatewayIdentity)
+
+`GatewayIdentity` 从 gRPC context 中解析网关自动注入的用户身份和订阅信息（来源为网关
+`SubscriptionMiddleware` 和 Auth 中间件注入的 metadata headers）。
+
+```python
+from stew.identity import GatewayIdentity, AuthMode
+
+class MyService(MyServiceServicer):
+    async def MyHandler(self, request, context):
+        identity = GatewayIdentity.from_grpc_context(context)
+
+        # 基础身份
+        user_id = identity.user_id        # 来源：x-user-id
+        user_email = identity.user_email  # 来源：x-user-email
+        auth_mode = identity.auth_mode    # AuthMode 枚举：JWT_OR_SESSION / API_KEY / ANONYMOUS
+
+        # 订阅 / 权益信息（网关 SubscriptionMiddleware 注入）
+        if identity.has_plan:
+            plan_id = identity.plan_id          # 当前套餐 ID
+            plan_name = identity.plan_name      # 套餐名称
+            features = identity.feature_keys    # 已启用的功能 key 列表
+```
+
+`GatewayIdentity` 也支持从 HTTP headers 或原始 metadata dict 创建：
+
+```python
+# 从 HTTP headers
+identity = GatewayIdentity.from_http_headers(request.headers)
+
+# 从原始 metadata
+identity = GatewayIdentity.from_metadata(metadata_dict)
+```
+
+---
+
 ## API 参考
 
 ### `GatewayClient(gateway_addr, *, app_secret, service_name, pb_path, ...)` — 推荐
@@ -1032,6 +1156,8 @@ proto/sdk/python/
 └── stew/
     ├── __init__.py                  # 公开导出
     ├── discovery_client.py          # discovery 兼容入口
+    ├── entitlement_guard.py         # EntitlementGuard — 权益与配额守卫
+    ├── identity.py                  # GatewayIdentity — 用户身份解析
     ├── file_storage_client.py       # FileStorageService SDK 封装
     ├── asset_browser_client.py      # BusinessAssetBrowserService SDK 封装
     ├── _discovery/                  # discovery 内部拆分实现
