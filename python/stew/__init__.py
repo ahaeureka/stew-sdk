@@ -46,6 +46,14 @@ from stew.identity import (
     GatewayIdentity,
     IdentityInterceptor,
 )
+from stew.entitlement_guard import (
+    EntitlementGuard,
+    EntitlementGuardError,
+    FeatureDeniedError,
+    QuotaExceededError,
+    require_feature,
+    require_quota,
+)
 
 __all__ = [
     "DiscoveryClient",
@@ -84,4 +92,10 @@ __all__ = [
     "AuthMode",
     "GatewayIdentity",
     "IdentityInterceptor",
+    "EntitlementGuard",
+    "EntitlementGuardError",
+    "FeatureDeniedError",
+    "QuotaExceededError",
+    "require_feature",
+    "require_quota",
 ]
