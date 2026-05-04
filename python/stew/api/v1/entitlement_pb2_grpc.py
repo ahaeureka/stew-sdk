@@ -116,8 +116,13 @@ class EntitlementServiceStub(object):
                 request_serializer=entitlement__pb2.ListSubscriptionsRequest.SerializeToString,
                 response_deserializer=entitlement__pb2.ListSubscriptionsResponse.FromString,
                 _registered_method=True)
-        self.RenewSubscriptions = channel.unary_unary(
-                '/stew.api.v1.EntitlementService/RenewSubscriptions',
+        self.AdminRenewSubscriptions = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/AdminRenewSubscriptions',
+                request_serializer=entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.RenewSubscriptionsResponse.FromString,
+                _registered_method=True)
+        self.InternalRenewSubscriptions = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/InternalRenewSubscriptions',
                 request_serializer=entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
                 response_deserializer=entitlement__pb2.RenewSubscriptionsResponse.FromString,
                 _registered_method=True)
@@ -279,8 +284,15 @@ class EntitlementServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def RenewSubscriptions(self, request, context):
-        """Trigger subscription renewal processing.
+    def AdminRenewSubscriptions(self, request, context):
+        """Management renewal entrypoint for operators and admin tooling.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def InternalRenewSubscriptions(self, request, context):
+        """Internal renewal entrypoint for gateway automation and scheduled jobs.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -426,8 +438,13 @@ def add_EntitlementServiceServicer_to_server(servicer, server):
                     request_deserializer=entitlement__pb2.ListSubscriptionsRequest.FromString,
                     response_serializer=entitlement__pb2.ListSubscriptionsResponse.SerializeToString,
             ),
-            'RenewSubscriptions': grpc.unary_unary_rpc_method_handler(
-                    servicer.RenewSubscriptions,
+            'AdminRenewSubscriptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.AdminRenewSubscriptions,
+                    request_deserializer=entitlement__pb2.RenewSubscriptionsRequest.FromString,
+                    response_serializer=entitlement__pb2.RenewSubscriptionsResponse.SerializeToString,
+            ),
+            'InternalRenewSubscriptions': grpc.unary_unary_rpc_method_handler(
+                    servicer.InternalRenewSubscriptions,
                     request_deserializer=entitlement__pb2.RenewSubscriptionsRequest.FromString,
                     response_serializer=entitlement__pb2.RenewSubscriptionsResponse.SerializeToString,
             ),
@@ -916,7 +933,7 @@ class EntitlementService(object):
             _registered_method=True)
 
     @staticmethod
-    def RenewSubscriptions(request,
+    def AdminRenewSubscriptions(request,
             target,
             options=(),
             channel_credentials=None,
@@ -929,7 +946,34 @@ class EntitlementService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/stew.api.v1.EntitlementService/RenewSubscriptions',
+            '/stew.api.v1.EntitlementService/AdminRenewSubscriptions',
+            entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
+            entitlement__pb2.RenewSubscriptionsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def InternalRenewSubscriptions(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/InternalRenewSubscriptions',
             entitlement__pb2.RenewSubscriptionsRequest.SerializeToString,
             entitlement__pb2.RenewSubscriptionsResponse.FromString,
             options,

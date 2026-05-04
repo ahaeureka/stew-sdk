@@ -1,275 +1,100 @@
 {
-    "BillingService": {
-        "EstimateCharge": {
-            "input_type": ".stew.api.v1.EstimateChargeRequest",
-            "output_type": ".stew.api.v1.EstimateChargeResponse",
+    "UserService": {
+        "Get": {
+            "input_type": ".google.protobuf.Empty",
+            "output_type": ".stew.api.v1.User",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/EstimateCharge",
+            "method_full_name": "/stew.api.v1.UserService/Get",
             "options": {
                 "[google.api.http]": {
-                    "post": "/api/v1/billing/estimate",
-                    "body": "*"
-                }
-            },
-            "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/estimate",
-                "body": "*"
-            }
-        },
-        "Authorize": {
-            "input_type": ".stew.api.v1.AuthorizeRequest",
-            "output_type": ".stew.api.v1.BillingAuthorizationResponse",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/Authorize",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/authorize",
-                    "body": "*"
-                }
-            },
-            "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/authorize",
-                "body": "*"
-            }
-        },
-        "Finalize": {
-            "input_type": ".stew.api.v1.FinalizeRequest",
-            "output_type": ".stew.api.v1.SettlementDecision",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/Finalize",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/finalize",
-                    "body": "*"
-                }
-            },
-            "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/finalize",
-                "body": "*"
-            }
-        },
-        "Release": {
-            "input_type": ".stew.api.v1.ReleaseRequest",
-            "output_type": ".stew.api.v1.SettlementDecision",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/Release",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/release",
-                    "body": "*"
-                }
-            },
-            "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/release",
-                "body": "*"
-            }
-        },
-        "Refund": {
-            "input_type": ".stew.api.v1.RefundRequest",
-            "output_type": ".stew.api.v1.SettlementDecision",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/Refund",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/refund",
-                    "body": "*"
-                }
-            },
-            "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/refund",
-                "body": "*"
-            }
-        },
-        "QueryBalance": {
-            "input_type": ".stew.api.v1.QueryBalanceRequest",
-            "output_type": ".stew.api.v1.BalanceSnapshot",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/QueryBalance",
-            "options": {
-                "[google.api.http]": {
-                    "get": "/api/v1/billing/balances/{business_id}/{subject_type}/{subject_id}"
+                    "get": "/auth/user"
                 }
             },
             "http": {
                 "method": "GET",
-                "path": "/api/v1/billing/balances/{business_id}/{subject_type}/{subject_id}"
+                "path": "/auth/user"
             }
         },
-        "GrantCredits": {
-            "input_type": ".stew.api.v1.GrantCreditsRequest",
-            "output_type": ".stew.api.v1.CreditGrant",
+        "Update": {
+            "input_type": ".stew.api.v1.UpdateUserRequest",
+            "output_type": ".stew.api.v1.User",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/GrantCredits",
+            "method_full_name": "/stew.api.v1.UserService/Update",
             "options": {
                 "[google.api.http]": {
-                    "post": "/api/v1/billing/grants",
+                    "put": "/auth/user",
                     "body": "*"
                 }
             },
             "http": {
-                "method": "POST",
-                "path": "/api/v1/billing/grants",
+                "method": "PUT",
+                "path": "/auth/user",
                 "body": "*"
             }
         },
-        "ListGrants": {
-            "input_type": ".stew.api.v1.ListGrantsRequest",
-            "output_type": ".stew.api.v1.ListGrantsResponse",
+        "UploadAvatar": {
+            "input_type": ".stew.api.v1.UploadAvatarRequest",
+            "output_type": ".stew.api.v1.UploadAvatarResponse",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/ListGrants",
+            "method_full_name": "/stew.api.v1.UserService/UploadAvatar",
             "options": {
                 "[google.api.http]": {
-                    "get": "/api/v1/billing/grants/{business_id}/{subject_type}/{subject_id}"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/grants/{business_id}/{subject_type}/{subject_id}"
-            }
-        },
-        "QueryTransactions": {
-            "input_type": ".stew.api.v1.QueryTransactionsRequest",
-            "output_type": ".stew.api.v1.QueryTransactionsResponse",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/QueryTransactions",
-            "options": {
-                "[google.api.http]": {
-                    "get": "/api/v1/billing/transactions/{business_id}/{request_id}"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/transactions/{business_id}/{request_id}"
-            }
-        },
-        "CreatePolicyArtifact": {
-            "input_type": ".stew.api.v1.CreateBillingPolicyArtifactRequest",
-            "output_type": ".stew.api.v1.BillingPolicyArtifact",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/CreatePolicyArtifact",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/policies/artifacts",
+                    "post": "/auth/user/avatar",
                     "body": "*"
                 }
             },
             "http": {
                 "method": "POST",
-                "path": "/api/v1/billing/policies/artifacts",
+                "path": "/auth/user/avatar",
                 "body": "*"
             }
         },
-        "GetPolicyArtifact": {
-            "input_type": ".stew.api.v1.GetBillingPolicyArtifactRequest",
-            "output_type": ".stew.api.v1.BillingPolicyArtifact",
+        "GetUserByLocalId": {
+            "input_type": ".stew.api.v1.GetUserByLocalIdRequest",
+            "output_type": ".stew.api.v1.User",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/GetPolicyArtifact",
+            "method_full_name": "/stew.api.v1.UserService/GetUserByLocalId",
             "options": {
                 "[google.api.http]": {
-                    "get": "/api/v1/billing/policies/artifacts/{artifact_id}"
+                    "get": "/api/v1/users/{local_user_id}"
                 }
             },
             "http": {
                 "method": "GET",
-                "path": "/api/v1/billing/policies/artifacts/{artifact_id}"
+                "path": "/api/v1/users/{local_user_id}"
             }
         },
-        "ListPolicyArtifacts": {
-            "input_type": ".stew.api.v1.ListBillingPolicyArtifactsRequest",
-            "output_type": ".stew.api.v1.ListBillingPolicyArtifactsResponse",
+        "GetUserByOidcIdentity": {
+            "input_type": ".stew.api.v1.GetUserByOidcIdentityRequest",
+            "output_type": ".stew.api.v1.User",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/ListPolicyArtifacts",
+            "method_full_name": "/stew.api.v1.UserService/GetUserByOidcIdentity",
             "options": {
                 "[google.api.http]": {
-                    "get": "/api/v1/billing/policies/{business_id}/artifacts"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/policies/{business_id}/artifacts"
-            }
-        },
-        "PublishPolicyBundle": {
-            "input_type": ".stew.api.v1.PublishBillingPolicyBundleRequest",
-            "output_type": ".stew.api.v1.BillingPolicyBundle",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/PublishPolicyBundle",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/policies/bundles",
+                    "post": "/api/v1/users:findByOidcIdentity",
                     "body": "*"
                 }
             },
             "http": {
                 "method": "POST",
-                "path": "/api/v1/billing/policies/bundles",
+                "path": "/api/v1/users:findByOidcIdentity",
                 "body": "*"
             }
         },
-        "GetPolicyBundle": {
-            "input_type": ".stew.api.v1.GetBillingPolicyBundleRequest",
-            "output_type": ".stew.api.v1.BillingPolicyBundle",
+        "BatchGetUsersByLocalId": {
+            "input_type": ".stew.api.v1.BatchGetUsersByLocalIdRequest",
+            "output_type": ".stew.api.v1.BatchGetUsersResponse",
             "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/GetPolicyBundle",
+            "method_full_name": "/stew.api.v1.UserService/BatchGetUsersByLocalId",
             "options": {
                 "[google.api.http]": {
-                    "get": "/api/v1/billing/policies/{business_id}/bundles/{policy_id}/{bundle_version}"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/policies/{business_id}/bundles/{policy_id}/{bundle_version}"
-            }
-        },
-        "ListPolicyBundles": {
-            "input_type": ".stew.api.v1.ListBillingPolicyBundlesRequest",
-            "output_type": ".stew.api.v1.ListBillingPolicyBundlesResponse",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/ListPolicyBundles",
-            "options": {
-                "[google.api.http]": {
-                    "get": "/api/v1/billing/policies/{business_id}/bundles"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/policies/{business_id}/bundles"
-            }
-        },
-        "QuerySnapshot": {
-            "input_type": ".stew.api.v1.QuerySnapshotRequest",
-            "output_type": ".stew.api.v1.BillingSettlementSnapshot",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/QuerySnapshot",
-            "options": {
-                "[google.api.http]": {
-                    "get": "/api/v1/billing/snapshots/{request_id}"
-                }
-            },
-            "http": {
-                "method": "GET",
-                "path": "/api/v1/billing/snapshots/{request_id}"
-            }
-        },
-        "ManualReconcile": {
-            "input_type": ".stew.api.v1.ManualReconcileRequest",
-            "output_type": ".stew.api.v1.ManualReconcileResponse",
-            "streaming_type": "unary",
-            "method_full_name": "/stew.api.v1.BillingService/ManualReconcile",
-            "options": {
-                "[google.api.http]": {
-                    "post": "/api/v1/billing/reconcile",
+                    "post": "/api/v1/users:batchGet",
                     "body": "*"
                 }
             },
             "http": {
                 "method": "POST",
-                "path": "/api/v1/billing/reconcile",
+                "path": "/api/v1/users:batchGet",
                 "body": "*"
             }
         }

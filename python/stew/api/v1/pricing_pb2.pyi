@@ -4,12 +4,24 @@ from google.api import annotations_pb2 as _annotations_pb2
 from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
 from google.protobuf.internal import containers as _containers
+from google.protobuf.internal import enum_type_wrapper as _enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from collections.abc import Iterable as _Iterable, Mapping as _Mapping
 from typing import ClassVar as _ClassVar, Optional as _Optional, Union as _Union
 
 DESCRIPTOR: _descriptor.FileDescriptor
+
+class BillingModel(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    BILLING_MODEL_UNSPECIFIED: _ClassVar[BillingModel]
+    BILLING_MODEL_FREE: _ClassVar[BillingModel]
+    BILLING_MODEL_PAID: _ClassVar[BillingModel]
+    BILLING_MODEL_CONTACT_SALES: _ClassVar[BillingModel]
+BILLING_MODEL_UNSPECIFIED: BillingModel
+BILLING_MODEL_FREE: BillingModel
+BILLING_MODEL_PAID: BillingModel
+BILLING_MODEL_CONTACT_SALES: BillingModel
 
 class LocalizedText(_message.Message):
     __slots__ = ("fallback", "values")
@@ -61,7 +73,7 @@ class PricingBadge(_message.Message):
     def __init__(self, key: _Optional[str] = ..., label: _Optional[_Union[LocalizedText, _Mapping]] = ..., tone: _Optional[str] = ...) -> None: ...
 
 class PricingAmountSet(_message.Message):
-    __slots__ = ("currency_code", "currency_symbol", "monthly_amount_minor", "quarterly_amount_minor", "yearly_amount_minor", "one_time_amount_minor", "monthly_equivalent_minor", "billing_anchor_label", "trial_days", "contact_sales_only", "price_label_override")
+    __slots__ = ("currency_code", "currency_symbol", "monthly_amount_minor", "quarterly_amount_minor", "yearly_amount_minor", "one_time_amount_minor", "monthly_equivalent_minor", "billing_anchor_label", "trial_days", "contact_sales_only", "price_label_override", "billing_model")
     CURRENCY_CODE_FIELD_NUMBER: _ClassVar[int]
     CURRENCY_SYMBOL_FIELD_NUMBER: _ClassVar[int]
     MONTHLY_AMOUNT_MINOR_FIELD_NUMBER: _ClassVar[int]
@@ -73,6 +85,7 @@ class PricingAmountSet(_message.Message):
     TRIAL_DAYS_FIELD_NUMBER: _ClassVar[int]
     CONTACT_SALES_ONLY_FIELD_NUMBER: _ClassVar[int]
     PRICE_LABEL_OVERRIDE_FIELD_NUMBER: _ClassVar[int]
+    BILLING_MODEL_FIELD_NUMBER: _ClassVar[int]
     currency_code: str
     currency_symbol: str
     monthly_amount_minor: int
@@ -84,7 +97,8 @@ class PricingAmountSet(_message.Message):
     trial_days: int
     contact_sales_only: bool
     price_label_override: LocalizedText
-    def __init__(self, currency_code: _Optional[str] = ..., currency_symbol: _Optional[str] = ..., monthly_amount_minor: _Optional[int] = ..., quarterly_amount_minor: _Optional[int] = ..., yearly_amount_minor: _Optional[int] = ..., one_time_amount_minor: _Optional[int] = ..., monthly_equivalent_minor: _Optional[int] = ..., billing_anchor_label: _Optional[_Union[LocalizedText, _Mapping]] = ..., trial_days: _Optional[int] = ..., contact_sales_only: bool = ..., price_label_override: _Optional[_Union[LocalizedText, _Mapping]] = ...) -> None: ...
+    billing_model: BillingModel
+    def __init__(self, currency_code: _Optional[str] = ..., currency_symbol: _Optional[str] = ..., monthly_amount_minor: _Optional[int] = ..., quarterly_amount_minor: _Optional[int] = ..., yearly_amount_minor: _Optional[int] = ..., one_time_amount_minor: _Optional[int] = ..., monthly_equivalent_minor: _Optional[int] = ..., billing_anchor_label: _Optional[_Union[LocalizedText, _Mapping]] = ..., trial_days: _Optional[int] = ..., contact_sales_only: bool = ..., price_label_override: _Optional[_Union[LocalizedText, _Mapping]] = ..., billing_model: _Optional[_Union[BillingModel, str]] = ...) -> None: ...
 
 class PricingHeroConfig(_message.Message):
     __slots__ = ("eyebrow", "title", "subtitle", "announcement", "primary_cta", "secondary_cta", "disclaimer", "align", "background_variant")
@@ -531,7 +545,7 @@ class PricingCtaResolved(_message.Message):
     def __init__(self, key: _Optional[str] = ..., label: _Optional[str] = ..., action_type: _Optional[str] = ..., href: _Optional[str] = ..., target: _Optional[str] = ..., plan_id: _Optional[str] = ..., billing_interval: _Optional[str] = ..., requires_auth: bool = ..., event_name: _Optional[str] = ..., disabled_reason: _Optional[str] = ...) -> None: ...
 
 class PricingResolvedAmount(_message.Message):
-    __slots__ = ("selected_interval", "currency_code", "currency_symbol", "amount_minor", "monthly_equivalent_minor", "billing_anchor_label", "savings_label", "is_contact_sales", "display_text")
+    __slots__ = ("selected_interval", "currency_code", "currency_symbol", "amount_minor", "monthly_equivalent_minor", "billing_anchor_label", "savings_label", "is_contact_sales", "display_text", "billing_model")
     SELECTED_INTERVAL_FIELD_NUMBER: _ClassVar[int]
     CURRENCY_CODE_FIELD_NUMBER: _ClassVar[int]
     CURRENCY_SYMBOL_FIELD_NUMBER: _ClassVar[int]
@@ -541,6 +555,7 @@ class PricingResolvedAmount(_message.Message):
     SAVINGS_LABEL_FIELD_NUMBER: _ClassVar[int]
     IS_CONTACT_SALES_FIELD_NUMBER: _ClassVar[int]
     DISPLAY_TEXT_FIELD_NUMBER: _ClassVar[int]
+    BILLING_MODEL_FIELD_NUMBER: _ClassVar[int]
     selected_interval: str
     currency_code: str
     currency_symbol: str
@@ -550,7 +565,8 @@ class PricingResolvedAmount(_message.Message):
     savings_label: str
     is_contact_sales: bool
     display_text: str
-    def __init__(self, selected_interval: _Optional[str] = ..., currency_code: _Optional[str] = ..., currency_symbol: _Optional[str] = ..., amount_minor: _Optional[int] = ..., monthly_equivalent_minor: _Optional[int] = ..., billing_anchor_label: _Optional[str] = ..., savings_label: _Optional[str] = ..., is_contact_sales: bool = ..., display_text: _Optional[str] = ...) -> None: ...
+    billing_model: str
+    def __init__(self, selected_interval: _Optional[str] = ..., currency_code: _Optional[str] = ..., currency_symbol: _Optional[str] = ..., amount_minor: _Optional[int] = ..., monthly_equivalent_minor: _Optional[int] = ..., billing_anchor_label: _Optional[str] = ..., savings_label: _Optional[str] = ..., is_contact_sales: bool = ..., display_text: _Optional[str] = ..., billing_model: _Optional[str] = ...) -> None: ...
 
 class PricingFeatureResolved(_message.Message):
     __slots__ = ("key", "label", "included", "detail")

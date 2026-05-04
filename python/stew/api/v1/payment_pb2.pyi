@@ -105,7 +105,7 @@ class CheckoutLineItem(_message.Message):
     def __init__(self, name: _Optional[str] = ..., description: _Optional[str] = ..., amount_minor: _Optional[int] = ..., quantity: _Optional[int] = ..., external_product_id: _Optional[str] = ...) -> None: ...
 
 class CreateCheckoutRequest(_message.Message):
-    __slots__ = ("business_id", "subject_id", "provider", "customer_email", "currency", "line_items", "billing_interval", "success_url", "cancel_url", "metadata", "idempotency_key")
+    __slots__ = ("business_id", "subject_id", "provider", "customer_email", "currency", "line_items", "billing_interval", "success_url", "cancel_url", "plan_id", "metadata", "idempotency_key")
     class MetadataEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -122,6 +122,7 @@ class CreateCheckoutRequest(_message.Message):
     BILLING_INTERVAL_FIELD_NUMBER: _ClassVar[int]
     SUCCESS_URL_FIELD_NUMBER: _ClassVar[int]
     CANCEL_URL_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_FIELD_NUMBER: _ClassVar[int]
     METADATA_FIELD_NUMBER: _ClassVar[int]
     IDEMPOTENCY_KEY_FIELD_NUMBER: _ClassVar[int]
     business_id: str
@@ -133,9 +134,10 @@ class CreateCheckoutRequest(_message.Message):
     billing_interval: PaymentBillingInterval
     success_url: str
     cancel_url: str
+    plan_id: str
     metadata: _containers.ScalarMap[str, str]
     idempotency_key: str
-    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., provider: _Optional[_Union[PaymentProviderKind, str]] = ..., customer_email: _Optional[str] = ..., currency: _Optional[str] = ..., line_items: _Optional[_Iterable[_Union[CheckoutLineItem, _Mapping]]] = ..., billing_interval: _Optional[_Union[PaymentBillingInterval, str]] = ..., success_url: _Optional[str] = ..., cancel_url: _Optional[str] = ..., metadata: _Optional[_Mapping[str, str]] = ..., idempotency_key: _Optional[str] = ...) -> None: ...
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., provider: _Optional[_Union[PaymentProviderKind, str]] = ..., customer_email: _Optional[str] = ..., currency: _Optional[str] = ..., line_items: _Optional[_Iterable[_Union[CheckoutLineItem, _Mapping]]] = ..., billing_interval: _Optional[_Union[PaymentBillingInterval, str]] = ..., success_url: _Optional[str] = ..., cancel_url: _Optional[str] = ..., plan_id: _Optional[str] = ..., metadata: _Optional[_Mapping[str, str]] = ..., idempotency_key: _Optional[str] = ...) -> None: ...
 
 class CreateCheckoutResponse(_message.Message):
     __slots__ = ("order_id", "provider_session_id", "checkout_url", "provider")

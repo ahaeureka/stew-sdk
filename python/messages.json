@@ -1,6 +1,6 @@
 {
-    "ServiceBillingConfig": {
-        "enabled": {
+    "AiGuardFieldOptions": {
+        "is_messages_array": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -9,43 +9,7 @@
             },
             "description": ""
         },
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "policy_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_mode": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "preauth_mode": {
-            "type": "BillingPreauthMode",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingPreauthMode(0)"
-            },
-            "description": ""
-        },
-        "allow_anonymous_subject": {
+        "is_role_field": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -54,70 +18,7 @@
             },
             "description": ""
         },
-        "missing_report_action": {
-            "type": "BillingMissingReportAction",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingMissingReportAction(0)"
-            },
-            "description": ""
-        },
-        "release_timeout_seconds": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "report_transport": {
-            "type": "BillingReportTransport",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingReportTransport(0)"
-            },
-            "description": ""
-        },
-        "report_header_prefix": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "factor_schema_version": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "max_reservation_ttl_seconds": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "idempotency_window_seconds": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "capture_requires_report": {
+        "is_content_field": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -126,25 +27,34 @@
             },
             "description": ""
         },
-        "reconcile_scan_interval_seconds": {
-            "type": "int",
+        "role_filter": {
+            "type": "str",
             "repeated": false,
             "required": false,
             "ext": {
-                "default": "0"
+                "default": "\"\""
             },
             "description": ""
         },
-        "max_report_size_bytes": {
-            "type": "int",
+        "is_prompt": {
+            "type": "bool",
             "repeated": false,
             "required": false,
             "ext": {
-                "default": "0"
+                "default": "False"
             },
             "description": ""
         },
-        "strict_policy_snapshot": {
+        "is_model": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "is_max_tokens": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -154,8 +64,8 @@
             "description": ""
         }
     },
-    "AuthorizationContext": {
-        "business_id": {
+    "Address": {
+        "formatted": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -164,7 +74,7 @@
             },
             "description": ""
         },
-        "user_id": {
+        "street_address": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -173,7 +83,7 @@
             },
             "description": ""
         },
-        "authorization_id": {
+        "locality": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -182,7 +92,7 @@
             },
             "description": ""
         },
-        "request_id": {
+        "region": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -191,7 +101,7 @@
             },
             "description": ""
         },
-        "policy_id": {
+        "postal_code": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -200,25 +110,7 @@
             },
             "description": ""
         },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "factor_schema_version": {
+        "country": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -228,156 +120,8 @@
             "description": ""
         }
     },
-    "BillingUsageTotals": {
-        "prompt_tokens": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "completion_tokens": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "embedding_tokens": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "ocr_pages": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "asr_minutes": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "infra_units": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        }
-    },
-    "BillingCostBreakdown": {
-        "chat_in_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "chat_out_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "embed_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "media_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "infra_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "total_cost_micros": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        }
-    },
-    "BillingPointBreakdown": {
-        "base_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "factor_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "final_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "min_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "point_policy_artifact_id": {
+    "BasicAuth": {
+        "uid": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -386,7 +130,79 @@
             },
             "description": ""
         },
-        "point_policy_version": {
+        "name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "role": {
+            "type": "Role",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "Role(0)"
+            },
+            "description": ""
+        },
+        "audience": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "issuer": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "not_before": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "expiration": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "issued_at": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "is_keep_login": {
+            "type": "bool",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "False"
+            },
+            "description": ""
+        },
+        "token": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -396,62 +212,8 @@
             "description": ""
         }
     },
-    "BillingMoneySnapshot": {
-        "face_value_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "recognized_revenue_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "budget_consumed_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "face_value_minor_per_point": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "recognized_revenue_minor_per_point": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "budget_minor_per_point": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "money_policy_artifact_id": {
+    "PostUserRequest": {
+        "name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -460,18 +222,7 @@
             },
             "description": ""
         },
-        "money_policy_version": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "BillingPolicyArtifact": {
-        "artifact_id": {
+        "password": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -480,7 +231,7 @@
             },
             "description": ""
         },
-        "business_id": {
+        "email": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -489,16 +240,7 @@
             },
             "description": ""
         },
-        "artifact_type": {
-            "type": "BillingPolicyArtifactType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingPolicyArtifactType(0)"
-            },
-            "description": ""
-        },
-        "artifact_version": {
+        "phone": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -507,108 +249,25 @@
             },
             "description": ""
         },
-        "content": {
-            "type": "Struct",
+        "role": {
+            "type": "Role",
             "repeated": false,
             "required": false,
             "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "content_hash": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "created_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        }
-    },
-    "BillingPolicyBundle": {
-        "policy_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "bundle_version": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "factor_schema_version": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "provider_rate_card_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "point_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "money_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "estimator_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
+                "default": "Role(0)"
             },
             "description": ""
         },
         "status": {
+            "type": "USER_STATUS",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "USER_STATUS(0)"
+            },
+            "description": ""
+        },
+        "dept": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -617,18 +276,7 @@
             },
             "description": ""
         },
-        "published_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        }
-    },
-    "CreateBillingPolicyArtifactRequest": {
-        "business_id": {
+        "owner": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -637,7 +285,7 @@
             },
             "description": ""
         },
-        "policy_id": {
+        "avatar": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -646,16 +294,7 @@
             },
             "description": ""
         },
-        "artifact_type": {
-            "type": "BillingPolicyArtifactType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingPolicyArtifactType(0)"
-            },
-            "description": ""
-        },
-        "artifact_version": {
+        "tenant_id": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -664,8 +303,8 @@
             },
             "description": ""
         },
-        "content": {
-            "type": "Struct",
+        "update_mask": {
+            "type": "FieldMask",
             "repeated": false,
             "required": false,
             "ext": {
@@ -674,8 +313,8 @@
             "description": ""
         }
     },
-    "GetBillingPolicyArtifactRequest": {
-        "artifact_id": {
+    "GetUserRequest": {
+        "uid": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -685,37 +324,30 @@
             "description": ""
         }
     },
-    "ListBillingPolicyArtifactsRequest": {
-        "business_id": {
+    "DeleteUserRequest": {
+        "uid": {
             "type": "str",
             "repeated": false,
             "required": false,
             "ext": {
                 "default": "\"\""
-            },
-            "description": ""
-        },
-        "policy_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "artifact_type": {
-            "type": "BillingPolicyArtifactType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingPolicyArtifactType(0)"
             },
             "description": ""
         }
     },
-    "PublishBillingPolicyBundleRequest": {
-        "business_id": {
+    "DeleteUserResponse": {
+        "uid": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "PatchUserRequest": {
+        "uid": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -724,7 +356,7 @@
             },
             "description": ""
         },
-        "policy_id": {
+        "name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -733,7 +365,249 @@
             },
             "description": ""
         },
-        "bundle_version": {
+        "password": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "email": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "phone": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "role": {
+            "type": "Role",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "Role(0)"
+            },
+            "description": ""
+        },
+        "status": {
+            "type": "USER_STATUS",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "USER_STATUS(0)"
+            },
+            "description": ""
+        },
+        "dept": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "owner": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "avatar": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "update_mask": {
+            "type": "FieldMask",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        }
+    },
+    "UpdateUserRequest": {
+        "display_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "preferred_username": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "locale": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "zoneinfo": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "website": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "picture": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "given_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "family_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "nickname": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "gender": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "birthdate": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "phone_number": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "email": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "password": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "UploadAvatarRequest": {
+        "avatar_data": {
+            "type": "bytes",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "b''"
+            },
+            "description": ""
+        },
+        "filename": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "UploadAvatarResponse": {
+        "avatar_url": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        }
+    },
+    "GetUserByLocalIdRequest": {
+        "local_user_id": {
             "type": "int",
             "repeated": false,
             "required": false,
@@ -741,8 +615,10 @@
                 "default": "0"
             },
             "description": ""
-        },
-        "factor_schema_version": {
+        }
+    },
+    "GetUserByOidcIdentityRequest": {
+        "oidc_sub": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -751,34 +627,7 @@
             },
             "description": ""
         },
-        "provider_rate_card_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "point_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "money_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "estimator_artifact_id": {
+        "oidc_issuer": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -788,37 +637,19 @@
             "description": ""
         }
     },
-    "GetBillingPolicyBundleRequest": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "policy_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "bundle_version": {
+    "BatchGetUsersByLocalIdRequest": {
+        "local_user_ids": {
             "type": "int",
-            "repeated": false,
+            "repeated": true,
             "required": false,
             "ext": {
-                "default": "0"
+                "default": []
             },
             "description": ""
         }
     },
-    "ListBillingPolicyBundlesRequest": {
-        "business_id": {
+    "User": {
+        "sub": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -827,7 +658,7 @@
             },
             "description": ""
         },
-        "policy_id": {
+        "name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -836,7 +667,88 @@
             },
             "description": ""
         },
-        "active_only": {
+        "given_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "family_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "middle_name": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "nickname": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "preferred_username": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "profile": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "picture": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "website": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "email": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "email_verified": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -844,10 +756,53 @@
                 "default": "False"
             },
             "description": ""
-        }
-    },
-    "EstimateChargeResponse": {
-        "success": {
+        },
+        "gender": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "birthdate": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "zoneinfo": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "locale": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "phone_number": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "phone_number_verified": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -856,363 +811,16 @@
             },
             "description": ""
         },
-        "estimated_points": {
-            "type": "int",
-            "repeated": false,
+        "address": {
+            "type": "Address",
+            "repeated": true,
             "required": false,
             "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "message": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "BillingAuthorizationResponse": {
-        "success": {
-            "type": "bool",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "False"
-            },
-            "description": ""
-        },
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "held_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "message": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "SettlementDecision": {
-        "success": {
-            "type": "bool",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "False"
-            },
-            "description": ""
-        },
-        "transaction_type": {
-            "type": "BillingTransactionType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingTransactionType(0)"
-            },
-            "description": ""
-        },
-        "points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "face_value_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "recognized_revenue_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "budget_consumed_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "message": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "ReleaseRequest": {
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "reason": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "RefundRequest": {
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "reason": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "QueryBalanceRequest": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "BalanceSnapshot": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "available_balance": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "held_balance": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "total_granted": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "total_consumed": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
+                "default": []
             },
             "description": ""
         },
         "updated_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        }
-    },
-    "CreditGrant": {
-        "grant_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "credit_type": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "amount": {
             "type": "int",
             "repeated": false,
             "required": false,
@@ -1221,36 +829,7 @@
             },
             "description": ""
         },
-        "consumed": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "expires_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        },
-        "status": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "GrantCreditsRequest": {
-        "business_id": {
+        "id": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1259,7 +838,7 @@
             },
             "description": ""
         },
-        "user_id": {
+        "owner": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1268,7 +847,7 @@
             },
             "description": ""
         },
-        "subject_id": {
+        "type": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1277,16 +856,7 @@
             },
             "description": ""
         },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "credit_type": {
+        "password": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1295,18 +865,7 @@
             },
             "description": ""
         },
-        "amount": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        }
-    },
-    "ListGrantsRequest": {
-        "business_id": {
+        "password_salt": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1315,7 +874,7 @@
             },
             "description": ""
         },
-        "subject_id": {
+        "password_type": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1324,27 +883,7 @@
             },
             "description": ""
         },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "BillingTransaction": {
-        "transaction_id": {
+        "display_name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1353,7 +892,7 @@
             },
             "description": ""
         },
-        "business_id": {
+        "first_name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1362,7 +901,7 @@
             },
             "description": ""
         },
-        "user_id": {
+        "last_name": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1371,7 +910,7 @@
             },
             "description": ""
         },
-        "authorization_id": {
+        "avatar": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1380,7 +919,7 @@
             },
             "description": ""
         },
-        "request_id": {
+        "avatar_type": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1389,7 +928,7 @@
             },
             "description": ""
         },
-        "subject_id": {
+        "permanent_avatar": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1398,168 +937,7 @@
             },
             "description": ""
         },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "transaction_type": {
-            "type": "BillingTransactionType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingTransactionType(0)"
-            },
-            "description": ""
-        },
-        "points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "face_value_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "recognized_revenue_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "budget_consumed_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "created_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        }
-    },
-    "QueryTransactionsRequest": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "QuerySnapshotRequest": {
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "ManualReconcileRequest": {
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "reason": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "ManualReconcileResponse": {
-        "success": {
+        "is_admin": {
             "type": "bool",
             "repeated": false,
             "required": false,
@@ -1568,7 +946,34 @@
             },
             "description": ""
         },
-        "message": {
+        "properties": {
+            "type": "Dict[str, Any]",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": null
+            },
+            "description": ""
+        },
+        "local_user_id": {
+            "type": "int",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "0"
+            },
+            "description": ""
+        },
+        "oidc_sub": {
+            "type": "str",
+            "repeated": false,
+            "required": false,
+            "ext": {
+                "default": "\"\""
+            },
+            "description": ""
+        },
+        "oidc_issuer": {
             "type": "str",
             "repeated": false,
             "required": false,
@@ -1578,443 +983,13 @@
             "description": ""
         }
     },
-    "EstimateChargeRequest": {
-        "context": {
-            "type": "AuthorizationContext",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "request_factors": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        }
-    },
-    "AuthorizeRequest": {
-        "context": {
-            "type": "AuthorizationContext",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "estimated_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        }
-    },
-    "BillingReport": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "usage_source": {
-            "type": "BillingUsageSource",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingUsageSource(0)"
-            },
-            "description": ""
-        },
-        "final_status": {
-            "type": "BillingFinalStatus",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingFinalStatus(0)"
-            },
-            "description": ""
-        },
-        "raw_usage_totals": {
-            "type": "BillingUsageTotals",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "provider_usage_facts": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "business_factors": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "execution_hints": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "refund_reason": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "dedupe_key": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        }
-    },
-    "BillingSettlementSnapshot": {
-        "business_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "user_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "authorization_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "request_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "subject_type": {
-            "type": "BillingSubjectType",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "BillingSubjectType(0)"
-            },
-            "description": ""
-        },
-        "usage_snapshot": {
-            "type": "BillingUsageTotals",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "provider_usage_facts": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "business_factors": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "execution_hints": {
-            "type": "Struct",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "raw_cost_snapshot": {
-            "type": "BillingCostBreakdown",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "point_breakdown": {
-            "type": "BillingPointBreakdown",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "money_snapshot": {
-            "type": "BillingMoneySnapshot",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "policy_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "policy_bundle_version": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "factor_schema_version": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "provider_rate_card_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "point_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "money_policy_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "estimator_artifact_id": {
-            "type": "str",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "\"\""
-            },
-            "description": ""
-        },
-        "applied_points": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "face_value_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "recognized_revenue_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "budget_consumed_minor": {
-            "type": "int",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "0"
-            },
-            "description": ""
-        },
-        "created_at": {
-            "type": "datetime.datetime",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": "None"
-            },
-            "description": ""
-        }
-    },
-    "ListBillingPolicyArtifactsResponse": {
-        "artifacts": {
-            "type": "BillingPolicyArtifact",
+    "BatchGetUsersResponse": {
+        "users": {
+            "type": "User",
             "repeated": true,
             "required": false,
             "ext": {
                 "default": []
-            },
-            "description": ""
-        }
-    },
-    "ListBillingPolicyBundlesResponse": {
-        "bundles": {
-            "type": "BillingPolicyBundle",
-            "repeated": true,
-            "required": false,
-            "ext": {
-                "default": []
-            },
-            "description": ""
-        }
-    },
-    "ListGrantsResponse": {
-        "grants": {
-            "type": "CreditGrant",
-            "repeated": true,
-            "required": false,
-            "ext": {
-                "default": []
-            },
-            "description": ""
-        }
-    },
-    "QueryTransactionsResponse": {
-        "transactions": {
-            "type": "BillingTransaction",
-            "repeated": true,
-            "required": false,
-            "ext": {
-                "default": []
-            },
-            "description": ""
-        }
-    },
-    "FinalizeRequest": {
-        "context": {
-            "type": "AuthorizationContext",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
-            },
-            "description": ""
-        },
-        "report": {
-            "type": "BillingReport",
-            "repeated": false,
-            "required": false,
-            "ext": {
-                "default": null
             },
             "description": ""
         }
