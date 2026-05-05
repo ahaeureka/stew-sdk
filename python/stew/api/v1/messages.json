@@ -380,7 +380,7 @@
             "description": ""
         },
         "data": {
-            "type": "Struct",
+            "type": "Dict[str, Any]",
             "repeated": false,
             "required": false,
             "ext": {

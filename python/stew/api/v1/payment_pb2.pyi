@@ -26,6 +26,10 @@ class PaymentOrderStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     PAYMENT_ORDER_STATUS_REFUNDED: _ClassVar[PaymentOrderStatus]
     PAYMENT_ORDER_STATUS_CANCELED: _ClassVar[PaymentOrderStatus]
     PAYMENT_ORDER_STATUS_EXPIRED: _ClassVar[PaymentOrderStatus]
+    PAYMENT_ORDER_STATUS_CREATING: _ClassVar[PaymentOrderStatus]
+    PAYMENT_ORDER_STATUS_CREATE_FAILED: _ClassVar[PaymentOrderStatus]
+    PAYMENT_ORDER_STATUS_REFUNDING: _ClassVar[PaymentOrderStatus]
+    PAYMENT_ORDER_STATUS_REFUND_FAILED: _ClassVar[PaymentOrderStatus]
 
 class PaymentBillingInterval(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -67,6 +71,10 @@ PAYMENT_ORDER_STATUS_FAILED: PaymentOrderStatus
 PAYMENT_ORDER_STATUS_REFUNDED: PaymentOrderStatus
 PAYMENT_ORDER_STATUS_CANCELED: PaymentOrderStatus
 PAYMENT_ORDER_STATUS_EXPIRED: PaymentOrderStatus
+PAYMENT_ORDER_STATUS_CREATING: PaymentOrderStatus
+PAYMENT_ORDER_STATUS_CREATE_FAILED: PaymentOrderStatus
+PAYMENT_ORDER_STATUS_REFUNDING: PaymentOrderStatus
+PAYMENT_ORDER_STATUS_REFUND_FAILED: PaymentOrderStatus
 PAYMENT_BILLING_INTERVAL_UNSPECIFIED: PaymentBillingInterval
 PAYMENT_BILLING_INTERVAL_ONE_TIME: PaymentBillingInterval
 PAYMENT_BILLING_INTERVAL_MONTHLY: PaymentBillingInterval
