@@ -394,19 +394,29 @@ class DeleteSubscriptionRequest(_message.Message):
     subscription_id: str
     def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ...) -> None: ...
 
+class RestoreSubscriptionRequest(_message.Message):
+    __slots__ = ("business_id", "subscription_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBSCRIPTION_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    subscription_id: str
+    def __init__(self, business_id: _Optional[str] = ..., subscription_id: _Optional[str] = ...) -> None: ...
+
 class ListSubscriptionsRequest(_message.Message):
-    __slots__ = ("business_id", "status", "plan_id", "page_size", "page_token")
+    __slots__ = ("business_id", "status", "plan_id", "page_size", "page_token", "include_deleted")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     STATUS_FIELD_NUMBER: _ClassVar[int]
     PLAN_ID_FIELD_NUMBER: _ClassVar[int]
     PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
     PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    INCLUDE_DELETED_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     status: str
     plan_id: str
     page_size: int
     page_token: str
-    def __init__(self, business_id: _Optional[str] = ..., status: _Optional[str] = ..., plan_id: _Optional[str] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ...) -> None: ...
+    include_deleted: bool
+    def __init__(self, business_id: _Optional[str] = ..., status: _Optional[str] = ..., plan_id: _Optional[str] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ..., include_deleted: bool = ...) -> None: ...
 
 class ListSubscriptionsResponse(_message.Message):
     __slots__ = ("subscriptions", "next_page_token")

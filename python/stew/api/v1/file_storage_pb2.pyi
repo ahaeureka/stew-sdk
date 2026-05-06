@@ -43,16 +43,20 @@ class UploadFileRequest(_message.Message):
     def __init__(self, metadata: _Optional[_Union[UploadFileMetadata, _Mapping]] = ..., chunk_data: _Optional[bytes] = ...) -> None: ...
 
 class UploadFileMetadata(_message.Message):
-    __slots__ = ("filename", "content_type", "folder", "business_context")
+    __slots__ = ("filename", "content_type", "folder", "business_context", "business_id", "business_metadata")
     FILENAME_FIELD_NUMBER: _ClassVar[int]
     CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
     FOLDER_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_METADATA_FIELD_NUMBER: _ClassVar[int]
     filename: str
     content_type: str
     folder: str
     business_context: str
-    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., folder: _Optional[str] = ..., business_context: _Optional[str] = ...) -> None: ...
+    business_id: str
+    business_metadata: str
+    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., folder: _Optional[str] = ..., business_context: _Optional[str] = ..., business_id: _Optional[str] = ..., business_metadata: _Optional[str] = ...) -> None: ...
 
 class UploadFileResponse(_message.Message):
     __slots__ = ("file_info", "callback_result")
@@ -63,7 +67,7 @@ class UploadFileResponse(_message.Message):
     def __init__(self, file_info: _Optional[_Union[FileInfo, _Mapping]] = ..., callback_result: _Optional[_Union[CallbackResult, _Mapping]] = ...) -> None: ...
 
 class InitResumableUploadRequest(_message.Message):
-    __slots__ = ("filename", "content_type", "folder", "total_size", "part_size", "business_context", "checksum")
+    __slots__ = ("filename", "content_type", "folder", "total_size", "part_size", "business_context", "checksum", "business_id", "business_metadata")
     FILENAME_FIELD_NUMBER: _ClassVar[int]
     CONTENT_TYPE_FIELD_NUMBER: _ClassVar[int]
     FOLDER_FIELD_NUMBER: _ClassVar[int]
@@ -71,6 +75,8 @@ class InitResumableUploadRequest(_message.Message):
     PART_SIZE_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_CONTEXT_FIELD_NUMBER: _ClassVar[int]
     CHECKSUM_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_METADATA_FIELD_NUMBER: _ClassVar[int]
     filename: str
     content_type: str
     folder: str
@@ -78,7 +84,9 @@ class InitResumableUploadRequest(_message.Message):
     part_size: int
     business_context: str
     checksum: str
-    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., folder: _Optional[str] = ..., total_size: _Optional[int] = ..., part_size: _Optional[int] = ..., business_context: _Optional[str] = ..., checksum: _Optional[str] = ...) -> None: ...
+    business_id: str
+    business_metadata: str
+    def __init__(self, filename: _Optional[str] = ..., content_type: _Optional[str] = ..., folder: _Optional[str] = ..., total_size: _Optional[int] = ..., part_size: _Optional[int] = ..., business_context: _Optional[str] = ..., checksum: _Optional[str] = ..., business_id: _Optional[str] = ..., business_metadata: _Optional[str] = ...) -> None: ...
 
 class InitResumableUploadResponse(_message.Message):
     __slots__ = ("upload_id", "part_size", "total_parts", "expires_at")
@@ -235,14 +243,16 @@ class GetFileInfoRequest(_message.Message):
     def __init__(self, file_id: _Optional[str] = ...) -> None: ...
 
 class CallbackResult(_message.Message):
-    __slots__ = ("accepted", "reference_id", "message")
+    __slots__ = ("accepted", "reference_id", "message", "business_id")
     ACCEPTED_FIELD_NUMBER: _ClassVar[int]
     REFERENCE_ID_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     accepted: bool
     reference_id: str
     message: str
-    def __init__(self, accepted: bool = ..., reference_id: _Optional[str] = ..., message: _Optional[str] = ...) -> None: ...
+    business_id: str
+    def __init__(self, accepted: bool = ..., reference_id: _Optional[str] = ..., message: _Optional[str] = ..., business_id: _Optional[str] = ...) -> None: ...
 
 class FileInfo(_message.Message):
     __slots__ = ("id", "filename", "content_type", "file_size", "folder", "owner_id", "checksum", "storage_backend", "created_at", "updated_at", "local_path", "storage_key")

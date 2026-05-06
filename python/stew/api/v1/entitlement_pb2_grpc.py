@@ -111,6 +111,11 @@ class EntitlementServiceStub(object):
                 request_serializer=entitlement__pb2.DeleteSubscriptionRequest.SerializeToString,
                 response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
+        self.RestoreSubscription = channel.unary_unary(
+                '/stew.api.v1.EntitlementService/RestoreSubscription',
+                request_serializer=entitlement__pb2.RestoreSubscriptionRequest.SerializeToString,
+                response_deserializer=entitlement__pb2.Subscription.FromString,
+                _registered_method=True)
         self.ListSubscriptions = channel.unary_unary(
                 '/stew.api.v1.EntitlementService/ListSubscriptions',
                 request_serializer=entitlement__pb2.ListSubscriptionsRequest.SerializeToString,
@@ -277,6 +282,13 @@ class EntitlementServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RestoreSubscription(self, request, context):
+        """Restore a cancelled or soft-deleted subscription from management tooling.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListSubscriptions(self, request, context):
         """List subscriptions for a business.
         """
@@ -432,6 +444,11 @@ def add_EntitlementServiceServicer_to_server(servicer, server):
                     servicer.DeleteSubscription,
                     request_deserializer=entitlement__pb2.DeleteSubscriptionRequest.FromString,
                     response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
+            'RestoreSubscription': grpc.unary_unary_rpc_method_handler(
+                    servicer.RestoreSubscription,
+                    request_deserializer=entitlement__pb2.RestoreSubscriptionRequest.FromString,
+                    response_serializer=entitlement__pb2.Subscription.SerializeToString,
             ),
             'ListSubscriptions': grpc.unary_unary_rpc_method_handler(
                     servicer.ListSubscriptions,
@@ -895,6 +912,33 @@ class EntitlementService(object):
             '/stew.api.v1.EntitlementService/DeleteSubscription',
             entitlement__pb2.DeleteSubscriptionRequest.SerializeToString,
             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RestoreSubscription(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.EntitlementService/RestoreSubscription',
+            entitlement__pb2.RestoreSubscriptionRequest.SerializeToString,
+            entitlement__pb2.Subscription.FromString,
             options,
             channel_credentials,
             insecure,
