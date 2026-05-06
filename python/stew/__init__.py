@@ -20,11 +20,13 @@ from stew.discovery_client import (
     HealthCheckConfig,
     MiddlewareConfig,
     NotFoundError,
+    resolve_api_key,
     RiskConfig,
     RiskRuleConfig,
     RegistrationConfig,
     SyncDiscoveryClient,
     TurnstileConfig,
+    with_service_auth,
 )
 from stew.file_storage_client import (
     DownloadProgress,
@@ -84,6 +86,8 @@ __all__ = [
     "DiscoveryError",
     "ConflictError",
     "NotFoundError",
+    "resolve_api_key",
+    "with_service_auth",
     "AssetBrowserClient",
     "AssetBrowserError",
     "ExportedAsset",

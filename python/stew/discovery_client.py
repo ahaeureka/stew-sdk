@@ -18,11 +18,13 @@ from stew._discovery import (
     HealthCheckConfig,
     MiddlewareConfig,
     NotFoundError,
+    resolve_api_key,
     RegistrationConfig,
     RiskConfig,
     RiskRuleConfig,
     SyncDiscoveryClient,
     TurnstileConfig,
+    with_service_auth,
 )
 
 __all__ = [
@@ -48,4 +50,6 @@ __all__ = [
     "grpc_context_passthrough",
     "grpc_context_passthrough_handler",
     "NotFoundError",
+    "resolve_api_key",
+    "with_service_auth",
 ]

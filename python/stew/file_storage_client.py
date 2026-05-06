@@ -8,7 +8,6 @@ import inspect
 import os
 from collections.abc import AsyncIterable, Iterable, Sequence
 from dataclasses import dataclass
-from types import TracebackType
 from typing import Any, Callable
 
 import grpc
@@ -19,7 +18,7 @@ from stew.api.v1 import file_storage_pb2 as _fs_pb
 from stew.api.v1 import file_storage_pb2_grpc as _fs_grpc
 
 from ._discovery.errors import DiscoveryError
-from ._discovery.helpers import make_metadata, wrap_rpc_error
+from ._discovery.helpers import AioGatewayClientBase, SyncGatewayClientBase, wrap_rpc_error
 
 DEFAULT_CHUNK_SIZE = 64 * 1024
 FileStorageError = DiscoveryError
@@ -200,67 +199,11 @@ def _ensure_output_path_is_writable(output_path: str, *, replace_existing: bool)
         )
 
 
-class FileStorageClient:
+class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
     """Async gRPC client for stew.api.v1.FileStorageService."""
 
-    def __init__(
-        self,
-        gateway_addr: str,
-        *,
-        app_secret: str = "",
-        api_key: str = "",
-        use_tls: bool = False,
-        timeout: float = 30.0,
-    ) -> None:
-        self._addr = gateway_addr
-        self._api_key = (
-            app_secret
-            or api_key
-            or os.environ.get("APP_SECRET")
-            or os.environ.get("SERVICE_API_KEY", "")
-        )
-        self._use_tls = use_tls
-        self._timeout = timeout
-        self._channel: grpc.aio.Channel | None = None
-        self._stub: _fs_grpc.FileStorageServiceStub | None = None
-
-    async def connect(self) -> None:
-        if self._use_tls:
-            credentials = grpc.ssl_channel_credentials()
-            self._channel = grpc.aio.secure_channel(self._addr, credentials)
-        else:
-            self._channel = grpc.aio.insecure_channel(self._addr)
-        self._stub = _fs_grpc.FileStorageServiceStub(self._channel)
-
-    async def close(self) -> None:
-        if self._channel is not None:
-            await self._channel.close()
-            self._channel = None
-        self._stub = None
-
-    async def __aenter__(self) -> "FileStorageClient":
-        await self.connect()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        await self.close()
-
-    @property
-    def _s(self) -> _fs_grpc.FileStorageServiceStub:
-        if self._stub is None:
-            raise RuntimeError("Client is not connected. Call connect() or use async with.")
-        return self._stub
-
-    def _meta(
-        self,
-        extra_metadata: Sequence[tuple[str, str]] = (),
-    ) -> list[tuple[str, str]]:
-        return make_metadata(self._api_key, extra_metadata=extra_metadata)
+    def _create_stub(self, channel: grpc.aio.Channel) -> _fs_grpc.FileStorageServiceStub:
+        return _fs_grpc.FileStorageServiceStub(channel)
 
     async def _download_call(
         self,
@@ -826,28 +769,11 @@ class FileStorageClient:
         return _fs_model.FileInfo.from_protobuf(response)
 
 
-class SyncFileStorageClient:
+class SyncFileStorageClient(SyncGatewayClientBase[FileStorageClient]):
     """Synchronous facade over :class:`FileStorageClient`."""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
-        self._client = FileStorageClient(*args, **kwargs)
-        self._loop = asyncio.new_event_loop()
-
-    def _run(self, coro):  # type: ignore[no-untyped-def]
-        return self._loop.run_until_complete(coro)
-
-    def __enter__(self) -> "SyncFileStorageClient":
-        self._run(self._client.connect())
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        self._run(self._client.close())
-        self._loop.close()
+        super().__init__(FileStorageClient, *args, **kwargs)
 
     def upload_file(self, **kwargs) -> _fs_model.UploadFileResponse:  # type: ignore[no-untyped-def]
         return self._run(self._client.upload_file(**kwargs))

@@ -35,16 +35,27 @@ from __future__ import annotations
 import functools
 import inspect
 import logging
-from typing import Any, Callable, TypeVar, Union
+from collections.abc import Sequence
+from typing import Any, Callable, Protocol, TypeVar, Union, cast
 
 import grpc
 
+from stew._discovery import helpers as _discovery_helpers
 from stew.api.v1 import entitlement_pb2 as _pb
 from stew.api.v1 import entitlement_pb2_grpc
 
 HandlerFunc = TypeVar("HandlerFunc", bound=Callable[..., Any])
 
 _logger = logging.getLogger(__name__)
+_with_service_auth = cast(Any, getattr(_discovery_helpers, "with_service_auth"))
+_resolve_api_key = cast(Any, getattr(_discovery_helpers, "resolve_api_key"))
+_create_aio_channel = cast(Any, getattr(_discovery_helpers, "create_aio_channel"))
+
+
+class _GuardContext(Protocol):
+    def invocation_metadata(self) -> Any: ...
+
+    async def abort(self, code: grpc.StatusCode, details: str) -> None: ...
 
 
 # ---------------------------------------------------------------------------
@@ -100,17 +111,74 @@ class EntitlementGuard:
         business_id: str,
         *,
         timeout: float | None = None,
+        app_secret: str = "",
+        api_key: str = "",
+        extra_metadata: Sequence[tuple[str, str]] = (),
     ):
-        self._stub = stub
+        self._stub = _with_service_auth(
+            stub,
+            app_secret=app_secret,
+            api_key=api_key,
+            extra_metadata=extra_metadata,
+        )
         self._business_id = business_id
         self._timeout = timeout
+        self._api_key = _resolve_api_key(app_secret, api_key)
+        self._owned_channel: grpc.aio.Channel | None = None
+
+    @classmethod
+    def connect(
+        cls,
+        gateway_addr: str,
+        business_id: str,
+        *,
+        timeout: float | None = None,
+        app_secret: str = "",
+        api_key: str = "",
+        use_tls: bool = False,
+        extra_metadata: Sequence[tuple[str, str]] = (),
+    ) -> "EntitlementGuard":
+        channel = _create_aio_channel(gateway_addr, use_tls=use_tls)
+
+        guard = cls(
+            entitlement_pb2_grpc.EntitlementServiceStub(channel),
+            business_id,
+            timeout=timeout,
+            app_secret=app_secret,
+            api_key=api_key,
+            extra_metadata=extra_metadata,
+        )
+        guard._owned_channel = channel
+        return guard
+
+    async def close(self) -> None:
+        if self._owned_channel is not None:
+            await self._owned_channel.close()
+            self._owned_channel = None
+
+    async def __aenter__(self) -> "EntitlementGuard":
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: Any,
+    ) -> None:
+        await self.close()
+
+    async def _invoke(self, rpc: Callable[..., Any], request: Any) -> Any:
+        return await rpc(
+            request,
+            timeout=self._timeout,
+        )
 
     # -- identity -----------------------------------------------------------
 
     def _resolve_context(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
-    ) -> "tuple[str, grpc.aio.ServicerContext | None]":
+        context_or_subject_id: Union[_GuardContext, str],
+    ) -> "tuple[str, _GuardContext | None]":
         """Return ``(subject_id, context)`` from either a context or raw string."""
         if isinstance(context_or_subject_id, str):
             return context_or_subject_id, None
@@ -118,8 +186,16 @@ class EntitlementGuard:
         return subject_id, context_or_subject_id
 
     @staticmethod
-    def _extract_subject_id(context: grpc.aio.ServicerContext) -> str:
-        metadata = dict(context.invocation_metadata())
+    def _extract_subject_id(context: _GuardContext) -> str:
+        metadata: dict[str, str] = {}
+        for raw_key, raw_value in context.invocation_metadata() or ():
+            key = raw_key.decode("utf-8") if isinstance(raw_key, bytes) else str(raw_key)
+            value = (
+                raw_value.decode("utf-8")
+                if isinstance(raw_value, bytes)
+                else str(raw_value)
+            )
+            metadata[key.lower()] = value
         subject_id = (
             metadata.get("x-user-id")
             or metadata.get("x-subject-id")
@@ -134,7 +210,7 @@ class EntitlementGuard:
 
     async def require_feature(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
+        context_or_subject_id: Union[_GuardContext, str],
         feature_key: str,
     ) -> None:
         """Assert that *feature_key* is enabled for the caller.
@@ -150,14 +226,14 @@ class EntitlementGuard:
             feature_key=feature_key,
         )
         try:
-            response = await self._stub.CheckFeature(request, timeout=self._timeout)
+            response = await self._invoke(self._stub.CheckFeature, request)
         except grpc.RpcError as exc:
             _logger.error(
                 "CheckFeature RPC failed: feature=%s subject=%s error=%s",
                 feature_key, subject_id, exc,
             )
             if context is not None:
-                await context.abort(exc.code(), exc.details())
+                await context.abort(exc.code(), exc.details() or str(exc))
             raise
 
         if not response.enabled:
@@ -170,7 +246,7 @@ class EntitlementGuard:
 
     async def check_feature(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
+        context_or_subject_id: Union[_GuardContext, str],
         feature_key: str,
     ) -> bool:
         """Return whether *feature_key* is enabled.  Never aborts.
@@ -184,14 +260,14 @@ class EntitlementGuard:
             subject_id=subject_id,
             feature_key=feature_key,
         )
-        response = await self._stub.CheckFeature(request, timeout=self._timeout)
+        response = await self._invoke(self._stub.CheckFeature, request)
         return response.enabled
 
     # -- quota checks -------------------------------------------------------
 
     async def require_quota(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
+        context_or_subject_id: Union[_GuardContext, str],
         quota_key: str,
         requested: int = 1,
     ) -> None:
@@ -208,14 +284,14 @@ class EntitlementGuard:
             quota_key=quota_key,
         )
         try:
-            response = await self._stub.CheckQuota(request, timeout=self._timeout)
+            response = await self._invoke(self._stub.CheckQuota, request)
         except grpc.RpcError as exc:
             _logger.error(
                 "CheckQuota RPC failed: quota=%s subject=%s error=%s",
                 quota_key, subject_id, exc,
             )
             if context is not None:
-                await context.abort(exc.code(), exc.details())
+                await context.abort(exc.code(), exc.details() or str(exc))
             raise
 
         if response.used + requested > response.limit:
@@ -233,7 +309,7 @@ class EntitlementGuard:
 
     async def check_quota(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
+        context_or_subject_id: Union[_GuardContext, str],
         quota_key: str,
         requested: int = 1,
     ) -> "tuple[bool, int, int]":
@@ -248,13 +324,13 @@ class EntitlementGuard:
             subject_id=subject_id,
             quota_key=quota_key,
         )
-        response = await self._stub.CheckQuota(request, timeout=self._timeout)
+        response = await self._invoke(self._stub.CheckQuota, request)
         allowed = response.used + requested <= response.limit
         return allowed, response.used, response.limit
 
     async def consume_quota(
         self,
-        context_or_subject_id: Union[grpc.aio.ServicerContext, str],
+        context_or_subject_id: Union[_GuardContext, str],
         quota_key: str,
         amount: int = 1,
     ) -> None:
@@ -276,14 +352,14 @@ class EntitlementGuard:
             delta=amount,
         )
         try:
-            await self._stub.IncrementQuota(request, timeout=self._timeout)
+            await self._invoke(self._stub.IncrementQuota, request)
         except grpc.RpcError as exc:
             _logger.error(
                 "IncrementQuota RPC failed: quota=%s amount=%s subject=%s error=%s",
                 quota_key, amount, subject_id, exc,
             )
             if context is not None:
-                await context.abort(exc.code(), exc.details())
+                await context.abort(exc.code(), exc.details() or str(exc))
             raise
 
 
@@ -330,7 +406,7 @@ def _resolve_amount(amount_spec: Any, request: Any) -> int:
     if isinstance(amount_spec, int):
         return amount_spec
     if callable(amount_spec):
-        return int(amount_spec(request))
+        return int(cast(Any, amount_spec(request)))
     if isinstance(amount_spec, str):
         if request is None:
             raise ValueError(

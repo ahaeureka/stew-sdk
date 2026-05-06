@@ -13,7 +13,6 @@ import asyncio
 import os
 from collections.abc import Sequence
 from dataclasses import dataclass
-from types import TracebackType
 from typing import Any
 
 import grpc
@@ -26,7 +25,7 @@ from stew.api.v1 import file_storage_model as _fs_model
 from stew.api.v1 import file_storage_pb2 as _fs_pb
 
 from ._discovery.errors import ConflictError, DiscoveryError
-from ._discovery.helpers import make_metadata, wrap_rpc_error
+from ._discovery.helpers import AioGatewayClientBase, SyncGatewayClientBase, wrap_rpc_error
 
 AssetBrowserError = DiscoveryError
 
@@ -76,73 +75,15 @@ def _resolve_export_filename(
     return f"{asset_id}.bin"
 
 
-class AssetBrowserClient:
+class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServiceStub]):
     """Async gRPC client for stew.api.v1.BusinessAssetBrowserService.
 
     All public version_id, active_version_id, draft_version_id and
     base_version_id values exposed by this client are business version IDs.
     """
 
-    def __init__(
-        self,
-        gateway_addr: str,
-        *,
-        app_secret: str = "",
-        api_key: str = "",
-        use_tls: bool = False,
-        timeout: float = 30.0,
-    ) -> None:
-        self._addr = gateway_addr
-        self._api_key = (
-            app_secret
-            or api_key
-            or os.environ.get("APP_SECRET")
-            or os.environ.get("SERVICE_API_KEY", "")
-        )
-        self._use_tls = use_tls
-        self._timeout = timeout
-        self._channel: grpc.aio.Channel | None = None
-        self._stub: _ab_grpc.BusinessAssetBrowserServiceStub | None = None
-
-    async def connect(self) -> None:
-        if self._use_tls:
-            credentials = grpc.ssl_channel_credentials()
-            self._channel = grpc.aio.secure_channel(self._addr, credentials)
-        else:
-            self._channel = grpc.aio.insecure_channel(self._addr)
-        self._stub = _ab_grpc.BusinessAssetBrowserServiceStub(self._channel)
-
-    async def close(self) -> None:
-        if self._channel is not None:
-            await self._channel.close()
-            self._channel = None
-        self._stub = None
-
-    async def __aenter__(self) -> "AssetBrowserClient":
-        await self.connect()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        await self.close()
-
-    @property
-    def _s(self) -> _ab_grpc.BusinessAssetBrowserServiceStub:
-        if self._stub is None:
-            raise RuntimeError(
-                "Client is not connected. Call connect() or use async with."
-            )
-        return self._stub
-
-    def _meta(
-        self,
-        extra_metadata: Sequence[tuple[str, str]] = (),
-    ) -> list[tuple[str, str]]:
-        return make_metadata(self._api_key, extra_metadata=extra_metadata)
+    def _create_stub(self, channel: grpc.aio.Channel) -> _ab_grpc.BusinessAssetBrowserServiceStub:
+        return _ab_grpc.BusinessAssetBrowserServiceStub(channel)
 
     async def _call(self, coro: Any) -> Any:
         try:
@@ -657,7 +598,7 @@ class AssetBrowserClient:
         )
 
 
-class SyncAssetBrowserClient:
+class SyncAssetBrowserClient(SyncGatewayClientBase[AssetBrowserClient]):
     """Synchronous facade over :class:`AssetBrowserClient`.
 
     Version-related fields keep the same business-ID semantics as the async
@@ -665,24 +606,7 @@ class SyncAssetBrowserClient:
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self._client = AssetBrowserClient(*args, **kwargs)
-        self._loop = asyncio.new_event_loop()
-
-    def _run(self, coro: Any) -> Any:
-        return self._loop.run_until_complete(coro)
-
-    def __enter__(self) -> "SyncAssetBrowserClient":
-        self._run(self._client.connect())
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        self._run(self._client.close())
-        self._loop.close()
+        super().__init__(AssetBrowserClient, *args, **kwargs)
 
     def list_collections(
         self, **kwargs: Any

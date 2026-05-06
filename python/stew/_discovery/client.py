@@ -4,9 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-import os
 import time
-from types import TracebackType
 from typing import Callable
 
 import grpc
@@ -16,13 +14,13 @@ from stew.api.v1 import service_discovery_pb2 as _pb
 from stew.api.v1 import service_discovery_pb2_grpc as _grpc
 
 from .errors import ConflictError, DiscoveryError, NotFoundError
-from .helpers import as_discovery_error, hash_bytes, make_metadata, wrap_rpc_error
+from .helpers import AioGatewayClientBase, SyncGatewayClientBase, as_discovery_error, hash_bytes, wrap_rpc_error
 from .types import DescriptorVersion, Endpoint, RegistrationConfig
 
 log = logging.getLogger(__name__)
 
 
-class DiscoveryClient:
+class DiscoveryClient(AioGatewayClientBase[_grpc.ServiceDiscoveryServiceStub]):
     """
     Async gRPC client for the Stew ServiceDiscoveryService.
 
@@ -45,31 +43,25 @@ class DiscoveryClient:
         retry_base_delay: float = 2.0,
         retry_max_delay: float = 60.0,
     ) -> None:
-        self._addr = gateway_addr
-        self._api_key = (
-            app_secret
-            or api_key
-            or os.environ.get("APP_SECRET")
-            or os.environ.get("SERVICE_API_KEY", "")
+        super().__init__(
+            gateway_addr,
+            app_secret=app_secret,
+            api_key=api_key,
+            use_tls=use_tls,
+            timeout=timeout,
         )
-        self._use_tls = use_tls
-        self._timeout = timeout
         self._retry_max = retry_max
         self._retry_base_delay = retry_base_delay
         self._retry_max_delay = retry_max_delay
-        self._channel: grpc.aio.Channel | None = None
-        self._stub: _grpc.ServiceDiscoveryServiceStub | None = None
         self._keepalive_tasks: dict[str, asyncio.Task[None]] = {}
         self._descriptor_refresh_tasks: dict[str, asyncio.Task[None]] = {}
 
+    def _create_stub(self, channel: grpc.aio.Channel) -> _grpc.ServiceDiscoveryServiceStub:
+        return _grpc.ServiceDiscoveryServiceStub(channel)
+
     async def connect(self) -> None:
         """Open the gRPC channel."""
-        if self._use_tls:
-            credentials = grpc.ssl_channel_credentials()
-            self._channel = grpc.aio.secure_channel(self._addr, credentials)
-        else:
-            self._channel = grpc.aio.insecure_channel(self._addr)
-        self._stub = _grpc.ServiceDiscoveryServiceStub(self._channel)
+        await super().connect()
         log.debug("connected to gateway %s (tls=%s)", self._addr, self._use_tls)
 
     async def wait_until_ready(self) -> None:
@@ -93,34 +85,7 @@ class DiscoveryClient:
         for task in self._descriptor_refresh_tasks.values():
             task.cancel()
         self._descriptor_refresh_tasks.clear()
-        if self._channel:
-            await self._channel.close()
-            self._channel = None
-        self._stub = None
-
-    async def __aenter__(self) -> "DiscoveryClient":
-        await self.connect()
-        return self
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        await self.close()
-
-    @property
-    def _s(self) -> _grpc.ServiceDiscoveryServiceStub:
-        if self._stub is None:
-            raise RuntimeError("Client is not connected. Call connect() or use async with.")
-        return self._stub
-
-    def _meta(
-        self,
-        extra_metadata: Sequence[tuple[str, str]] = (),
-    ) -> list[tuple[str, str]]:
-        return make_metadata(self._api_key, extra_metadata=extra_metadata)
+        await super().close()
 
     async def _call(self, coro):  # type: ignore[no-untyped-def]
         try:
@@ -752,28 +717,11 @@ class DiscoveryClient:
         }
 
 
-class SyncDiscoveryClient:
+class SyncDiscoveryClient(SyncGatewayClientBase[DiscoveryClient]):
     """Synchronous facade over :class:`DiscoveryClient`."""
 
     def __init__(self, *args, **kwargs) -> None:  # type: ignore[no-untyped-def]
-        self._client = DiscoveryClient(*args, **kwargs)
-        self._loop = asyncio.new_event_loop()
-
-    def _run(self, coro):  # type: ignore[no-untyped-def]
-        return self._loop.run_until_complete(coro)
-
-    def __enter__(self) -> "SyncDiscoveryClient":
-        self._run(self._client.connect())
-        return self
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc: BaseException | None,
-        tb: TracebackType | None,
-    ) -> None:
-        self._run(self._client.close())
-        self._loop.close()
+        super().__init__(DiscoveryClient, *args, **kwargs)
 
     def heartbeat(self, **kwargs) -> None:  # type: ignore[no-untyped-def]
         self._run(self._client.heartbeat(**kwargs))

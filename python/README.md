@@ -43,6 +43,50 @@ SDK **不负责**服务注册/注销，这些操作需要管理员通过前端�
 
 ## 快速上手
 
+### 安全构造路径（推荐）
+
+Python SDK 现在把出站网关调用的 channel 创建、`x-api-key` 注入、同步/异步生命周期都收敛到了统一 helper。
+对业务接入方，推荐直接走下面两套构造路径，而不是自己维护 bare channel / bare stub：
+
+| 场景 | 推荐写法 | 说明 |
+|------|----------|------|
+| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
+| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
+| gRPC handler 内做权益校验 | `EntitlementGuard.connect(...)` | SDK 自动创建访问网关的 channel/stub，并为 Entitlement RPC 自动补齐 `x-api-key` |
+
+只有在你必须自己维护自定义 stub 时，才推荐退回 `with_service_auth(...)` 包装裸 stub。
+
+```python
+import asyncio
+
+from stew import AssetBrowserClient, FileStorageClient, SyncFileStorageClient
+from stew.entitlement_guard import EntitlementGuard
+
+
+async def async_example() -> None:
+    async with FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as files:
+        await files.get_file_info(file_id="file-1")
+
+    async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as assets:
+        await assets.get_collection(asset_space="configs", asset_id="my-app")
+
+
+def sync_example() -> None:
+    with SyncFileStorageClient("127.0.0.1:3012", app_secret="ak_xxx") as files:
+        files.get_file_info(file_id="file-1")
+
+
+guard = EntitlementGuard.connect(
+    "127.0.0.1:3012",
+    business_id="skillforge",
+    app_secret="ak_xxx",
+)
+
+
+asyncio.run(async_example())
+sync_example()
+```
+
 ### 一键接入（推荐）
 
 `GatewayClient` 是最简单的接入方式：连接网关、追加本机 endpoint、上传描述符、启动心跳保活一步完成。
@@ -99,6 +143,9 @@ asyncio.run(main())
 ```
 
 ### 同步（启动脚本 / 非 async 场景）
+
+`SyncDiscoveryClient` 现在与 `SyncFileStorageClient`、`SyncAssetBrowserClient` 走同一套同步 facade，
+推荐统一使用 `with ...Client(...) as client:` 的上下文管理方式，让 SDK 负责事件循环和关闭清理。
 
 ```python
 from stew import SyncDiscoveryClient
@@ -474,10 +521,12 @@ from stew.entitlement_guard import (
 
 ```python
 from stew.entitlement_guard import EntitlementGuard
-from stew.api.v1.entitlement_pb2_grpc import EntitlementServiceStub
 
-stub = EntitlementServiceStub(channel)
-guard = EntitlementGuard(stub, business_id="skillforge")
+guard = EntitlementGuard.connect(
+    "127.0.0.1:3012",
+    business_id="skillforge",
+    app_secret=APP_SECRET,
+)
 
 class MyService(MyServiceServicer):
     async def ExtractText(self, request, context):
@@ -496,6 +545,9 @@ class MyService(MyServiceServicer):
 
         # ... 业务逻辑 ...
 ```
+
+    上面的 `EntitlementGuard.connect(...)` 与 `DiscoveryClient` / `FileStorageClient` / `AssetBrowserClient`
+    一样，都会走 SDK 统一的异步 channel 创建入口。对于业务代码，这就是权益校验的默认安全路径。
 
 **声明式（decorator）：**
 
@@ -522,6 +574,41 @@ class MyService(MyServiceServicer):
 | `stub` | `EntitlementServiceStub` | 必填 | 指向网关的 gRPC stub |
 | `business_id` | `str` | 必填 | 业务标识 |
 | `timeout` | `float \| None` | `None` | gRPC 调用超时（秒），`None` 表示无超时 |
+| `app_secret` | `str` | `""` | 当前服务自己的凭证，SDK 会自动作为 `x-api-key` 注入到 Entitlement RPC |
+| `api_key` | `str` | `""` | `app_secret` 的别名（兼容旧代码） |
+| `extra_metadata` | `Sequence[tuple[str, str]]` | `()` | 额外附加到 Entitlement RPC 的 metadata |
+
+**推荐用法：** 优先使用 `EntitlementGuard.connect(...)`，让 SDK 自己创建 channel 和 stub。
+
+这样默认就是“安全路径”：
+
+- SDK 自动创建访问网关的 channel
+- SDK 自动把当前服务自己的 `app_secret` 注入为 `x-api-key`
+- SDK 与其他异步客户端共用同一套 channel 创建入口，行为一致
+- 业务代码不需要自己维护裸 `EntitlementServiceStub`
+- `async with` 退出时，SDK 会自动关闭自己创建的 channel
+
+如果你已经有自己的 stub，也可以继续：
+
+```python
+from stew import with_service_auth
+from stew.api.v1.entitlement_pb2_grpc import EntitlementServiceStub
+
+stub = with_service_auth(
+    EntitlementServiceStub(channel),
+    app_secret=APP_SECRET,
+)
+guard = EntitlementGuard(stub, business_id="skillforge")
+```
+
+如果未显式传入 `app_secret` / `api_key`，`EntitlementGuard` 会按以下优先级回退：
+
+- 构造函数 `app_secret`
+- 构造函数 `api_key`
+- 环境变量 `APP_SECRET`
+- 环境变量 `SERVICE_API_KEY`
+
+这意味着：即使底层最开始是 bare channel / bare stub，只要通过 `EntitlementGuard.connect(...)` 或 `with_service_auth(...)` 进入 SDK 的安全路径，SDK 也会在每次 `CheckFeature` / `CheckQuota` / `IncrementQuota` 调用时自动补上 `x-api-key`，避免再次出现二跳回调网关时的 `401`。
 
 **全部方法：**
 

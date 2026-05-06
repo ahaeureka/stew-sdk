@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import asyncio
 import functools
 import hashlib
 import inspect
+import os
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
-from typing import Any, Callable, Iterator, Sequence, TypeVar
+from types import TracebackType
+from typing import Any, Callable, Generic, Iterator, Protocol, Self, Sequence, TypeVar
 
 import grpc
 
@@ -17,6 +20,8 @@ from .types import BalanceType, Endpoint, EndpointBinding, HealthCheckConfig, Mi
 
 MetadataEntry = tuple[str, str]
 HandlerFunc = TypeVar("HandlerFunc", bound=Callable[..., Any])
+StubT = TypeVar("StubT")
+AsyncClientT = TypeVar("AsyncClientT", bound="_AsyncGatewayManagedClient")
 
 _PASSTHROUGH_METADATA: ContextVar[tuple[MetadataEntry, ...]] = ContextVar(
     "stew_passthrough_grpc_metadata",
@@ -378,6 +383,159 @@ def make_metadata(
     return metadata
 
 
+def resolve_api_key(
+    app_secret: str = "",
+    api_key: str = "",
+) -> str:
+    return (
+        app_secret
+        or api_key
+        or os.environ.get("APP_SECRET")
+        or os.environ.get("SERVICE_API_KEY", "")
+    )
+
+
+def create_aio_channel(
+    gateway_addr: str,
+    *,
+    use_tls: bool = False,
+) -> grpc.aio.Channel:
+    if use_tls:
+        credentials = grpc.ssl_channel_credentials()
+        return grpc.aio.secure_channel(gateway_addr, credentials)
+    return grpc.aio.insecure_channel(gateway_addr)
+
+
+class AioGatewayClientBase(Generic[StubT]):
+    def __init__(
+        self,
+        gateway_addr: str,
+        *,
+        app_secret: str = "",
+        api_key: str = "",
+        use_tls: bool = False,
+        timeout: float = 30.0,
+    ) -> None:
+        self._addr = gateway_addr
+        self._api_key = resolve_api_key(app_secret, api_key)
+        self._use_tls = use_tls
+        self._timeout = timeout
+        self._channel: grpc.aio.Channel | None = None
+        self._stub: StubT | None = None
+
+    def _create_stub(self, channel: grpc.aio.Channel) -> StubT:
+        raise NotImplementedError
+
+    async def connect(self) -> None:
+        self._channel = create_aio_channel(self._addr, use_tls=self._use_tls)
+        self._stub = self._create_stub(self._channel)
+
+    async def close(self) -> None:
+        if self._channel is not None:
+            await self._channel.close()
+            self._channel = None
+        self._stub = None
+
+    async def __aenter__(self) -> Self:
+        await self.connect()
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        await self.close()
+
+    @property
+    def _s(self) -> StubT:
+        if self._stub is None:
+            raise RuntimeError("Client is not connected. Call connect() or use async with.")
+        return self._stub
+
+    def _meta(
+        self,
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> list[MetadataEntry]:
+        return make_metadata(self._api_key, extra_metadata=extra_metadata)
+
+
+class _AsyncGatewayManagedClient(Protocol):
+    async def connect(self) -> None: ...
+
+    async def close(self) -> None: ...
+
+
+class SyncGatewayClientBase(Generic[AsyncClientT]):
+    def __init__(
+        self,
+        client_factory: Callable[..., AsyncClientT],
+        *args: Any,
+        **kwargs: Any,
+    ) -> None:
+        self._client = client_factory(*args, **kwargs)
+        self._loop = asyncio.new_event_loop()
+
+    def _run(self, coro: Any) -> Any:
+        return self._loop.run_until_complete(coro)
+
+    def __enter__(self) -> Self:
+        self._run(self._client.connect())
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
+        self._run(self._client.close())
+        self._loop.close()
+
+
+class _ServiceAuthStubProxy:
+    def __init__(
+        self,
+        stub: Any,
+        *,
+        api_key: str,
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> None:
+        self._stub = stub
+        self._api_key = api_key
+        self._extra_metadata = list(extra_metadata)
+
+    def __getattr__(self, name: str) -> Any:
+        attr = getattr(self._stub, name)
+        if not callable(attr):
+            return attr
+
+        def wrapped(*args: Any, **kwargs: Any) -> Any:
+            call_metadata = kwargs.pop("metadata", ())
+            kwargs["metadata"] = make_metadata(
+                self._api_key,
+                extra_metadata=[*self._extra_metadata, *(call_metadata or ())],
+            )
+            return attr(*args, **kwargs)
+
+        return wrapped
+
+
+def with_service_auth(
+    stub: Any,
+    *,
+    app_secret: str = "",
+    api_key: str = "",
+    extra_metadata: Sequence[MetadataEntry] = (),
+) -> Any:
+    return _ServiceAuthStubProxy(
+        stub,
+        api_key=resolve_api_key(app_secret, api_key),
+        extra_metadata=extra_metadata,
+    )
+
+
 def to_proto_lb(
     endpoints: Sequence[Endpoint],
     balance_type: BalanceType,
@@ -465,17 +623,22 @@ def wrap_rpc_error(exc: grpc.RpcError) -> DiscoveryError:
 __all__ = [
     "AioGrpcContextPassthroughInterceptor",
     "GrpcContextPassthroughInterceptor",
+    "AioGatewayClientBase",
+    "SyncGatewayClientBase",
     "as_discovery_error",
     "collect_grpc_context_metadata",
+    "create_aio_channel",
     "endpoint_matches_binding",
     "grpc_context_passthrough",
     "grpc_context_passthrough_handler",
     "hash_bytes",
     "make_metadata",
+    "resolve_api_key",
     "reset_grpc_context_metadata",
     "set_grpc_context_metadata",
     "to_proto_hc",
     "to_proto_lb",
     "to_proto_mw",
+    "with_service_auth",
     "wrap_rpc_error",
 ]
