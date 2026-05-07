@@ -219,6 +219,36 @@ def test_get_entry_text() -> None:
     assert result.entry_revision == 1
 
 
+def test_export_entry_accepts_business_id_and_extra_metadata() -> None:
+    captured: dict[str, object] = {}
+    response_pb = httpbody_pb2.HttpBody(data=b"payload", content_type="text/plain")
+
+    class Stub:
+        async def ExportAssetEntry(self, request, metadata, timeout):
+            captured["metadata"] = list(metadata)
+            return response_pb
+
+    client = AssetBrowserClient("127.0.0.1:3012", app_secret="ak_test")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.export_entry(
+            asset_space="docs",
+            asset_id="readme",
+            path="/README.md",
+            business_id="skillforge",
+            extra_metadata=[("x-request-id", "req-1")],
+        )
+    )
+
+    assert result.data == b"payload"
+    assert captured["metadata"] == [
+        ("x-api-key", "ak_test"),
+        ("x-business-id", "skillforge"),
+        ("x-request-id", "req-1"),
+    ]
+
+
 def test_update_draft_text() -> None:
     response_pb = ab_pb.UpdateDraftTextEntryResponse(
         draft_version_id="draft-001",

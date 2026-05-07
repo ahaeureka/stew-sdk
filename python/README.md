@@ -1,6 +1,12 @@
 # Stew Gateway — Python SDK
 
-Python 客户端 SDK，用于向 Stew 网关提交 Protobuf 描述符、管理版本及维持服务健康心跳。
+Python 客户端 SDK，覆盖服务注册与描述符上传、文件存储、资产浏览、计费、API Key 管理、支付、权益管理、网关注入身份读取、权益守卫与 generated gRPC stub/model。
+
+最新中文接入入口：
+
+- [../../docs/Python SDK接入指南.md](../../docs/Python%20SDK接入指南.md)
+
+如果你现在是在补业务接入，先读这份接入指南，再回来看本 README 的完整 API 说明。
 
 ---
 
@@ -11,8 +17,8 @@ Python 客户端 SDK，用于向 Stew 网关提交 Protobuf 描述符、管理�
 cd /path/to/stew/proto/sdk/python
 uv sync
 
-# 或直接 pip
-pip install grpcio protobuf
+# 或直接安装 SDK 包
+pip install /path/to/stew/proto/sdk/python
 ```
 
 ---
@@ -50,8 +56,8 @@ Python SDK 现在把出站网关调用的 channel 创建、`x-api-key` 注入、
 
 | 场景 | 推荐写法 | 说明 |
 |------|----------|------|
-| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
-| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
+| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)`、`async with BillingClient(...)`、`async with ApiKeyClient(...)`、`async with PaymentClient(...)`、`async with EntitlementClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
+| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)`、`with SyncBillingClient(...)`、`with SyncApiKeyClient(...)`、`with SyncPaymentClient(...)`、`with SyncEntitlementClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
 | gRPC handler 内做权益校验 | `EntitlementGuard.connect(...)` | SDK 自动创建访问网关的 channel/stub，并为 Entitlement RPC 自动补齐 `x-api-key` |
 
 只有在你必须自己维护自定义 stub 时，才推荐退回 `with_service_auth(...)` 包装裸 stub。
@@ -59,7 +65,7 @@ Python SDK 现在把出站网关调用的 channel 创建、`x-api-key` 注入、
 ```python
 import asyncio
 
-from stew import AssetBrowserClient, FileStorageClient, SyncFileStorageClient
+from stew import AssetBrowserClient, EntitlementClient, FileStorageClient, SyncFileStorageClient
 from stew.entitlement_guard import EntitlementGuard
 
 
@@ -69,6 +75,9 @@ async def async_example() -> None:
 
     async with AssetBrowserClient("127.0.0.1:3012", app_secret="ak_xxx") as assets:
         await assets.get_collection(asset_space="configs", asset_id="my-app")
+
+    async with EntitlementClient("127.0.0.1:3012", app_secret="ak_xxx") as entitlement:
+        await entitlement.list_plans(scope_business_id="skillforge")
 
 
 def sync_example() -> None:
@@ -145,6 +154,7 @@ asyncio.run(main())
 ### 同步（启动脚本 / 非 async 场景）
 
 `SyncDiscoveryClient` 现在与 `SyncFileStorageClient`、`SyncAssetBrowserClient` 走同一套同步 facade，
+`SyncBillingClient`、`SyncApiKeyClient`、`SyncPaymentClient`、`SyncEntitlementClient` 也遵循同一模式，
 推荐统一使用 `with ...Client(...) as client:` 的上下文管理方式，让 SDK 负责事件循环和关闭清理。
 
 ```python
@@ -609,6 +619,42 @@ guard = EntitlementGuard(stub, business_id="skillforge")
 - 环境变量 `SERVICE_API_KEY`
 
 这意味着：即使底层最开始是 bare channel / bare stub，只要通过 `EntitlementGuard.connect(...)` 或 `with_service_auth(...)` 进入 SDK 的安全路径，SDK 也会在每次 `CheckFeature` / `CheckQuota` / `IncrementQuota` 调用时自动补上 `x-api-key`，避免再次出现二跳回调网关时的 `401`。
+
+**关于 `subject_id` 的最新建议：**
+
+- 如果权益主体就是当前登录用户，可以直接把 `context` 传给 `require_feature()` / `require_quota()`
+- 如果配额主体、计费主体与登录用户不完全一致，优先显式传入字符串 `subject_id`
+
+例如：
+
+```python
+metadata = dict(context.invocation_metadata())
+subject_id = metadata.get("x-billing-subject-id") or metadata.get("x-user-id") or ""
+await guard.require_quota(subject_id, "credits.monthly", requested)
+```
+
+不要在这种场景继续依赖自动 context 解析。
+
+**关于 `x-business-id` 的最新边界：**
+
+当前 `FileStorageClient` / `AssetBrowserClient` 已支持：
+
+- 构造级 `business_id`
+- 构造级 `default_metadata`
+- 方法级 `business_id`
+- 方法级 `extra_metadata`
+
+因此，凡是网关要求显式透传 `x-business-id` 的文件 / 资产接口，现在可以直接用高层 client。只有在以下场景，才优先退回：
+
+- REST + `httpx`
+- generated gRPC stub + `with_service_auth(...)` + `metadata=(("x-business-id", business_id),)`
+
+也就是：
+
+- 当前服务还没有高层 Python client 封装
+- 你需要完全控制底层 RPC metadata / 调用细节
+
+完整说明见 [../../docs/Python SDK接入指南.md](../../docs/Python%20SDK接入指南.md)。
 
 **全部方法：**
 

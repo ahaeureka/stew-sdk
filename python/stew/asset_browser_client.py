@@ -25,7 +25,12 @@ from stew.api.v1 import file_storage_model as _fs_model
 from stew.api.v1 import file_storage_pb2 as _fs_pb
 
 from ._discovery.errors import ConflictError, DiscoveryError
-from ._discovery.helpers import AioGatewayClientBase, SyncGatewayClientBase, wrap_rpc_error
+from ._discovery.helpers import (
+    AioGatewayClientBase,
+    MetadataEntry,
+    SyncGatewayClientBase,
+    wrap_rpc_error,
+)
 
 AssetBrowserError = DiscoveryError
 
@@ -101,6 +106,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         scope_value: str = "",
         page_size: int = 0,
         page_token: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.ListAssetCollectionsResponse:
         response = await self._call(
             self._s.ListAssetCollections(
@@ -111,7 +118,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     page_size=page_size,
                     page_token=page_token,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -122,6 +129,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         *,
         asset_space: str,
         asset_id: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.AssetCollection:
         response = await self._call(
             self._s.GetAssetCollection(
@@ -129,7 +138,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     asset_space=asset_space,
                     asset_id=asset_id,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -144,6 +153,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         scope_value: str = "",
         display_name: str = "",
         description: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.AssetCollection:
         response = await self._call(
             self._s.EnsureAssetCollection(
@@ -155,7 +166,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     display_name=display_name,
                     description=description,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -174,6 +185,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         page_token: str = "",
         include_files: bool = True,
         include_directories: bool = True,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.ListAssetTreeResponse:
         response = await self._call(
             self._s.ListAssetTree(
@@ -187,7 +200,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     include_files=include_files,
                     include_directories=include_directories,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -201,6 +214,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_space: str,
         asset_id: str,
         include_archived: bool = False,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.ListAssetVersionsResponse:
         response = await self._call(
             self._s.ListAssetVersions(
@@ -209,7 +224,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     asset_id=asset_id,
                     include_archived=include_archived,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -221,6 +236,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_space: str,
         asset_id: str,
         version_id: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.GetAssetVersionResponse:
         response = await self._call(
             self._s.GetAssetVersion(
@@ -229,7 +246,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     asset_id=asset_id,
                     version_id=version_id,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -245,6 +262,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         base_version_id: str = "",
         draft_version_id: str = "",
         description: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.CreateDraftVersionResponse:
         response = await self._call(
             self._s.CreateDraftVersion(
@@ -255,7 +274,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     draft_version_id=draft_version_id,
                     description=description,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -267,6 +286,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_space: str,
         asset_id: str,
         draft_version_id: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> None:
         await self._call(
             self._s.DiscardDraftVersion(
@@ -275,7 +296,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     asset_id=asset_id,
                     draft_version_id=draft_version_id,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -289,6 +310,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         version_id: str = "",
         description: str = "",
         previous_version_id: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.PublishDraftVersionResponse:
         response = await self._call(
             self._s.PublishDraftVersion(
@@ -300,7 +323,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     description=description,
                     previous_version_id=previous_version_id,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -315,6 +338,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_id: str,
         version_id: str,
         path: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.GetAssetEntryTextResponse:
         response = await self._call(
             self._s.GetAssetEntryText(
@@ -324,7 +349,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     version_id=version_id,
                     path=path,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -341,6 +366,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         content_type: str = "",
         expected_entry_revision: int = 0,
         commit_message: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.UpdateDraftTextEntryResponse:
         response = await self._call(
             self._s.UpdateDraftTextEntry(
@@ -354,7 +381,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     expected_entry_revision=expected_entry_revision,
                     commit_message=commit_message,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -368,6 +395,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         draft_version_id: str,
         path: str,
         new_path: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.RenameDraftEntryResponse:
         response = await self._call(
             self._s.RenameDraftEntry(
@@ -378,7 +407,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     path=path,
                     new_path=new_path,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -391,6 +420,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_id: str,
         draft_version_id: str,
         path: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.DeleteDraftEntryResponse:
         response = await self._call(
             self._s.DeleteDraftEntry(
@@ -400,7 +431,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     draft_version_id=draft_version_id,
                     path=path,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -419,6 +450,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         path_prefix: str = "",
         page_size: int = 0,
         page_token: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.DiffAssetVersionsResponse:
         response = await self._call(
             self._s.DiffAssetVersions(
@@ -432,7 +465,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     page_size=page_size,
                     page_token=page_token,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -449,6 +482,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         path_prefix: str = "",
         page_size: int = 0,
         page_token: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.DiffAssetDraftResponse:
         response = await self._call(
             self._s.DiffAssetDraft(
@@ -462,7 +497,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     page_size=page_size,
                     page_token=page_token,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -477,6 +512,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         right_version_id: str,
         path: str,
         diff_mode: _ab_model.AssetDiffMode = _ab_model.AssetDiffMode.ASSET_DIFF_MODE_UNSPECIFIED,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.GetAssetDiffEntryDetailResponse:
         response = await self._call(
             self._s.GetAssetDiffEntryDetail(
@@ -488,7 +525,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     path=path,
                     diff_mode=diff_mode.value,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -503,6 +540,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_id: str,
         target_version_id: str,
         previous_version_id: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _ab_model.ActivateAssetVersionResponse:
         response = await self._call(
             self._s.ActivateAssetVersion(
@@ -512,7 +551,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     target_version_id=target_version_id,
                     previous_version_id=previous_version_id,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -525,6 +564,8 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         asset_id: str,
         version_id: str = "",
         path: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> ExportedAsset:
         response = await self._call(
             self._s.ExportAssetEntry(
@@ -534,7 +575,7 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
                     version_id=version_id,
                     path=path,
                 ),
-                metadata=self._meta(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
                 timeout=self._timeout,
             )
         )
@@ -565,12 +606,16 @@ class AssetBrowserClient(AioGatewayClientBase[_ab_grpc.BusinessAssetBrowserServi
         path: str = "",
         output_path: str = "",
         replace_existing: bool = False,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> SavedExportedAsset:
         exported = await self.export_entry(
             asset_space=asset_space,
             asset_id=asset_id,
             version_id=version_id,
             path=path,
+            business_id=business_id,
+            extra_metadata=extra_metadata,
         )
         resolved_output_path = output_path or exported.filename or f"{asset_id}.bin"
 

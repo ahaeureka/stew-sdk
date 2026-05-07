@@ -5,10 +5,11 @@ import functools
 import hashlib
 import inspect
 import os
+from collections import namedtuple
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
 from types import TracebackType
-from typing import Any, Callable, Generic, Iterator, Protocol, Self, Sequence, TypeVar
+from typing import Any, Callable, Generic, Iterator, Protocol, Self, Sequence, TypeVar, cast
 
 import grpc
 
@@ -99,6 +100,37 @@ def _upsert_metadata(metadata: list[MetadataEntry], entry: MetadataEntry) -> Non
             metadata[index] = (key, value)
             return
     metadata.append((key, value))
+
+
+def _normalize_extra_metadata(extra_metadata: Sequence[MetadataEntry]) -> list[MetadataEntry]:
+    normalized_metadata: list[MetadataEntry] = []
+    for item in extra_metadata:
+        normalized = _normalize_metadata_entry(item)
+        if normalized is None:
+            continue
+        key, value = normalized
+        if key == "x-api-key":
+            continue
+        _upsert_metadata(normalized_metadata, (key, value))
+    return normalized_metadata
+
+
+def _merge_metadata_entries(*metadata_groups: Sequence[MetadataEntry]) -> list[MetadataEntry]:
+    merged: list[MetadataEntry] = []
+    for metadata_group in metadata_groups:
+        for key, value in _normalize_extra_metadata(metadata_group):
+            _upsert_metadata(merged, (key, value))
+    return merged
+
+
+class _SyncClientCallDetails(
+    namedtuple(
+        "_SyncClientCallDetailsBase",
+        ("method", "timeout", "metadata", "credentials", "wait_for_ready", "compression"),
+    ),
+    grpc.ClientCallDetails,
+):
+    pass
 
 
 def collect_grpc_context_metadata(context_or_metadata: Any) -> list[MetadataEntry]:
@@ -242,10 +274,12 @@ def _wrap_sync_rpc_method_handler(
     invocation_metadata: Any,
 ) -> grpc.RpcMethodHandler:
     if handler.request_streaming and handler.response_streaming:
+        stream_stream_handler = handler.stream_stream
+        assert stream_stream_handler is not None
 
         def stream_stream(request_iterator: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                yield from _iter_stream_items(handler.stream_stream(request_iterator, context))
+                yield from _iter_stream_items(stream_stream_handler(request_iterator, context))
 
         return grpc.stream_stream_rpc_method_handler(
             stream_stream,
@@ -254,10 +288,12 @@ def _wrap_sync_rpc_method_handler(
         )
 
     if handler.request_streaming:
+        stream_unary_handler = handler.stream_unary
+        assert stream_unary_handler is not None
 
         def stream_unary(request_iterator: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                return handler.stream_unary(request_iterator, context)
+                return stream_unary_handler(request_iterator, context)
 
         return grpc.stream_unary_rpc_method_handler(
             stream_unary,
@@ -266,10 +302,12 @@ def _wrap_sync_rpc_method_handler(
         )
 
     if handler.response_streaming:
+        unary_stream_handler = handler.unary_stream
+        assert unary_stream_handler is not None
 
         def unary_stream(request: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                yield from _iter_stream_items(handler.unary_stream(request, context))
+                yield from _iter_stream_items(unary_stream_handler(request, context))
 
         return grpc.unary_stream_rpc_method_handler(
             unary_stream,
@@ -277,9 +315,12 @@ def _wrap_sync_rpc_method_handler(
             response_serializer=handler.response_serializer,
         )
 
+    unary_unary_handler = handler.unary_unary
+    assert unary_unary_handler is not None
+
     def unary_unary(request: Any, context: Any):
         with grpc_context_passthrough(invocation_metadata):
-            return handler.unary_unary(request, context)
+            return unary_unary_handler(request, context)
 
     return grpc.unary_unary_rpc_method_handler(
         unary_unary,
@@ -293,10 +334,12 @@ def _wrap_async_rpc_method_handler(
     invocation_metadata: Any,
 ) -> grpc.RpcMethodHandler:
     if handler.request_streaming and handler.response_streaming:
+        stream_stream_handler = handler.stream_stream
+        assert stream_stream_handler is not None
 
         async def stream_stream(request_iterator: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                async for item in _aiter_stream_items(handler.stream_stream(request_iterator, context)):
+                async for item in _aiter_stream_items(stream_stream_handler(request_iterator, context)):
                     yield item
 
         return grpc.stream_stream_rpc_method_handler(
@@ -306,10 +349,12 @@ def _wrap_async_rpc_method_handler(
         )
 
     if handler.request_streaming:
+        stream_unary_handler = handler.stream_unary
+        assert stream_unary_handler is not None
 
         async def stream_unary(request_iterator: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                return await _await_if_needed(handler.stream_unary(request_iterator, context))
+                return await _await_if_needed(stream_unary_handler(request_iterator, context))
 
         return grpc.stream_unary_rpc_method_handler(
             stream_unary,
@@ -318,10 +363,12 @@ def _wrap_async_rpc_method_handler(
         )
 
     if handler.response_streaming:
+        unary_stream_handler = handler.unary_stream
+        assert unary_stream_handler is not None
 
         async def unary_stream(request: Any, context: Any):
             with grpc_context_passthrough(invocation_metadata):
-                async for item in _aiter_stream_items(handler.unary_stream(request, context)):
+                async for item in _aiter_stream_items(unary_stream_handler(request, context)):
                     yield item
 
         return grpc.unary_stream_rpc_method_handler(
@@ -330,9 +377,12 @@ def _wrap_async_rpc_method_handler(
             response_serializer=handler.response_serializer,
         )
 
+    unary_unary_handler = handler.unary_unary
+    assert unary_unary_handler is not None
+
     async def unary_unary(request: Any, context: Any):
         with grpc_context_passthrough(invocation_metadata):
-            return await _await_if_needed(handler.unary_unary(request, context))
+            return await _await_if_needed(unary_unary_handler(request, context))
 
     return grpc.unary_unary_rpc_method_handler(
         unary_unary,
@@ -371,13 +421,7 @@ def make_metadata(
     if api_key:
         _upsert_metadata(metadata, ("x-api-key", api_key))
 
-    for item in extra_metadata:
-        normalized = _normalize_metadata_entry(item)
-        if normalized is None:
-            continue
-        key, value = normalized
-        if key == "x-api-key":
-            continue
+    for key, value in _normalize_extra_metadata(extra_metadata):
         _upsert_metadata(metadata, (key, value))
 
     return metadata
@@ -395,15 +439,140 @@ def resolve_api_key(
     )
 
 
+def _build_client_metadata(
+    *,
+    api_key: str,
+    default_metadata: Sequence[MetadataEntry],
+    call_metadata: Any = (),
+) -> list[MetadataEntry]:
+    return make_metadata(
+        api_key,
+        extra_metadata=_merge_metadata_entries(default_metadata, call_metadata),
+    )
+
+
+class GrpcMetadataClientInterceptor(
+    grpc.UnaryUnaryClientInterceptor,
+    grpc.UnaryStreamClientInterceptor,
+    grpc.StreamUnaryClientInterceptor,
+    grpc.StreamStreamClientInterceptor,
+):
+    """Inject API key and business metadata into sync gRPC client calls."""
+
+    def __init__(
+        self,
+        *,
+        app_secret: str = "",
+        api_key: str = "",
+        business_id: str = "",
+        default_metadata: Sequence[MetadataEntry] = (),
+    ) -> None:
+        self._api_key = resolve_api_key(app_secret, api_key)
+        self._default_metadata = _normalize_extra_metadata(default_metadata)
+        if business_id:
+            _upsert_metadata(self._default_metadata, ("x-business-id", business_id))
+
+    def _augment_call_details(
+        self,
+        client_call_details: grpc.ClientCallDetails,
+    ) -> grpc.ClientCallDetails:
+        return _SyncClientCallDetails(
+            method=client_call_details.method,
+            timeout=client_call_details.timeout,
+            metadata=_build_client_metadata(
+                api_key=self._api_key,
+                default_metadata=self._default_metadata,
+                call_metadata=client_call_details.metadata or (),
+            ),
+            credentials=client_call_details.credentials,
+            wait_for_ready=client_call_details.wait_for_ready,
+            compression=getattr(client_call_details, "compression", None),
+        )
+
+    def intercept_unary_unary(self, continuation, client_call_details, request):
+        return continuation(self._augment_call_details(client_call_details), request)
+
+    def intercept_unary_stream(self, continuation, client_call_details, request):
+        return continuation(self._augment_call_details(client_call_details), request)
+
+    def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+        return continuation(self._augment_call_details(client_call_details), request_iterator)
+
+    def intercept_stream_stream(self, continuation, client_call_details, request_iterator):
+        return continuation(self._augment_call_details(client_call_details), request_iterator)
+
+
+class AioGrpcMetadataClientInterceptor(
+    grpc.aio.UnaryUnaryClientInterceptor,
+    grpc.aio.UnaryStreamClientInterceptor,
+    grpc.aio.StreamUnaryClientInterceptor,
+    grpc.aio.StreamStreamClientInterceptor,
+):
+    """Inject API key and business metadata into aio gRPC client calls."""
+
+    def __init__(
+        self,
+        *,
+        app_secret: str = "",
+        api_key: str = "",
+        business_id: str = "",
+        default_metadata: Sequence[MetadataEntry] = (),
+    ) -> None:
+        self._api_key = resolve_api_key(app_secret, api_key)
+        self._default_metadata = _normalize_extra_metadata(default_metadata)
+        if business_id:
+            _upsert_metadata(self._default_metadata, ("x-business-id", business_id))
+
+    def _augment_call_details(
+        self,
+        client_call_details: grpc.aio.ClientCallDetails,
+    ) -> grpc.aio.ClientCallDetails:
+        return grpc.aio.ClientCallDetails(
+            method=client_call_details.method,
+            timeout=client_call_details.timeout,
+            metadata=cast(
+                Any,
+                _build_client_metadata(
+                    api_key=self._api_key,
+                    default_metadata=self._default_metadata,
+                    call_metadata=client_call_details.metadata or (),
+                ),
+            ),
+            credentials=client_call_details.credentials,
+            wait_for_ready=client_call_details.wait_for_ready,
+        )
+
+    async def intercept_unary_unary(self, continuation, client_call_details, request):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request)
+        )
+
+    async def intercept_unary_stream(self, continuation, client_call_details, request):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request)
+        )
+
+    async def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request_iterator)
+        )
+
+    async def intercept_stream_stream(self, continuation, client_call_details, request_iterator):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request_iterator)
+        )
+
+
 def create_aio_channel(
     gateway_addr: str,
     *,
     use_tls: bool = False,
+    interceptors: Sequence[grpc.aio.ClientInterceptor] = (),
 ) -> grpc.aio.Channel:
     if use_tls:
         credentials = grpc.ssl_channel_credentials()
-        return grpc.aio.secure_channel(gateway_addr, credentials)
-    return grpc.aio.insecure_channel(gateway_addr)
+        return grpc.aio.secure_channel(gateway_addr, credentials, interceptors=interceptors)
+    return grpc.aio.insecure_channel(gateway_addr, interceptors=interceptors)
 
 
 class AioGatewayClientBase(Generic[StubT]):
@@ -413,11 +582,16 @@ class AioGatewayClientBase(Generic[StubT]):
         *,
         app_secret: str = "",
         api_key: str = "",
+        business_id: str = "",
+        default_metadata: Sequence[MetadataEntry] = (),
         use_tls: bool = False,
         timeout: float = 30.0,
     ) -> None:
         self._addr = gateway_addr
         self._api_key = resolve_api_key(app_secret, api_key)
+        self._default_metadata = _normalize_extra_metadata(default_metadata)
+        if business_id:
+            _upsert_metadata(self._default_metadata, ("x-business-id", business_id))
         self._use_tls = use_tls
         self._timeout = timeout
         self._channel: grpc.aio.Channel | None = None
@@ -427,7 +601,16 @@ class AioGatewayClientBase(Generic[StubT]):
         raise NotImplementedError
 
     async def connect(self) -> None:
-        self._channel = create_aio_channel(self._addr, use_tls=self._use_tls)
+        self._channel = create_aio_channel(
+            self._addr,
+            use_tls=self._use_tls,
+            interceptors=[
+                AioGrpcMetadataClientInterceptor(
+                    api_key=self._api_key,
+                    default_metadata=self._default_metadata,
+                )
+            ],
+        )
         self._stub = self._create_stub(self._channel)
 
     async def close(self) -> None:
@@ -457,8 +640,21 @@ class AioGatewayClientBase(Generic[StubT]):
     def _meta(
         self,
         extra_metadata: Sequence[MetadataEntry] = (),
+        business_id: str = "",
     ) -> list[MetadataEntry]:
-        return make_metadata(self._api_key, extra_metadata=extra_metadata)
+        merged_metadata: list[MetadataEntry] = []
+        if business_id:
+            _upsert_metadata(merged_metadata, ("x-business-id", business_id))
+        for key, value in _normalize_extra_metadata(extra_metadata):
+            _upsert_metadata(merged_metadata, (key, value))
+
+        if self._channel is None:
+            return make_metadata(
+                self._api_key,
+                extra_metadata=_merge_metadata_entries(self._default_metadata, merged_metadata),
+            )
+
+        return merged_metadata
 
 
 class _AsyncGatewayManagedClient(Protocol):
@@ -621,9 +817,11 @@ def wrap_rpc_error(exc: grpc.RpcError) -> DiscoveryError:
 
 
 __all__ = [
+    "AioGrpcMetadataClientInterceptor",
     "AioGrpcContextPassthroughInterceptor",
     "GrpcContextPassthroughInterceptor",
     "AioGatewayClientBase",
+    "GrpcMetadataClientInterceptor",
     "SyncGatewayClientBase",
     "as_discovery_error",
     "collect_grpc_context_metadata",

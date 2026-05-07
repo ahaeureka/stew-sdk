@@ -43,6 +43,21 @@ from stew.asset_browser_client import (
     SavedExportedAsset,
     SyncAssetBrowserClient,
 )
+from stew.billing_client import (
+    BillingClient,
+    BillingError,
+    SyncBillingClient,
+)
+from stew.apikey_client import (
+    ApiKeyClient,
+    ApiKeyError,
+    SyncApiKeyClient,
+)
+from stew.payment_client import (
+    PaymentClient,
+    PaymentError,
+    SyncPaymentClient,
+)
 from stew.identity import (
     AuthMode,
     GatewayIdentity,
@@ -55,6 +70,11 @@ from stew.entitlement_guard import (
     QuotaExceededError,
     require_feature,
     require_quota,
+)
+from stew.entitlement_client import (
+    EntitlementClient,
+    EntitlementError,
+    SyncEntitlementClient,
 )
 
 __all__ = [
@@ -93,13 +113,25 @@ __all__ = [
     "ExportedAsset",
     "SavedExportedAsset",
     "SyncAssetBrowserClient",
+    "BillingClient",
+    "BillingError",
+    "SyncBillingClient",
+    "ApiKeyClient",
+    "ApiKeyError",
+    "SyncApiKeyClient",
+    "PaymentClient",
+    "PaymentError",
+    "SyncPaymentClient",
     "AuthMode",
     "GatewayIdentity",
     "IdentityInterceptor",
     "EntitlementGuard",
     "EntitlementGuardError",
+    "EntitlementClient",
+    "EntitlementError",
     "FeatureDeniedError",
     "QuotaExceededError",
     "require_feature",
     "require_quota",
+    "SyncEntitlementClient",
 ]

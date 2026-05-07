@@ -2,6 +2,7 @@ import asyncio
 
 import pytest
 
+from stew.entitlement_client import SyncEntitlementClient
 from stew.asset_browser_client import SyncAssetBrowserClient
 from stew.file_storage_client import SyncFileStorageClient
 from stew._discovery.client import SyncDiscoveryClient
@@ -21,6 +22,10 @@ from stew._discovery.client import SyncDiscoveryClient
         (
             lambda: SyncAssetBrowserClient("127.0.0.1:3012", app_secret="ak_sync"),
             "stew.asset_browser_client.AssetBrowserClient",
+        ),
+        (
+            lambda: SyncEntitlementClient("127.0.0.1:3012", app_secret="ak_sync"),
+            "stew.entitlement_client.EntitlementClient",
         ),
     ],
 )

@@ -18,7 +18,12 @@ from stew.api.v1 import file_storage_pb2 as _fs_pb
 from stew.api.v1 import file_storage_pb2_grpc as _fs_grpc
 
 from ._discovery.errors import DiscoveryError
-from ._discovery.helpers import AioGatewayClientBase, SyncGatewayClientBase, wrap_rpc_error
+from ._discovery.helpers import (
+    AioGatewayClientBase,
+    MetadataEntry,
+    SyncGatewayClientBase,
+    wrap_rpc_error,
+)
 
 DEFAULT_CHUNK_SIZE = 64 * 1024
 FileStorageError = DiscoveryError
@@ -209,11 +214,12 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         self,
         message: _fs_pb.DownloadFileRequest,
         *,
+        business_id: str = "",
         extra_metadata: Sequence[tuple[str, str]] = (),
     ) -> tuple[Any, dict[str, str]]:
         call = self._s.DownloadFile(
             message,
-            metadata=self._meta(extra_metadata=extra_metadata),
+            metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
             timeout=self._timeout,
         )
         response = await self._call(call)
@@ -225,9 +231,18 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
 
         return response, metadata
 
-    async def verify_download_checksum(self, *, file_id: str, checksum: str) -> bool:
+    async def verify_download_checksum(
+        self,
+        *,
+        file_id: str,
+        checksum: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> bool:
         response, response_headers = await self._download_call(
-            _fs_pb.DownloadFileRequest(file_id=file_id, checksum=checksum, verify_only=True)
+            _fs_pb.DownloadFileRequest(file_id=file_id, checksum=checksum, verify_only=True),
+            business_id=business_id,
+            extra_metadata=extra_metadata,
         )
         _ = response
         status_code = response_headers.get("x-http-status", "")
@@ -240,8 +255,20 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             code=grpc.StatusCode.UNKNOWN,
         )
 
-    async def _verify_integrity_or_raise(self, *, file_id: str, checksum: str) -> None:
-        verified = await self.verify_download_checksum(file_id=file_id, checksum=checksum)
+    async def _verify_integrity_or_raise(
+        self,
+        *,
+        file_id: str,
+        checksum: str,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> None:
+        verified = await self.verify_download_checksum(
+            file_id=file_id,
+            checksum=checksum,
+            business_id=business_id,
+            extra_metadata=extra_metadata,
+        )
         if not verified:
             raise FileStorageError(
                 "Downloaded file integrity verification failed",
@@ -264,6 +291,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         business_context: str = "",
         metadata: _fs_model.UploadFileMetadata | _fs_pb.UploadFileMetadata | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.UploadFileResponse:
         metadata_message = (
             _coerce_protobuf_message(metadata, _fs_pb.UploadFileMetadata)
@@ -282,7 +311,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                 yield _fs_pb.UploadFileRequest(chunk_data=chunk)
 
         response: _fs_pb.UploadFileResponse = await self._call(
-            self._s.UploadFile(request_iter(), metadata=self._meta(), timeout=self._timeout)
+            self._s.UploadFile(
+                request_iter(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.UploadFileResponse.from_protobuf(response)
 
@@ -297,6 +330,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         part_size: int = 0,
         business_context: str = "",
         checksum: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.InitResumableUploadResponse:
         message = (
             _coerce_protobuf_message(request, _fs_pb.InitResumableUploadRequest)
@@ -312,7 +347,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             )
         )
         response: _fs_pb.InitResumableUploadResponse = await self._call(
-            self._s.InitResumableUpload(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.InitResumableUpload(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.InitResumableUploadResponse.from_protobuf(response)
 
@@ -324,6 +363,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         data: UploadSource,
         header: _fs_model.UploadPartHeader | _fs_pb.UploadPartHeader | None = None,
         chunk_size: int = DEFAULT_CHUNK_SIZE,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.UploadPartResponse:
         header_message = (
             _coerce_protobuf_message(header, _fs_pb.UploadPartHeader)
@@ -337,7 +378,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                 yield _fs_pb.UploadPartRequest(chunk_data=chunk)
 
         response: _fs_pb.UploadPartResponse = await self._call(
-            self._s.UploadPart(request_iter(), metadata=self._meta(), timeout=self._timeout)
+            self._s.UploadPart(
+                request_iter(),
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.UploadPartResponse.from_protobuf(response)
 
@@ -347,6 +392,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         *,
         upload_id: str = "",
         parts: Sequence[PartEtagInput] = (),
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.UploadFileResponse:
         message = (
             _coerce_protobuf_message(request, _fs_pb.CompleteResumableUploadRequest)
@@ -357,7 +404,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             )
         )
         response: _fs_pb.UploadFileResponse = await self._call(
-            self._s.CompleteResumableUpload(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.CompleteResumableUpload(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.UploadFileResponse.from_protobuf(response)
 
@@ -365,6 +416,9 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         self,
         upload_id: str = "",
         request: _fs_model.AbortResumableUploadRequest | _fs_pb.AbortResumableUploadRequest | None = None,
+        *,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> None:
         message = (
             _coerce_protobuf_message(request, _fs_pb.AbortResumableUploadRequest)
@@ -372,13 +426,20 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             else _fs_pb.AbortResumableUploadRequest(upload_id=upload_id)
         )
         await self._call(
-            self._s.AbortResumableUpload(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.AbortResumableUpload(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
 
     async def get_upload_status(
         self,
         upload_id: str = "",
         request: _fs_model.GetUploadStatusRequest | _fs_pb.GetUploadStatusRequest | None = None,
+        *,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.GetUploadStatusResponse:
         message = (
             _coerce_protobuf_message(request, _fs_pb.GetUploadStatusRequest)
@@ -386,7 +447,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             else _fs_pb.GetUploadStatusRequest(upload_id=upload_id)
         )
         response: _fs_pb.GetUploadStatusResponse = await self._call(
-            self._s.GetUploadStatus(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.GetUploadStatus(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.GetUploadStatusResponse.from_protobuf(response)
 
@@ -399,6 +464,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         verify_integrity: bool = False,
         on_progress: Callable[[DownloadProgress], Any] | None = None,
         request: _fs_model.DownloadFileRequest | _fs_pb.DownloadFileRequest | None = None,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> DownloadedFile:
         message = (
             _coerce_protobuf_message(request, _fs_pb.DownloadFileRequest)
@@ -409,7 +476,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                 verify_only=verify_only,
             )
         )
-        response, metadata_headers = await self._download_call(message)
+        response, metadata_headers = await self._download_call(
+            message,
+            business_id=business_id,
+            extra_metadata=extra_metadata,
+        )
         metadata = _extract_download_metadata(response)
         data = response.data
         total_bytes = int(metadata_headers.get("content-length", str(len(data)))) if data else 0
@@ -427,6 +498,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             await self._verify_integrity_or_raise(
                 file_id=file_id,
                 checksum=hashlib.sha256(data).hexdigest(),
+                business_id=business_id,
+                extra_metadata=extra_metadata,
             )
 
         return DownloadedFile(
@@ -450,6 +523,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         file_size: int | None = None,
         content_type: str = "",
         start_offset: int = 0,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> AsyncIterable[DownloadedFileChunk]:
         if chunk_size <= 0:
             raise ValueError("chunk_size must be greater than 0")
@@ -459,7 +534,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         resolved_file_size = file_size
         resolved_content_type = content_type
         if resolved_file_size is None or resolved_file_size <= 0:
-            info = await self.get_file_info(file_id=file_id)
+            info = await self.get_file_info(
+                file_id=file_id,
+                business_id=business_id,
+                extra_metadata=extra_metadata,
+            )
             resolved_file_size = int(info.file_size or 0)
             if not resolved_content_type:
                 resolved_content_type = info.content_type or "application/octet-stream"
@@ -478,7 +557,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             request = _fs_pb.DownloadFileRequest(file_id=file_id)
             response, response_headers = await self._download_call(
                 request,
-                extra_metadata=(("range", f"bytes={start}-{end}"),),
+                business_id=business_id,
+                extra_metadata=[*extra_metadata, ("range", f"bytes={start}-{end}")],
             )
             metadata = _extract_download_metadata(response)
             status_code = response_headers.get("x-http-status", "206")
@@ -520,6 +600,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         content_type: str = "",
         verify_integrity: bool = False,
         on_progress: Callable[[DownloadProgress], Any] | None = None,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> DownloadedFile:
         parts: list[bytes] = []
         resolved_content_type = content_type
@@ -534,6 +616,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             chunk_size=chunk_size,
             file_size=file_size,
             content_type=content_type,
+            business_id=business_id,
+            extra_metadata=extra_metadata,
         ):
             parts.append(chunk.data)
             downloaded_bytes += len(chunk.data)
@@ -562,6 +646,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             await self._verify_integrity_or_raise(
                 file_id=file_id,
                 checksum=hashlib.sha256(data).hexdigest(),
+                business_id=business_id,
+                extra_metadata=extra_metadata,
             )
 
         return DownloadedFile(
@@ -585,10 +671,16 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         on_progress: Callable[[DownloadProgress], Any] | None = None,
         resume: bool = True,
         replace_existing: bool = False,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> SavedDownloadedFile:
         info: _fs_model.FileInfo | None = None
         if file_size is None or file_size <= 0 or not content_type or not output_path:
-            info = await self.get_file_info(file_id=file_id)
+            info = await self.get_file_info(
+                file_id=file_id,
+                business_id=business_id,
+                extra_metadata=extra_metadata,
+            )
 
         resolved_file_size = int(file_size or (info.file_size if info is not None else 0) or 0)
         resolved_content_type = content_type or (
@@ -643,6 +735,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                         await self._verify_integrity_or_raise(
                             file_id=file_id,
                             checksum=hasher.hexdigest(),
+                            business_id=business_id,
+                            extra_metadata=extra_metadata,
                         )
                     os.replace(tmp_path, resolved_output_path)
                     return SavedDownloadedFile(
@@ -661,6 +755,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                 file_size=resolved_file_size,
                 content_type=resolved_content_type,
                 start_offset=start_offset,
+                business_id=business_id,
+                extra_metadata=extra_metadata,
             ):
                 if fh is None:
                     mode = "ab" if start_offset > 0 and os.path.exists(tmp_path) else "wb"
@@ -701,6 +797,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
                 await self._verify_integrity_or_raise(
                     file_id=file_id,
                     checksum=hasher.hexdigest(),
+                    business_id=business_id,
+                    extra_metadata=extra_metadata,
                 )
 
             os.replace(tmp_path, resolved_output_path)
@@ -723,13 +821,22 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         self,
         file_id: str = "",
         request: _fs_model.DeleteFileRequest | _fs_pb.DeleteFileRequest | None = None,
+        *,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> None:
         message = (
             _coerce_protobuf_message(request, _fs_pb.DeleteFileRequest)
             if request is not None
             else _fs_pb.DeleteFileRequest(file_id=file_id)
         )
-        await self._call(self._s.DeleteFile(message, metadata=self._meta(), timeout=self._timeout))
+        await self._call(
+            self._s.DeleteFile(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
+        )
 
     async def list_files(
         self,
@@ -738,6 +845,8 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         folder: str = "/",
         page_size: int = 100,
         page_token: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.ListFilesResponse:
         message = (
             _coerce_protobuf_message(request, _fs_pb.ListFilesRequest)
@@ -749,7 +858,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             )
         )
         response: _fs_pb.ListFilesResponse = await self._call(
-            self._s.ListFiles(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.ListFiles(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.ListFilesResponse.from_protobuf(response)
 
@@ -757,6 +870,9 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
         self,
         file_id: str = "",
         request: _fs_model.GetFileInfoRequest | _fs_pb.GetFileInfoRequest | None = None,
+        *,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _fs_model.FileInfo:
         message = (
             _coerce_protobuf_message(request, _fs_pb.GetFileInfoRequest)
@@ -764,7 +880,11 @@ class FileStorageClient(AioGatewayClientBase[_fs_grpc.FileStorageServiceStub]):
             else _fs_pb.GetFileInfoRequest(file_id=file_id)
         )
         response: _fs_pb.FileInfo = await self._call(
-            self._s.GetFileInfo(message, metadata=self._meta(), timeout=self._timeout)
+            self._s.GetFileInfo(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
         )
         return _fs_model.FileInfo.from_protobuf(response)
 

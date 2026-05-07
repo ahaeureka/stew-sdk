@@ -124,6 +124,37 @@ def test_file_storage_client_merges_grpc_context_passthrough_metadata() -> None:
     ]
 
 
+def test_get_file_info_accepts_business_id_and_extra_metadata() -> None:
+    captured: dict[str, object] = {}
+
+    class Stub:
+        async def GetFileInfo(self, request, metadata, timeout):
+            captured["metadata"] = list(metadata)
+            return file_storage_pb2.FileInfo(
+                id="file-1",
+                filename="archive.bin",
+                content_type="application/octet-stream",
+                file_size=10,
+            )
+
+    client = FileStorageClient("127.0.0.1:3012", app_secret="ak_xxx")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    asyncio.run(
+        client.get_file_info(
+            file_id="file-1",
+            business_id="skillforge",
+            extra_metadata=[("x-request-id", "req-1")],
+        )
+    )
+
+    assert captured["metadata"] == [
+        ("x-api-key", "ak_xxx"),
+        ("x-business-id", "skillforge"),
+        ("x-request-id", "req-1"),
+    ]
+
+
 def test_download_file_reports_progress_and_verifies_integrity() -> None:
     metadata = file_storage_pb2.DownloadFileHttpMetadata(
         filename="report.pdf",
