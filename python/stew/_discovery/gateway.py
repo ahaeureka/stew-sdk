@@ -89,6 +89,7 @@ class GatewayClient:
                 "initial gateway registration raised for %s: %s",
                 self._service_name,
                 exc,
+                exc_info=True,
             )
             success = False
 
@@ -484,6 +485,7 @@ class GatewayClient:
                     attempt,
                     self._service_name,
                     exc,
+                    exc_info=True,
                 )
                 success = False
 

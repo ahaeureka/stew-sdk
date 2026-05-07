@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from pathlib import Path
 
 from stew.api.v1 import service_discovery_pb2 as discovery_pb2
@@ -221,3 +222,73 @@ def test_discovery_client_merges_grpc_context_passthrough_metadata() -> None:
         ("x-request-id", "req-1"),
         ("x-api-key", "ak_xxx"),
     ]
+
+
+def test_start_descriptor_refresh_tracks_absolute_pb_path(tmp_path: Path) -> None:
+    pb_path = tmp_path / "service.pb"
+    pb_path.write_bytes(b"descriptor")
+    client = DiscoveryClient("127.0.0.1:3012", app_secret="ak_xxx")
+
+    async def run() -> None:
+        async def fake_read_descriptor_bytes(*, descriptor_path: str) -> bytes:
+            assert descriptor_path == str(pb_path)
+            return pb_path.read_bytes()
+
+        client._read_descriptor_bytes = fake_read_descriptor_bytes  # type: ignore[method-assign]
+
+        await client.start_descriptor_refresh(
+            service_name="stew.api.v1.TestService",
+            pb_path=str(pb_path),
+            interval=3600,
+        )
+
+        key = f"stew.api.v1.TestService:{pb_path.resolve()}"
+        task = client._descriptor_refresh_tasks[key]
+
+        client.stop_descriptor_refresh(
+            service_name="stew.api.v1.TestService",
+            pb_path=str(pb_path),
+        )
+
+        result = await asyncio.gather(task, return_exceptions=True)
+
+        assert key not in client._descriptor_refresh_tasks
+        assert isinstance(result[0], asyncio.CancelledError)
+
+    asyncio.run(run())
+
+
+def test_retry_loop_logs_traceback_for_unexpected_exception(
+    tmp_path: Path,
+    monkeypatch,
+    caplog,
+) -> None:
+    client = make_gateway_client(
+        tmp_path,
+        endpoint=Endpoint(address="127.0.0.1", port=50051),
+    )
+    attempts = {"count": 0}
+
+    async def fake_register_once() -> bool:
+        attempts["count"] += 1
+        if attempts["count"] == 1:
+            raise RuntimeError("descriptor refresh boom")
+        return True
+
+    async def fake_sleep(_: float) -> None:
+        return None
+
+    monkeypatch.setattr(client, "_register_once", fake_register_once)
+    monkeypatch.setattr("stew._discovery.gateway.asyncio.sleep", fake_sleep)
+
+    with caplog.at_level(logging.WARNING, logger="stew._discovery.gateway"):
+        asyncio.run(client._retry_loop())
+
+    retry_log = next(
+        record
+        for record in caplog.records
+        if "raised unexpectedly" in record.getMessage()
+    )
+
+    assert attempts["count"] == 2
+    assert retry_log.exc_info is not None
