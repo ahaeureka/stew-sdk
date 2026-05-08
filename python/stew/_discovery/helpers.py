@@ -451,6 +451,53 @@ def _build_client_metadata(
     )
 
 
+def _augment_aio_client_call_details(
+    *,
+    api_key: str,
+    default_metadata: Sequence[MetadataEntry],
+    client_call_details: grpc.aio.ClientCallDetails,
+) -> grpc.aio.ClientCallDetails:
+    return grpc.aio.ClientCallDetails(
+        method=client_call_details.method,
+        timeout=client_call_details.timeout,
+        metadata=cast(
+            Any,
+            _build_client_metadata(
+                api_key=api_key,
+                default_metadata=default_metadata,
+                call_metadata=client_call_details.metadata or (),
+            ),
+        ),
+        credentials=client_call_details.credentials,
+        wait_for_ready=client_call_details.wait_for_ready,
+    )
+
+
+class _AioMetadataInterceptorBase:
+    def __init__(
+        self,
+        *,
+        app_secret: str = "",
+        api_key: str = "",
+        business_id: str = "",
+        default_metadata: Sequence[MetadataEntry] = (),
+    ) -> None:
+        self._api_key = resolve_api_key(app_secret, api_key)
+        self._default_metadata = _normalize_extra_metadata(default_metadata)
+        if business_id:
+            _upsert_metadata(self._default_metadata, ("x-business-id", business_id))
+
+    def _augment_call_details(
+        self,
+        client_call_details: grpc.aio.ClientCallDetails,
+    ) -> grpc.aio.ClientCallDetails:
+        return _augment_aio_client_call_details(
+            api_key=self._api_key,
+            default_metadata=self._default_metadata,
+            client_call_details=client_call_details,
+        )
+
+
 class GrpcMetadataClientInterceptor(
     grpc.UnaryUnaryClientInterceptor,
     grpc.UnaryStreamClientInterceptor,
@@ -503,44 +550,18 @@ class GrpcMetadataClientInterceptor(
 
 
 class AioGrpcMetadataClientInterceptor(
+    _AioMetadataInterceptorBase,
     grpc.aio.UnaryUnaryClientInterceptor,
     grpc.aio.UnaryStreamClientInterceptor,
     grpc.aio.StreamUnaryClientInterceptor,
     grpc.aio.StreamStreamClientInterceptor,
 ):
-    """Inject API key and business metadata into aio gRPC client calls."""
+    """Backward-compatible aio metadata interceptor.
 
-    def __init__(
-        self,
-        *,
-        app_secret: str = "",
-        api_key: str = "",
-        business_id: str = "",
-        default_metadata: Sequence[MetadataEntry] = (),
-    ) -> None:
-        self._api_key = resolve_api_key(app_secret, api_key)
-        self._default_metadata = _normalize_extra_metadata(default_metadata)
-        if business_id:
-            _upsert_metadata(self._default_metadata, ("x-business-id", business_id))
-
-    def _augment_call_details(
-        self,
-        client_call_details: grpc.aio.ClientCallDetails,
-    ) -> grpc.aio.ClientCallDetails:
-        return grpc.aio.ClientCallDetails(
-            method=client_call_details.method,
-            timeout=client_call_details.timeout,
-            metadata=cast(
-                Any,
-                _build_client_metadata(
-                    api_key=self._api_key,
-                    default_metadata=self._default_metadata,
-                    call_metadata=client_call_details.metadata or (),
-                ),
-            ),
-            credentials=client_call_details.credentials,
-            wait_for_ready=client_call_details.wait_for_ready,
-        )
+    Passing this single instance directly to grpc.aio.Channel(interceptors=[...]) only
+    registers the first matching RPC arity. Prefer build_aio_metadata_client_interceptors()
+    or create_aio_channel().
+    """
 
     async def intercept_unary_unary(self, continuation, client_call_details, request):
         return await _await_if_needed(
@@ -563,16 +584,99 @@ class AioGrpcMetadataClientInterceptor(
         )
 
 
+class _AioUnaryUnaryMetadataClientInterceptor(
+    _AioMetadataInterceptorBase,
+    grpc.aio.UnaryUnaryClientInterceptor,
+):
+    async def intercept_unary_unary(self, continuation, client_call_details, request):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request)
+        )
+
+
+class _AioUnaryStreamMetadataClientInterceptor(
+    _AioMetadataInterceptorBase,
+    grpc.aio.UnaryStreamClientInterceptor,
+):
+    async def intercept_unary_stream(self, continuation, client_call_details, request):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request)
+        )
+
+
+class _AioStreamUnaryMetadataClientInterceptor(
+    _AioMetadataInterceptorBase,
+    grpc.aio.StreamUnaryClientInterceptor,
+):
+    async def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request_iterator)
+        )
+
+
+class _AioStreamStreamMetadataClientInterceptor(
+    _AioMetadataInterceptorBase,
+    grpc.aio.StreamStreamClientInterceptor,
+):
+    async def intercept_stream_stream(self, continuation, client_call_details, request_iterator):
+        return await _await_if_needed(
+            continuation(self._augment_call_details(client_call_details), request_iterator)
+        )
+
+
+def build_aio_metadata_client_interceptors(
+    *,
+    app_secret: str = "",
+    api_key: str = "",
+    business_id: str = "",
+    default_metadata: Sequence[MetadataEntry] = (),
+) -> list[grpc.aio.ClientInterceptor]:
+    kwargs = {
+        "app_secret": app_secret,
+        "api_key": api_key,
+        "business_id": business_id,
+        "default_metadata": default_metadata,
+    }
+    return [
+        _AioUnaryUnaryMetadataClientInterceptor(**kwargs),
+        _AioUnaryStreamMetadataClientInterceptor(**kwargs),
+        _AioStreamUnaryMetadataClientInterceptor(**kwargs),
+        _AioStreamStreamMetadataClientInterceptor(**kwargs),
+    ]
+
+
+def _expand_aio_client_interceptors(
+    interceptors: Sequence[grpc.aio.ClientInterceptor],
+) -> tuple[grpc.aio.ClientInterceptor, ...]:
+    expanded: list[grpc.aio.ClientInterceptor] = []
+    for interceptor in interceptors:
+        if isinstance(interceptor, AioGrpcMetadataClientInterceptor):
+            expanded.extend(
+                build_aio_metadata_client_interceptors(
+                    api_key=interceptor._api_key,
+                    default_metadata=interceptor._default_metadata,
+                )
+            )
+            continue
+        expanded.append(interceptor)
+    return tuple(expanded)
+
+
 def create_aio_channel(
     gateway_addr: str,
     *,
     use_tls: bool = False,
     interceptors: Sequence[grpc.aio.ClientInterceptor] = (),
 ) -> grpc.aio.Channel:
+    expanded_interceptors = _expand_aio_client_interceptors(interceptors)
     if use_tls:
         credentials = grpc.ssl_channel_credentials()
-        return grpc.aio.secure_channel(gateway_addr, credentials, interceptors=interceptors)
-    return grpc.aio.insecure_channel(gateway_addr, interceptors=interceptors)
+        return grpc.aio.secure_channel(
+            gateway_addr,
+            credentials,
+            interceptors=expanded_interceptors,
+        )
+    return grpc.aio.insecure_channel(gateway_addr, interceptors=expanded_interceptors)
 
 
 class AioGatewayClientBase(Generic[StubT]):
@@ -604,12 +708,10 @@ class AioGatewayClientBase(Generic[StubT]):
         self._channel = create_aio_channel(
             self._addr,
             use_tls=self._use_tls,
-            interceptors=[
-                AioGrpcMetadataClientInterceptor(
-                    api_key=self._api_key,
-                    default_metadata=self._default_metadata,
-                )
-            ],
+            interceptors=build_aio_metadata_client_interceptors(
+                api_key=self._api_key,
+                default_metadata=self._default_metadata,
+            ),
         )
         self._stub = self._create_stub(self._channel)
 
@@ -821,6 +923,7 @@ __all__ = [
     "AioGrpcContextPassthroughInterceptor",
     "GrpcContextPassthroughInterceptor",
     "AioGatewayClientBase",
+    "build_aio_metadata_client_interceptors",
     "GrpcMetadataClientInterceptor",
     "SyncGatewayClientBase",
     "as_discovery_error",

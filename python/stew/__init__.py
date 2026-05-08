@@ -5,6 +5,7 @@ Stew Gateway Python SDK
 from stew.discovery_client import (
     AioGrpcContextPassthroughInterceptor,
     BalanceType,
+    build_aio_metadata_client_interceptors,
     ConflictError,
     GrpcContextPassthroughInterceptor,
     collect_grpc_context_metadata,
@@ -82,6 +83,7 @@ __all__ = [
     "SyncDiscoveryClient",
     "GatewayClient",
     "AioGrpcContextPassthroughInterceptor",
+    "build_aio_metadata_client_interceptors",
     "FileStorageClient",
     "GrpcContextPassthroughInterceptor",
     "SyncFileStorageClient",

@@ -4,6 +4,7 @@ from .gateway import GatewayClient
 from .helpers import (
     AioGrpcContextPassthroughInterceptor,
     GrpcContextPassthroughInterceptor,
+    build_aio_metadata_client_interceptors,
     collect_grpc_context_metadata,
     grpc_context_passthrough,
     grpc_context_passthrough_handler,
@@ -27,6 +28,7 @@ from .types import (
 __all__ = [
     "BalanceType",
     "AioGrpcContextPassthroughInterceptor",
+    "build_aio_metadata_client_interceptors",
     "ConflictError",
     "collect_grpc_context_metadata",
     "CorsConfig",

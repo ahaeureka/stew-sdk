@@ -3,6 +3,7 @@
 from stew._discovery import (
     AioGrpcContextPassthroughInterceptor,
     BalanceType,
+    build_aio_metadata_client_interceptors,
     ConflictError,
     GrpcContextPassthroughInterceptor,
     collect_grpc_context_metadata,
@@ -32,6 +33,7 @@ __all__ = [
     "SyncDiscoveryClient",
     "GatewayClient",
     "AioGrpcContextPassthroughInterceptor",
+    "build_aio_metadata_client_interceptors",
     "GrpcContextPassthroughInterceptor",
     "Endpoint",
     "EndpointBinding",
