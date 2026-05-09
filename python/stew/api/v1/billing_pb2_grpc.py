@@ -90,6 +90,16 @@ class BillingServiceStub(object):
                 request_serializer=billing__pb2.QuerySnapshotRequest.SerializeToString,
                 response_deserializer=billing__pb2.BillingSettlementSnapshot.FromString,
                 _registered_method=True)
+        self.QueryReservations = channel.unary_unary(
+                '/stew.api.v1.BillingService/QueryReservations',
+                request_serializer=billing__pb2.QueryBillingReservationsRequest.SerializeToString,
+                response_deserializer=billing__pb2.QueryBillingReservationsResponse.FromString,
+                _registered_method=True)
+        self.GetReservation = channel.unary_unary(
+                '/stew.api.v1.BillingService/GetReservation',
+                request_serializer=billing__pb2.GetBillingReservationRequest.SerializeToString,
+                response_deserializer=billing__pb2.BillingReservation.FromString,
+                _registered_method=True)
         self.ManualReconcile = channel.unary_unary(
                 '/stew.api.v1.BillingService/ManualReconcile',
                 request_serializer=billing__pb2.ManualReconcileRequest.SerializeToString,
@@ -208,6 +218,20 @@ class BillingServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def QueryReservations(self, request, context):
+        """List reservations for async-report investigation and operator reconciliation.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetReservation(self, request, context):
+        """Fetch the current reservation lifecycle state for investigation and operations.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ManualReconcile(self, request, context):
         """Force manual reconciliation for a request that needs operator intervention.
         """
@@ -314,6 +338,16 @@ def add_BillingServiceServicer_to_server(servicer, server):
                     servicer.QuerySnapshot,
                     request_deserializer=billing__pb2.QuerySnapshotRequest.FromString,
                     response_serializer=billing__pb2.BillingSettlementSnapshot.SerializeToString,
+            ),
+            'QueryReservations': grpc.unary_unary_rpc_method_handler(
+                    servicer.QueryReservations,
+                    request_deserializer=billing__pb2.QueryBillingReservationsRequest.FromString,
+                    response_serializer=billing__pb2.QueryBillingReservationsResponse.SerializeToString,
+            ),
+            'GetReservation': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetReservation,
+                    request_deserializer=billing__pb2.GetBillingReservationRequest.FromString,
+                    response_serializer=billing__pb2.BillingReservation.SerializeToString,
             ),
             'ManualReconcile': grpc.unary_unary_rpc_method_handler(
                     servicer.ManualReconcile,
@@ -660,6 +694,60 @@ class BillingService(object):
             _registered_method=True)
 
     @staticmethod
+    def QueryReservations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/QueryReservations',
+            billing__pb2.QueryBillingReservationsRequest.SerializeToString,
+            billing__pb2.QueryBillingReservationsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetReservation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingService/GetReservation',
+            billing__pb2.GetBillingReservationRequest.SerializeToString,
+            billing__pb2.BillingReservation.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def ManualReconcile(request,
             target,
             options=(),
@@ -838,6 +926,81 @@ class BillingService(object):
             '/stew.api.v1.BillingService/ListPolicyBundles',
             billing__pb2.ListBillingPolicyBundlesRequest.SerializeToString,
             billing__pb2.ListBillingPolicyBundlesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class BillingReportIngressServiceStub(object):
+    """BillingReportIngressService accepts asynchronous billing reports from trusted services.
+    """
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.SubmitBillingReport = channel.unary_unary(
+                '/stew.api.v1.BillingReportIngressService/SubmitBillingReport',
+                request_serializer=billing__pb2.SubmitBillingReportRequest.SerializeToString,
+                response_deserializer=billing__pb2.SubmitBillingReportResponse.FromString,
+                _registered_method=True)
+
+
+class BillingReportIngressServiceServicer(object):
+    """BillingReportIngressService accepts asynchronous billing reports from trusted services.
+    """
+
+    def SubmitBillingReport(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_BillingReportIngressServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'SubmitBillingReport': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitBillingReport,
+                    request_deserializer=billing__pb2.SubmitBillingReportRequest.FromString,
+                    response_serializer=billing__pb2.SubmitBillingReportResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'stew.api.v1.BillingReportIngressService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('stew.api.v1.BillingReportIngressService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class BillingReportIngressService(object):
+    """BillingReportIngressService accepts asynchronous billing reports from trusted services.
+    """
+
+    @staticmethod
+    def SubmitBillingReport(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingReportIngressService/SubmitBillingReport',
+            billing__pb2.SubmitBillingReportRequest.SerializeToString,
+            billing__pb2.SubmitBillingReportResponse.FromString,
             options,
             channel_credentials,
             insecure,

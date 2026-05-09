@@ -194,6 +194,95 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 优先级：构造函数 `app_secret` > `api_key` > 环境变量 `APP_SECRET` > `SERVICE_API_KEY`
 
+### 计费与 OOB 上报
+
+`BillingClient` / `SyncBillingClient` 这一轮已经补齐了 reservation 与异步上报入口，不再只覆盖预授权和同步 finalize：
+
+- `authorize()`：创建 reservation / authorization
+- `get_reservation()`：按 `business_id + authorization_id` 拉单条 reservation
+- `query_reservations()`：按状态、主体、时间窗筛选 reservation，适合排查 `AwaitingReport` / `PendingReconcile`
+- `submit_billing_report()`：走 `BillingReportIngressService.SubmitBillingReport`，用于 `report_transport=OUT_OF_BAND` 的异步 worker 结算
+- `manual_reconcile()`：运营或人工补账入口
+
+几个语义边界需要和网关实现保持一致：
+
+- `report.business_id` 必须是原始 authorize 时确定的业务账本 ID，不要改成 worker 自己的业务域
+- `report.user_id`、`report.request_id`、`report.authorization_id` 应复用原始 authorize 上下文
+- `delivery_request_id` 代表本次投递尝试；`dedupe_key` 代表业务幂等键，二者不是同一个东西
+- 当前服务凭证必须有对应 `source_service` 的 service-scoped 权限；服务端会校验来源服务与业务绑定
+
+异步 worker 提交 OOB billing report 的最小示例：
+
+```python
+import asyncio
+
+from stew import BillingClient
+from stew.api.v1 import billing_model
+
+
+async def submit_oob_report() -> None:
+    async with BillingClient(
+        "127.0.0.1:3012",
+        app_secret="ak_worker",
+        business_id="skillforge",
+    ) as billing:
+        reservation = await billing.get_reservation(
+            scope_business_id="skillforge",
+            authorization_id="auth_123",
+        )
+
+        if reservation.status != billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_AWAITING_REPORT:
+            return
+
+        response = await billing.submit_billing_report(
+            report=billing_model.BillingReport(
+                business_id="skillforge",
+                authorization_id="auth_123",
+                request_id="req_123",
+                user_id="user_123",
+                usage_source=billing_model.BillingUsageSource.BILLING_USAGE_SOURCE_ACTUAL,
+                final_status=billing_model.BillingFinalStatus.BILLING_FINAL_STATUS_SUCCESS,
+                billed_points_candidate=42,
+                dedupe_key="job-42",
+            ),
+            delivery_request_id="worker-attempt-1",
+            source_service="stew.api.v1.ExtractionWorker",
+            labels={"job_id": "job-42"},
+            extra_metadata=[("x-request-id", "req_123")],
+        )
+
+        print("deduped:", response.deduped)
+        print("settled points:", response.decision.points if response.decision else 0)
+
+
+asyncio.run(submit_oob_report())
+```
+
+如果你的服务仍然走同步回传，`x-billing-status` + `x-billing-report` 的 header / trailer 模式依旧有效；只有在服务配置把 `report_transport` 切成 `OUT_OF_BAND` 时，才需要额外走 `submit_billing_report()`。
+
+批量排查 late report 时，推荐直接按状态筛 reservation：
+
+```python
+import asyncio
+
+from stew import BillingClient
+from stew.api.v1 import billing_model
+
+
+async def find_stale_reservations() -> None:
+    async with BillingClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
+        result = await billing.query_reservations(
+            scope_business_id="skillforge",
+            status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
+            page_size=50,
+        )
+        for reservation in result.reservations or []:
+            print(reservation.authorization_id, reservation.status)
+
+
+asyncio.run(find_stale_reservations())
+```
+
 ### 自动透传当前 gRPC Context
 
 如果业务服务本身是通过 Stew 网关接入的，并且在 gRPC handler 内还会再次使用 SDK 调回网关

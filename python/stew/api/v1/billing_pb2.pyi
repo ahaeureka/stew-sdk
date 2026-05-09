@@ -42,6 +42,7 @@ class BillingReportTransport(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     BILLING_REPORT_TRANSPORT_HEADER: _ClassVar[BillingReportTransport]
     BILLING_REPORT_TRANSPORT_TRAILER: _ClassVar[BillingReportTransport]
     BILLING_REPORT_TRANSPORT_BOTH: _ClassVar[BillingReportTransport]
+    BILLING_REPORT_TRANSPORT_OUT_OF_BAND: _ClassVar[BillingReportTransport]
 
 class BillingFinalStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -67,6 +68,17 @@ class BillingTransactionType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     BILLING_TRANSACTION_TYPE_GRANT: _ClassVar[BillingTransactionType]
     BILLING_TRANSACTION_TYPE_COMPENSATION: _ClassVar[BillingTransactionType]
 
+class BillingReservationStatus(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+    __slots__ = ()
+    BILLING_RESERVATION_STATUS_UNSPECIFIED: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_AUTHORIZED: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_AWAITING_REPORT: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_PENDING_RECONCILE: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_CAPTURED: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_RELEASED: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_REFUNDED: _ClassVar[BillingReservationStatus]
+    BILLING_RESERVATION_STATUS_EXPIRED: _ClassVar[BillingReservationStatus]
+
 class BillingPolicyArtifactType(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
     BILLING_POLICY_ARTIFACT_TYPE_UNSPECIFIED: _ClassVar[BillingPolicyArtifactType]
@@ -91,6 +103,7 @@ BILLING_REPORT_TRANSPORT_UNSPECIFIED: BillingReportTransport
 BILLING_REPORT_TRANSPORT_HEADER: BillingReportTransport
 BILLING_REPORT_TRANSPORT_TRAILER: BillingReportTransport
 BILLING_REPORT_TRANSPORT_BOTH: BillingReportTransport
+BILLING_REPORT_TRANSPORT_OUT_OF_BAND: BillingReportTransport
 BILLING_FINAL_STATUS_UNSPECIFIED: BillingFinalStatus
 BILLING_FINAL_STATUS_SUCCESS: BillingFinalStatus
 BILLING_FINAL_STATUS_FAILED: BillingFinalStatus
@@ -106,6 +119,14 @@ BILLING_TRANSACTION_TYPE_REFUND: BillingTransactionType
 BILLING_TRANSACTION_TYPE_EXPIRE: BillingTransactionType
 BILLING_TRANSACTION_TYPE_GRANT: BillingTransactionType
 BILLING_TRANSACTION_TYPE_COMPENSATION: BillingTransactionType
+BILLING_RESERVATION_STATUS_UNSPECIFIED: BillingReservationStatus
+BILLING_RESERVATION_STATUS_AUTHORIZED: BillingReservationStatus
+BILLING_RESERVATION_STATUS_AWAITING_REPORT: BillingReservationStatus
+BILLING_RESERVATION_STATUS_PENDING_RECONCILE: BillingReservationStatus
+BILLING_RESERVATION_STATUS_CAPTURED: BillingReservationStatus
+BILLING_RESERVATION_STATUS_RELEASED: BillingReservationStatus
+BILLING_RESERVATION_STATUS_REFUNDED: BillingReservationStatus
+BILLING_RESERVATION_STATUS_EXPIRED: BillingReservationStatus
 BILLING_POLICY_ARTIFACT_TYPE_UNSPECIFIED: BillingPolicyArtifactType
 BILLING_POLICY_ARTIFACT_TYPE_PROVIDER_RATE_CARD: BillingPolicyArtifactType
 BILLING_POLICY_ARTIFACT_TYPE_POINT_POLICY: BillingPolicyArtifactType
@@ -113,7 +134,7 @@ BILLING_POLICY_ARTIFACT_TYPE_MONEY_POLICY: BillingPolicyArtifactType
 BILLING_POLICY_ARTIFACT_TYPE_ESTIMATOR: BillingPolicyArtifactType
 
 class ServiceBillingConfig(_message.Message):
-    __slots__ = ("enabled", "business_id", "policy_id", "subject_mode", "preauth_mode", "allow_anonymous_subject", "missing_report_action", "release_timeout_seconds", "report_transport", "report_header_prefix", "factor_schema_version", "max_reservation_ttl_seconds", "idempotency_window_seconds", "capture_requires_report", "reconcile_scan_interval_seconds", "max_report_size_bytes", "strict_policy_snapshot", "policy_id_by_plan")
+    __slots__ = ("enabled", "business_id", "policy_id", "subject_mode", "preauth_mode", "allow_anonymous_subject", "missing_report_action", "release_timeout_seconds", "report_transport", "report_header_prefix", "factor_schema_version", "max_reservation_ttl_seconds", "idempotency_window_seconds", "capture_requires_report", "reconcile_scan_interval_seconds", "max_report_size_bytes", "strict_policy_snapshot", "policy_id_by_plan", "out_of_band_report_timeout_seconds")
     class PolicyIdByPlanEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -139,6 +160,7 @@ class ServiceBillingConfig(_message.Message):
     MAX_REPORT_SIZE_BYTES_FIELD_NUMBER: _ClassVar[int]
     STRICT_POLICY_SNAPSHOT_FIELD_NUMBER: _ClassVar[int]
     POLICY_ID_BY_PLAN_FIELD_NUMBER: _ClassVar[int]
+    OUT_OF_BAND_REPORT_TIMEOUT_SECONDS_FIELD_NUMBER: _ClassVar[int]
     enabled: bool
     business_id: str
     policy_id: str
@@ -157,7 +179,8 @@ class ServiceBillingConfig(_message.Message):
     max_report_size_bytes: int
     strict_policy_snapshot: bool
     policy_id_by_plan: _containers.ScalarMap[str, str]
-    def __init__(self, enabled: bool = ..., business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., subject_mode: _Optional[_Union[BillingSubjectType, str]] = ..., preauth_mode: _Optional[_Union[BillingPreauthMode, str]] = ..., allow_anonymous_subject: bool = ..., missing_report_action: _Optional[_Union[BillingMissingReportAction, str]] = ..., release_timeout_seconds: _Optional[int] = ..., report_transport: _Optional[_Union[BillingReportTransport, str]] = ..., report_header_prefix: _Optional[str] = ..., factor_schema_version: _Optional[str] = ..., max_reservation_ttl_seconds: _Optional[int] = ..., idempotency_window_seconds: _Optional[int] = ..., capture_requires_report: bool = ..., reconcile_scan_interval_seconds: _Optional[int] = ..., max_report_size_bytes: _Optional[int] = ..., strict_policy_snapshot: bool = ..., policy_id_by_plan: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    out_of_band_report_timeout_seconds: int
+    def __init__(self, enabled: bool = ..., business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., subject_mode: _Optional[_Union[BillingSubjectType, str]] = ..., preauth_mode: _Optional[_Union[BillingPreauthMode, str]] = ..., allow_anonymous_subject: bool = ..., missing_report_action: _Optional[_Union[BillingMissingReportAction, str]] = ..., release_timeout_seconds: _Optional[int] = ..., report_transport: _Optional[_Union[BillingReportTransport, str]] = ..., report_header_prefix: _Optional[str] = ..., factor_schema_version: _Optional[str] = ..., max_reservation_ttl_seconds: _Optional[int] = ..., idempotency_window_seconds: _Optional[int] = ..., capture_requires_report: bool = ..., reconcile_scan_interval_seconds: _Optional[int] = ..., max_report_size_bytes: _Optional[int] = ..., strict_policy_snapshot: bool = ..., policy_id_by_plan: _Optional[_Mapping[str, str]] = ..., out_of_band_report_timeout_seconds: _Optional[int] = ...) -> None: ...
 
 class AuthorizationContext(_message.Message):
     __slots__ = ("business_id", "user_id", "authorization_id", "request_id", "policy_id", "subject_id", "subject_type", "factor_schema_version")
@@ -288,6 +311,45 @@ class FinalizeRequest(_message.Message):
     context: AuthorizationContext
     report: BillingReport
     def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., report: _Optional[_Union[BillingReport, _Mapping]] = ...) -> None: ...
+
+class SubmitBillingReportRequest(_message.Message):
+    __slots__ = ("report", "delivery_request_id", "source_service", "labels")
+    class LabelsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: str
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[str] = ...) -> None: ...
+    REPORT_FIELD_NUMBER: _ClassVar[int]
+    DELIVERY_REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SOURCE_SERVICE_FIELD_NUMBER: _ClassVar[int]
+    LABELS_FIELD_NUMBER: _ClassVar[int]
+    report: BillingReport
+    delivery_request_id: str
+    source_service: str
+    labels: _containers.ScalarMap[str, str]
+    def __init__(self, report: _Optional[_Union[BillingReport, _Mapping]] = ..., delivery_request_id: _Optional[str] = ..., source_service: _Optional[str] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
+
+class SubmitBillingReportResponse(_message.Message):
+    __slots__ = ("business_id", "user_id", "subject_id", "subject_type", "authorization_id", "request_id", "decision", "deduped")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    DECISION_FIELD_NUMBER: _ClassVar[int]
+    DEDUPED_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    user_id: str
+    subject_id: str
+    subject_type: BillingSubjectType
+    authorization_id: str
+    request_id: str
+    decision: SettlementDecision
+    deduped: bool
+    def __init__(self, business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., decision: _Optional[_Union[SettlementDecision, _Mapping]] = ..., deduped: bool = ...) -> None: ...
 
 class SettlementDecision(_message.Message):
     __slots__ = ("success", "transaction_type", "points", "face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "message")
@@ -578,6 +640,78 @@ class QuerySnapshotRequest(_message.Message):
     request_id: str
     def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ...) -> None: ...
 
+class GetBillingReservationRequest(_message.Message):
+    __slots__ = ("business_id", "authorization_id")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    authorization_id: str
+    def __init__(self, business_id: _Optional[str] = ..., authorization_id: _Optional[str] = ...) -> None: ...
+
+class QueryBillingReservationsRequest(_message.Message):
+    __slots__ = ("business_id", "request_id", "authorization_id", "subject_id", "subject_type", "user_id", "start_time_epoch_seconds", "end_time_epoch_seconds", "page_size", "page_token", "status")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    START_TIME_EPOCH_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    END_TIME_EPOCH_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    PAGE_SIZE_FIELD_NUMBER: _ClassVar[int]
+    PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    request_id: str
+    authorization_id: str
+    subject_id: str
+    subject_type: BillingSubjectType
+    user_id: str
+    start_time_epoch_seconds: int
+    end_time_epoch_seconds: int
+    page_size: int
+    page_token: str
+    status: BillingReservationStatus
+    def __init__(self, business_id: _Optional[str] = ..., request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ..., start_time_epoch_seconds: _Optional[int] = ..., end_time_epoch_seconds: _Optional[int] = ..., page_size: _Optional[int] = ..., page_token: _Optional[str] = ..., status: _Optional[_Union[BillingReservationStatus, str]] = ...) -> None: ...
+
+class BillingReservation(_message.Message):
+    __slots__ = ("business_id", "user_id", "authorization_id", "request_id", "subject_id", "subject_type", "policy_id", "status", "held_points", "captured_points", "awaiting_report_timeout_action", "awaiting_report_deadline", "created_at")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    USER_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    STATUS_FIELD_NUMBER: _ClassVar[int]
+    HELD_POINTS_FIELD_NUMBER: _ClassVar[int]
+    CAPTURED_POINTS_FIELD_NUMBER: _ClassVar[int]
+    AWAITING_REPORT_TIMEOUT_ACTION_FIELD_NUMBER: _ClassVar[int]
+    AWAITING_REPORT_DEADLINE_FIELD_NUMBER: _ClassVar[int]
+    CREATED_AT_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    user_id: str
+    authorization_id: str
+    request_id: str
+    subject_id: str
+    subject_type: BillingSubjectType
+    policy_id: str
+    status: BillingReservationStatus
+    held_points: int
+    captured_points: int
+    awaiting_report_timeout_action: str
+    awaiting_report_deadline: _timestamp_pb2.Timestamp
+    created_at: _timestamp_pb2.Timestamp
+    def __init__(self, business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., policy_id: _Optional[str] = ..., status: _Optional[_Union[BillingReservationStatus, str]] = ..., held_points: _Optional[int] = ..., captured_points: _Optional[int] = ..., awaiting_report_timeout_action: _Optional[str] = ..., awaiting_report_deadline: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+
+class QueryBillingReservationsResponse(_message.Message):
+    __slots__ = ("reservations", "next_page_token")
+    RESERVATIONS_FIELD_NUMBER: _ClassVar[int]
+    NEXT_PAGE_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    reservations: _containers.RepeatedCompositeFieldContainer[BillingReservation]
+    next_page_token: str
+    def __init__(self, reservations: _Optional[_Iterable[_Union[BillingReservation, _Mapping]]] = ..., next_page_token: _Optional[str] = ...) -> None: ...
+
 class ManualReconcileRequest(_message.Message):
     __slots__ = ("business_id", "subject_id", "request_id", "authorization_id", "reason")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
@@ -593,12 +727,14 @@ class ManualReconcileRequest(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., request_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
 
 class ManualReconcileResponse(_message.Message):
-    __slots__ = ("success", "message")
+    __slots__ = ("success", "message", "reservation")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    RESERVATION_FIELD_NUMBER: _ClassVar[int]
     success: bool
     message: str
-    def __init__(self, success: bool = ..., message: _Optional[str] = ...) -> None: ...
+    reservation: BillingReservation
+    def __init__(self, success: bool = ..., message: _Optional[str] = ..., reservation: _Optional[_Union[BillingReservation, _Mapping]] = ...) -> None: ...
 
 class BillingPolicyArtifact(_message.Message):
     __slots__ = ("artifact_id", "business_id", "artifact_type", "artifact_version", "content", "content_hash", "created_at", "updated_at", "deleted_at")

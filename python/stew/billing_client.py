@@ -61,14 +61,34 @@ class BillingClient(AioGatewayClientBase[_bill_grpc.BillingServiceStub]):
     request body fields such as AuthorizationContext.business_id.
     """
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._report_ingress_stub: _bill_grpc.BillingReportIngressServiceStub | None = None
+
     def _create_stub(self, channel: grpc.aio.Channel) -> _bill_grpc.BillingServiceStub:
         return _bill_grpc.BillingServiceStub(channel)
+
+    async def connect(self) -> None:
+        await super().connect()
+        if self._channel is None:
+            raise RuntimeError("Client channel was not initialized")
+        self._report_ingress_stub = _bill_grpc.BillingReportIngressServiceStub(self._channel)
+
+    async def close(self) -> None:
+        self._report_ingress_stub = None
+        await super().close()
 
     async def _call(self, coro: Any) -> Any:
         try:
             return await coro
         except grpc.RpcError as exc:
             raise wrap_rpc_error(exc) from exc
+
+    @property
+    def _report_s(self) -> _bill_grpc.BillingReportIngressServiceStub:
+        if self._report_ingress_stub is None:
+            raise RuntimeError("Client is not connected. Call connect() or use async with.")
+        return self._report_ingress_stub
 
     async def estimate_charge(
         self,
@@ -413,6 +433,113 @@ class BillingClient(AioGatewayClientBase[_bill_grpc.BillingServiceStub]):
         )
         return _bill_model.BillingSettlementSnapshot.from_protobuf(response)
 
+    async def query_reservations(
+        self,
+        request: _bill_model.QueryBillingReservationsRequest
+        | _bill_pb.QueryBillingReservationsRequest
+        | None = None,
+        *,
+        scope_business_id: str = "",
+        request_id: str = "",
+        authorization_id: str = "",
+        subject_id: str = "",
+        subject_type: _bill_model.BillingSubjectType | int = _bill_model.BillingSubjectType(0),
+        user_id: str = "",
+        start_time_epoch_seconds: int = 0,
+        end_time_epoch_seconds: int = 0,
+        page_size: int = 0,
+        page_token: str = "",
+        status: _bill_model.BillingReservationStatus | int = _bill_model.BillingReservationStatus(0),
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> _bill_model.QueryBillingReservationsResponse:
+        message = (
+            _coerce_protobuf_message(request, _bill_pb.QueryBillingReservationsRequest)
+            if request is not None
+            else _bill_pb.QueryBillingReservationsRequest(
+                business_id=scope_business_id,
+                request_id=request_id,
+                authorization_id=authorization_id,
+                subject_id=subject_id,
+                subject_type=_enum_value(subject_type),
+                user_id=user_id,
+                start_time_epoch_seconds=start_time_epoch_seconds,
+                end_time_epoch_seconds=end_time_epoch_seconds,
+                page_size=page_size,
+                page_token=page_token,
+                status=_enum_value(status),
+            )
+        )
+        response = await self._call(
+            self._s.QueryReservations(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
+        )
+        return _bill_model.QueryBillingReservationsResponse.from_protobuf(response)
+
+    async def get_reservation(
+        self,
+        request: _bill_model.GetBillingReservationRequest
+        | _bill_pb.GetBillingReservationRequest
+        | None = None,
+        *,
+        scope_business_id: str = "",
+        authorization_id: str = "",
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> _bill_model.BillingReservation:
+        message = (
+            _coerce_protobuf_message(request, _bill_pb.GetBillingReservationRequest)
+            if request is not None
+            else _bill_pb.GetBillingReservationRequest(
+                business_id=scope_business_id,
+                authorization_id=authorization_id,
+            )
+        )
+        response = await self._call(
+            self._s.GetReservation(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
+        )
+        return _bill_model.BillingReservation.from_protobuf(response)
+
+    async def submit_billing_report(
+        self,
+        request: _bill_model.SubmitBillingReportRequest
+        | _bill_pb.SubmitBillingReportRequest
+        | None = None,
+        *,
+        report: _bill_model.BillingReport | _bill_pb.BillingReport | None = None,
+        delivery_request_id: str = "",
+        source_service: str = "",
+        labels: dict[str, str] | None = None,
+        business_id: str = "",
+        extra_metadata: Sequence[MetadataEntry] = (),
+    ) -> _bill_model.SubmitBillingReportResponse:
+        if request is not None:
+            message = _coerce_protobuf_message(request, _bill_pb.SubmitBillingReportRequest)
+        else:
+            message = _bill_pb.SubmitBillingReportRequest(
+                delivery_request_id=delivery_request_id,
+                source_service=source_service,
+                labels=labels or {},
+            )
+            if report is not None:
+                message.report.CopyFrom(_coerce_billing_report(report))
+
+        response = await self._call(
+            self._report_s.SubmitBillingReport(
+                message,
+                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                timeout=self._timeout,
+            )
+        )
+        return _bill_model.SubmitBillingReportResponse.from_protobuf(response)
+
     async def manual_reconcile(
         self,
         request: _bill_model.ManualReconcileRequest | _bill_pb.ManualReconcileRequest | None = None,
@@ -678,6 +805,19 @@ class SyncBillingClient(SyncGatewayClientBase[BillingClient]):
         self, *args: Any, **kwargs: Any
     ) -> _bill_model.BillingSettlementSnapshot:
         return self._run(self._client.query_snapshot(*args, **kwargs))
+
+    def query_reservations(
+        self, *args: Any, **kwargs: Any
+    ) -> _bill_model.QueryBillingReservationsResponse:
+        return self._run(self._client.query_reservations(*args, **kwargs))
+
+    def get_reservation(self, *args: Any, **kwargs: Any) -> _bill_model.BillingReservation:
+        return self._run(self._client.get_reservation(*args, **kwargs))
+
+    def submit_billing_report(
+        self, *args: Any, **kwargs: Any
+    ) -> _bill_model.SubmitBillingReportResponse:
+        return self._run(self._client.submit_billing_report(*args, **kwargs))
 
     def manual_reconcile(
         self, *args: Any, **kwargs: Any
