@@ -85,7 +85,6 @@ def test_finalize_accepts_model_inputs() -> None:
                 business_id="ledger-biz",
                 authorization_id="auth-1",
                 request_id="req-2",
-                billed_points_candidate=128,
             ),
         )
     )
@@ -250,7 +249,7 @@ def test_submit_billing_report_uses_ingress_stub() -> None:
                 dedupe_key="job-42",
             ),
             delivery_request_id="delivery-1",
-            source_service="stew.api.v1.ExtractionWorker",
+            source_service="your.service.v1.AsyncWorker",
             labels={"attempt": "1"},
             business_id="header-biz",
             extra_metadata=[("x-request-id", "req-1")],
@@ -259,7 +258,7 @@ def test_submit_billing_report_uses_ingress_stub() -> None:
 
     assert captured["request"].report.authorization_id == "auth-1"
     assert captured["request"].delivery_request_id == "delivery-1"
-    assert captured["request"].source_service == "stew.api.v1.ExtractionWorker"
+    assert captured["request"].source_service == "your.service.v1.AsyncWorker"
     assert captured["request"].labels["attempt"] == "1"
     assert captured["metadata"] == [
         ("x-api-key", "ak_bill"),

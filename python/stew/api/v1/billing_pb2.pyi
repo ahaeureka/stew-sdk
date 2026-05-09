@@ -34,7 +34,6 @@ class BillingMissingReportAction(int, metaclass=_enum_type_wrapper.EnumTypeWrapp
     BILLING_MISSING_REPORT_ACTION_UNSPECIFIED: _ClassVar[BillingMissingReportAction]
     BILLING_MISSING_REPORT_ACTION_RELEASE: _ClassVar[BillingMissingReportAction]
     BILLING_MISSING_REPORT_ACTION_MARK_PENDING: _ClassVar[BillingMissingReportAction]
-    BILLING_MISSING_REPORT_ACTION_CAPTURE_ESTIMATE: _ClassVar[BillingMissingReportAction]
 
 class BillingReportTransport(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     __slots__ = ()
@@ -98,7 +97,6 @@ BILLING_PREAUTH_MODE_DISABLED: BillingPreauthMode
 BILLING_MISSING_REPORT_ACTION_UNSPECIFIED: BillingMissingReportAction
 BILLING_MISSING_REPORT_ACTION_RELEASE: BillingMissingReportAction
 BILLING_MISSING_REPORT_ACTION_MARK_PENDING: BillingMissingReportAction
-BILLING_MISSING_REPORT_ACTION_CAPTURE_ESTIMATE: BillingMissingReportAction
 BILLING_REPORT_TRANSPORT_UNSPECIFIED: BillingReportTransport
 BILLING_REPORT_TRANSPORT_HEADER: BillingReportTransport
 BILLING_REPORT_TRANSPORT_TRAILER: BillingReportTransport
@@ -203,39 +201,35 @@ class AuthorizationContext(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., factor_schema_version: _Optional[str] = ...) -> None: ...
 
 class BillingUsageTotals(_message.Message):
-    __slots__ = ("prompt_tokens", "completion_tokens", "embedding_tokens", "ocr_pages", "asr_minutes", "infra_units")
-    PROMPT_TOKENS_FIELD_NUMBER: _ClassVar[int]
-    COMPLETION_TOKENS_FIELD_NUMBER: _ClassVar[int]
-    EMBEDDING_TOKENS_FIELD_NUMBER: _ClassVar[int]
-    OCR_PAGES_FIELD_NUMBER: _ClassVar[int]
-    ASR_MINUTES_FIELD_NUMBER: _ClassVar[int]
-    INFRA_UNITS_FIELD_NUMBER: _ClassVar[int]
-    prompt_tokens: int
-    completion_tokens: int
-    embedding_tokens: int
-    ocr_pages: int
-    asr_minutes: int
-    infra_units: int
-    def __init__(self, prompt_tokens: _Optional[int] = ..., completion_tokens: _Optional[int] = ..., embedding_tokens: _Optional[int] = ..., ocr_pages: _Optional[int] = ..., asr_minutes: _Optional[int] = ..., infra_units: _Optional[int] = ...) -> None: ...
+    __slots__ = ("meters",)
+    class MetersEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: int
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+    METERS_FIELD_NUMBER: _ClassVar[int]
+    meters: _containers.ScalarMap[str, int]
+    def __init__(self, meters: _Optional[_Mapping[str, int]] = ...) -> None: ...
 
 class BillingCostBreakdown(_message.Message):
-    __slots__ = ("chat_in_micros", "chat_out_micros", "embed_micros", "media_micros", "infra_micros", "total_cost_micros")
-    CHAT_IN_MICROS_FIELD_NUMBER: _ClassVar[int]
-    CHAT_OUT_MICROS_FIELD_NUMBER: _ClassVar[int]
-    EMBED_MICROS_FIELD_NUMBER: _ClassVar[int]
-    MEDIA_MICROS_FIELD_NUMBER: _ClassVar[int]
-    INFRA_MICROS_FIELD_NUMBER: _ClassVar[int]
+    __slots__ = ("line_items", "total_cost_micros")
+    class LineItemsEntry(_message.Message):
+        __slots__ = ("key", "value")
+        KEY_FIELD_NUMBER: _ClassVar[int]
+        VALUE_FIELD_NUMBER: _ClassVar[int]
+        key: str
+        value: int
+        def __init__(self, key: _Optional[str] = ..., value: _Optional[int] = ...) -> None: ...
+    LINE_ITEMS_FIELD_NUMBER: _ClassVar[int]
     TOTAL_COST_MICROS_FIELD_NUMBER: _ClassVar[int]
-    chat_in_micros: int
-    chat_out_micros: int
-    embed_micros: int
-    media_micros: int
-    infra_micros: int
+    line_items: _containers.ScalarMap[str, int]
     total_cost_micros: int
-    def __init__(self, chat_in_micros: _Optional[int] = ..., chat_out_micros: _Optional[int] = ..., embed_micros: _Optional[int] = ..., media_micros: _Optional[int] = ..., infra_micros: _Optional[int] = ..., total_cost_micros: _Optional[int] = ...) -> None: ...
+    def __init__(self, line_items: _Optional[_Mapping[str, int]] = ..., total_cost_micros: _Optional[int] = ...) -> None: ...
 
 class BillingReport(_message.Message):
-    __slots__ = ("business_id", "authorization_id", "request_id", "user_id", "usage_source", "final_status", "raw_usage_totals", "cost_breakdown", "business_factors", "billed_points_candidate", "refund_reason", "dedupe_key", "provider_usage_facts", "execution_hints")
+    __slots__ = ("business_id", "authorization_id", "request_id", "user_id", "usage_source", "final_status", "raw_usage_totals", "cost_breakdown", "business_factors", "refund_reason", "dedupe_key", "provider_usage_facts", "execution_hints")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
@@ -245,7 +239,6 @@ class BillingReport(_message.Message):
     RAW_USAGE_TOTALS_FIELD_NUMBER: _ClassVar[int]
     COST_BREAKDOWN_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_FACTORS_FIELD_NUMBER: _ClassVar[int]
-    BILLED_POINTS_CANDIDATE_FIELD_NUMBER: _ClassVar[int]
     REFUND_REASON_FIELD_NUMBER: _ClassVar[int]
     DEDUPE_KEY_FIELD_NUMBER: _ClassVar[int]
     PROVIDER_USAGE_FACTS_FIELD_NUMBER: _ClassVar[int]
@@ -259,12 +252,11 @@ class BillingReport(_message.Message):
     raw_usage_totals: BillingUsageTotals
     cost_breakdown: BillingCostBreakdown
     business_factors: _struct_pb2.Struct
-    billed_points_candidate: int
     refund_reason: str
     dedupe_key: str
     provider_usage_facts: _struct_pb2.Struct
     execution_hints: _struct_pb2.Struct
-    def __init__(self, business_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., user_id: _Optional[str] = ..., usage_source: _Optional[_Union[BillingUsageSource, str]] = ..., final_status: _Optional[_Union[BillingFinalStatus, str]] = ..., raw_usage_totals: _Optional[_Union[BillingUsageTotals, _Mapping]] = ..., cost_breakdown: _Optional[_Union[BillingCostBreakdown, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., billed_points_candidate: _Optional[int] = ..., refund_reason: _Optional[str] = ..., dedupe_key: _Optional[str] = ..., provider_usage_facts: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., execution_hints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    def __init__(self, business_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., user_id: _Optional[str] = ..., usage_source: _Optional[_Union[BillingUsageSource, str]] = ..., final_status: _Optional[_Union[BillingFinalStatus, str]] = ..., raw_usage_totals: _Optional[_Union[BillingUsageTotals, _Mapping]] = ..., cost_breakdown: _Optional[_Union[BillingCostBreakdown, _Mapping]] = ..., business_factors: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., refund_reason: _Optional[str] = ..., dedupe_key: _Optional[str] = ..., provider_usage_facts: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., execution_hints: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
 
 class EstimateChargeRequest(_message.Message):
     __slots__ = ("context", "request_factors")

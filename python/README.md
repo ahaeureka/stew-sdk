@@ -210,6 +210,20 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 - `report.user_id`、`report.request_id`、`report.authorization_id` 应复用原始 authorize 上下文
 - `delivery_request_id` 代表本次投递尝试；`dedupe_key` 代表业务幂等键，二者不是同一个东西
 - 当前服务凭证必须有对应 `source_service` 的 service-scoped 权限；服务端会校验来源服务与业务绑定
+- `BillingReport` 现在只接受事实层数据，不再接受 `billed_points_candidate` 之类的候选结算字段
+- 缺失 report 的后续处理只应配置为 `BILLING_MISSING_REPORT_ACTION_RELEASE` 或 `BILLING_MISSING_REPORT_ACTION_MARK_PENDING`，不要再把 `capture_estimate` 当作主线能力
+
+SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或计费规则：
+
+- `BillingUsageTotals` / `BillingCostBreakdown` 只承载通用 usage 和成本数据
+- `business_factors` / `provider_usage_facts` / `execution_hints` 是业务自定义的透传字段
+- 具体 factor key、套餐逻辑、功能 key 或配额映射应由业务侧和网关策略配置自行约定，不属于 SDK 内置语义
+
+当前推荐的事实上报结构：
+
+- usage 统一放在 `raw_usage_totals.meters`
+- cost 统一放在 `cost_breakdown.line_items` 和 `total_cost_micros`
+- 最终扣点、金额和账务口径由网关 / rustpayment 基于策略快照重算，不由业务 report 直接指定
 
 异步 worker 提交 OOB billing report 的最小示例：
 
@@ -224,10 +238,10 @@ async def submit_oob_report() -> None:
     async with BillingClient(
         "127.0.0.1:3012",
         app_secret="ak_worker",
-        business_id="skillforge",
+        business_id="example-business",
     ) as billing:
         reservation = await billing.get_reservation(
-            scope_business_id="skillforge",
+            scope_business_id="example-business",
             authorization_id="auth_123",
         )
 
@@ -236,18 +250,28 @@ async def submit_oob_report() -> None:
 
         response = await billing.submit_billing_report(
             report=billing_model.BillingReport(
-                business_id="skillforge",
+                business_id="example-business",
                 authorization_id="auth_123",
                 request_id="req_123",
                 user_id="user_123",
                 usage_source=billing_model.BillingUsageSource.BILLING_USAGE_SOURCE_ACTUAL,
                 final_status=billing_model.BillingFinalStatus.BILLING_FINAL_STATUS_SUCCESS,
-                billed_points_candidate=42,
                 dedupe_key="job-42",
+                raw_usage_totals=billing_model.BillingUsageTotals(
+                    meters={"feature_units": 120, "processing_units": 80, "overhead_units": 1},
+                ),
+                cost_breakdown=billing_model.BillingCostBreakdown(
+                    line_items={
+                        "feature_units": 12000,
+                        "processing_units": 8000,
+                        "overhead_units": 100,
+                    },
+                    total_cost_micros=20100,
+                ),
             ),
             delivery_request_id="worker-attempt-1",
-            source_service="stew.api.v1.ExtractionWorker",
-            labels={"job_id": "job-42"},
+            source_service="your.service.v1.AsyncWorker",
+            labels={"attempt": "1"},
             extra_metadata=[("x-request-id", "req_123")],
         )
 
@@ -272,7 +296,7 @@ from stew.api.v1 import billing_model
 async def find_stale_reservations() -> None:
     async with BillingClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
         result = await billing.query_reservations(
-            scope_business_id="skillforge",
+            scope_business_id="example-business",
             status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
             page_size=50,
         )
