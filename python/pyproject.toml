@@ -11,5 +11,5 @@ dependencies = [
     "ruff>=0.14.1",
 ]
 [tool.uv.sources]
-protobuf-pydantic-gen = { git = "https://github.com/begonia-org/pydantic-protobuf-gen.git", rev = "feature/feat-auth" }
+protobuf-pydantic-gen = { git = "https://github.com/begonia-org/pydantic-protobuf-gen.git", rev = "develop" }
 
