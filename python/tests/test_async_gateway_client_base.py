@@ -4,7 +4,9 @@ import grpc
 import pytest
 
 from stew.apikey_client import ApiKeyClient
-from stew.billing_client import BillingClient
+from stew.billing_admin_client import BillingAdminClient
+from stew.billing_internal_client import BillingInternalClient
+from stew.billing_public_client import BillingPublicClient
 from stew.entitlement_client import EntitlementClient
 from stew.asset_browser_client import AssetBrowserClient
 from stew.file_storage_client import FileStorageClient
@@ -21,19 +23,27 @@ from stew._discovery.helpers import (
     ("client_factory", "stub_target"),
     [
         (
-            lambda: DiscoveryClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
+            lambda: DiscoveryClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
             "stew._discovery.client._grpc.ServiceDiscoveryServiceStub",
         ),
         (
-            lambda: FileStorageClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
+            lambda: FileStorageClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
             "stew.file_storage_client._fs_grpc.FileStorageServiceStub",
         ),
         (
-            lambda: AssetBrowserClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
+            lambda: AssetBrowserClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
             "stew.asset_browser_client._ab_grpc.BusinessAssetBrowserServiceStub",
         ),
         (
-            lambda: EntitlementClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
+            lambda: EntitlementClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
             "stew.entitlement_client._ent_grpc.EntitlementServiceStub",
         ),
         (
@@ -46,11 +56,27 @@ from stew._discovery.helpers import (
             "stew.apikey_client._apikey_grpc.ApiKeyServiceStub",
         ),
         (
-            lambda: BillingClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
-            "stew.billing_client._bill_grpc.BillingServiceStub",
+            lambda: BillingPublicClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
+            "stew.billing_public_client._bill_public_grpc.BillingPublicServiceStub",
         ),
         (
-            lambda: PaymentClient("127.0.0.1:3012", app_secret="ak_shared", timeout=5.0),
+            lambda: BillingAdminClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
+            "stew.billing_admin_client._bill_admin_grpc.BillingAdminServiceStub",
+        ),
+        (
+            lambda: BillingInternalClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
+            "stew.billing_internal_client._bill_internal_grpc.BillingInternalServiceStub",
+        ),
+        (
+            lambda: PaymentClient(
+                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
+            ),
             "stew.payment_client._payment_grpc.PaymentGatewayServiceStub",
         ),
     ],
@@ -65,6 +91,9 @@ def test_async_gateway_clients_share_channel_and_metadata(
     class FakeChannel:
         def __init__(self) -> None:
             self.closed = False
+
+        def unary_unary(self, *args, **kwargs):
+            return object()
 
         async def close(self) -> None:
             self.closed = True
@@ -113,7 +142,10 @@ def test_async_gateway_client_base_supports_default_metadata_and_business_id() -
 
     assert dict(
         client._meta(
-            extra_metadata=[("x-request-id", "req-1"), ("x-business-id", "biz-override")]
+            extra_metadata=[
+                ("x-request-id", "req-1"),
+                ("x-business-id", "biz-override"),
+            ]
         )
     ) == {
         "x-api-key": "ak_shared",
@@ -131,15 +163,36 @@ def test_build_aio_metadata_client_interceptors_cover_all_rpc_arities() -> None:
     )
 
     assert len(interceptors) == 4
-    assert sum(isinstance(it, grpc.aio.UnaryUnaryClientInterceptor) for it in interceptors) == 1
-    assert sum(isinstance(it, grpc.aio.UnaryStreamClientInterceptor) for it in interceptors) == 1
-    assert sum(isinstance(it, grpc.aio.StreamUnaryClientInterceptor) for it in interceptors) == 1
-    assert sum(isinstance(it, grpc.aio.StreamStreamClientInterceptor) for it in interceptors) == 1
+    assert (
+        sum(isinstance(it, grpc.aio.UnaryUnaryClientInterceptor) for it in interceptors)
+        == 1
+    )
+    assert (
+        sum(
+            isinstance(it, grpc.aio.UnaryStreamClientInterceptor) for it in interceptors
+        )
+        == 1
+    )
+    assert (
+        sum(
+            isinstance(it, grpc.aio.StreamUnaryClientInterceptor) for it in interceptors
+        )
+        == 1
+    )
+    assert (
+        sum(
+            isinstance(it, grpc.aio.StreamStreamClientInterceptor)
+            for it in interceptors
+        )
+        == 1
+    )
 
     async def run() -> None:
         captured: dict[str, object] = {}
         stream_unary = next(
-            it for it in interceptors if isinstance(it, grpc.aio.StreamUnaryClientInterceptor)
+            it
+            for it in interceptors
+            if isinstance(it, grpc.aio.StreamUnaryClientInterceptor)
         )
         call_details = grpc.aio.ClientCallDetails(
             method="/stew.api.v1.FileStorageService/UploadFile",
@@ -201,7 +254,19 @@ def test_create_aio_channel_expands_legacy_metadata_interceptor(
 
     expanded = captured["interceptors"]
     assert len(expanded) == 4
-    assert sum(isinstance(it, grpc.aio.UnaryUnaryClientInterceptor) for it in expanded) == 1
-    assert sum(isinstance(it, grpc.aio.UnaryStreamClientInterceptor) for it in expanded) == 1
-    assert sum(isinstance(it, grpc.aio.StreamUnaryClientInterceptor) for it in expanded) == 1
-    assert sum(isinstance(it, grpc.aio.StreamStreamClientInterceptor) for it in expanded) == 1
+    assert (
+        sum(isinstance(it, grpc.aio.UnaryUnaryClientInterceptor) for it in expanded)
+        == 1
+    )
+    assert (
+        sum(isinstance(it, grpc.aio.UnaryStreamClientInterceptor) for it in expanded)
+        == 1
+    )
+    assert (
+        sum(isinstance(it, grpc.aio.StreamUnaryClientInterceptor) for it in expanded)
+        == 1
+    )
+    assert (
+        sum(isinstance(it, grpc.aio.StreamStreamClientInterceptor) for it in expanded)
+        == 1
+    )

@@ -49,6 +49,18 @@ from stew.billing_client import (
     BillingError,
     SyncBillingClient,
 )
+from stew.billing_public_client import (
+    BillingPublicClient,
+    SyncBillingPublicClient,
+)
+from stew.billing_admin_client import (
+    BillingAdminClient,
+    SyncBillingAdminClient,
+)
+from stew.billing_internal_client import (
+    BillingInternalClient,
+    SyncBillingInternalClient,
+)
 from stew.apikey_client import (
     ApiKeyClient,
     ApiKeyError,
@@ -116,8 +128,14 @@ __all__ = [
     "SavedExportedAsset",
     "SyncAssetBrowserClient",
     "BillingClient",
+    "BillingPublicClient",
+    "BillingAdminClient",
+    "BillingInternalClient",
     "BillingError",
     "SyncBillingClient",
+    "SyncBillingPublicClient",
+    "SyncBillingAdminClient",
+    "SyncBillingInternalClient",
     "ApiKeyClient",
     "ApiKeyError",
     "SyncApiKeyClient",

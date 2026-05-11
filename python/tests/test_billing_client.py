@@ -1,17 +1,37 @@
 import asyncio
 
-from stew import BillingClient, BillingError, SyncBillingClient
+from google.protobuf import empty_pb2
+
+from stew import (
+    BillingAdminClient,
+    BillingClient,
+    BillingError,
+    BillingInternalClient,
+    BillingPublicClient,
+    SyncBillingAdminClient,
+    SyncBillingClient,
+    SyncBillingInternalClient,
+    SyncBillingPublicClient,
+)
 from stew.api.v1 import billing_model as billing_model
 from stew.api.v1 import billing_pb2 as billing_pb2
 
 
-def test_billing_client_is_exported() -> None:
+def test_billing_clients_are_exported() -> None:
     assert BillingClient is not None
+    assert BillingPublicClient is not None
+    assert BillingAdminClient is not None
+    assert BillingInternalClient is not None
     assert SyncBillingClient is not None
+    assert SyncBillingPublicClient is not None
+    assert SyncBillingAdminClient is not None
+    assert SyncBillingInternalClient is not None
     assert BillingError is not None
 
 
-def test_query_balance_separates_scope_business_id_from_header_business_id() -> None:
+def test_public_query_balance_separates_scope_business_id_from_header_business_id() -> (
+    None
+):
     captured: dict[str, object] = {}
 
     class Stub:
@@ -26,7 +46,7 @@ def test_query_balance_separates_scope_business_id_from_header_business_id() -> 
                 available_balance=42,
             )
 
-    client = BillingClient(
+    client = BillingPublicClient(
         "127.0.0.1:3012",
         app_secret="ak_bill",
         business_id="biz-default",
@@ -57,7 +77,7 @@ def test_query_balance_separates_scope_business_id_from_header_business_id() -> 
     assert result.available_balance == 42
 
 
-def test_finalize_accepts_model_inputs() -> None:
+def test_internal_finalize_accepts_model_inputs() -> None:
     captured: dict[str, object] = {}
 
     class Stub:
@@ -71,7 +91,7 @@ def test_finalize_accepts_model_inputs() -> None:
                 message="captured",
             )
 
-    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    client = BillingInternalClient("127.0.0.1:3012", app_secret="ak_bill")
     client._stub = Stub()  # type: ignore[assignment]
 
     result = asyncio.run(
@@ -98,7 +118,43 @@ def test_finalize_accepts_model_inputs() -> None:
     assert result.points == 128
 
 
-def test_create_policy_artifact_supports_scope_and_metadata() -> None:
+def test_admin_create_policy_supports_scope_and_metadata() -> None:
+    captured: dict[str, object] = {}
+
+    class Stub:
+        async def CreatePolicy(self, request, metadata, timeout):
+            captured["request"] = request
+            captured["metadata"] = list(metadata)
+            assert timeout == 30.0
+            return billing_pb2.BillingPolicy(
+                policy_id="policy-1",
+                business_id=request.business_id,
+                display_name=request.display_name,
+            )
+
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.create_policy(
+            scope_business_id="ledger-biz",
+            display_name="Gold Plan",
+            description="premium",
+            business_id="header-biz",
+        )
+    )
+
+    assert captured["request"].business_id == "ledger-biz"
+    assert captured["request"].display_name == "Gold Plan"
+    assert captured["metadata"] == [
+        ("x-api-key", "ak_bill"),
+        ("x-business-id", "header-biz"),
+    ]
+    assert isinstance(result, billing_model.BillingPolicy)
+    assert result.policy_id == "policy-1"
+
+
+def test_admin_create_policy_artifact_supports_scope_and_metadata() -> None:
     captured: dict[str, object] = {}
 
     class Stub:
@@ -112,7 +168,7 @@ def test_create_policy_artifact_supports_scope_and_metadata() -> None:
                 artifact_version=request.artifact_version,
             )
 
-    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
     client._stub = Stub()  # type: ignore[assignment]
 
     result = asyncio.run(
@@ -134,7 +190,7 @@ def test_create_policy_artifact_supports_scope_and_metadata() -> None:
     assert result.artifact_id == "artifact-1"
 
 
-def test_list_policy_bundles_returns_model_response() -> None:
+def test_admin_list_policy_bundles_returns_model_response() -> None:
     captured: dict[str, object] = {}
 
     class Stub:
@@ -151,7 +207,7 @@ def test_list_policy_bundles_returns_model_response() -> None:
                 ]
             )
 
-    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
     client._stub = Stub()  # type: ignore[assignment]
 
     result = asyncio.run(
@@ -170,7 +226,7 @@ def test_list_policy_bundles_returns_model_response() -> None:
     assert result.bundles[0].bundle_version == 3
 
 
-def test_query_reservations_supports_status_filter() -> None:
+def test_admin_query_reservations_supports_status_filter() -> None:
     captured: dict[str, object] = {}
 
     class Stub:
@@ -189,7 +245,7 @@ def test_query_reservations_supports_status_filter() -> None:
                 next_page_token="next-page",
             )
 
-    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
     client._stub = Stub()  # type: ignore[assignment]
 
     result = asyncio.run(
@@ -218,7 +274,7 @@ def test_query_reservations_supports_status_filter() -> None:
     assert result.next_page_token == "next-page"
 
 
-def test_submit_billing_report_uses_ingress_stub() -> None:
+def test_internal_submit_billing_report_uses_ingress_stub() -> None:
     captured: dict[str, object] = {}
 
     class IngressStub:
@@ -234,7 +290,7 @@ def test_submit_billing_report_uses_ingress_stub() -> None:
                 decision=billing_pb2.SettlementDecision(success=True, points=42),
             )
 
-    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    client = BillingInternalClient("127.0.0.1:3012", app_secret="ak_bill")
     client._report_ingress_stub = IngressStub()  # type: ignore[assignment]
 
     result = asyncio.run(
@@ -269,3 +325,55 @@ def test_submit_billing_report_uses_ingress_stub() -> None:
     assert result.deduped is True
     assert result.decision is not None
     assert result.decision.points == 42
+
+
+def test_admin_delete_policy_returns_empty_response() -> None:
+    class Stub:
+        async def DeletePolicy(self, request, metadata, timeout):
+            assert request.business_id == "ledger-biz"
+            assert request.policy_id == "policy-1"
+            assert list(metadata) == [("x-api-key", "ak_bill")]
+            assert timeout == 30.0
+            return empty_pb2.Empty()
+
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.delete_policy(
+            scope_business_id="ledger-biz",
+            policy_id="policy-1",
+        )
+    )
+
+    assert isinstance(result, empty_pb2.Empty)
+
+
+def test_compatibility_billing_client_routes_to_split_clients() -> None:
+    client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
+    calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
+
+    async def fake_query_balance(*args, **kwargs):
+        calls.append(("public", args, kwargs))
+        return billing_model.BalanceSnapshot(available_balance=9)
+
+    async def fake_grant_credits(*args, **kwargs):
+        calls.append(("admin", args, kwargs))
+        return billing_model.CreditGrant(grant_id="grant-1")
+
+    async def fake_finalize(*args, **kwargs):
+        calls.append(("internal", args, kwargs))
+        return billing_model.SettlementDecision(success=True)
+
+    client.public.query_balance = fake_query_balance  # type: ignore[method-assign]
+    client.admin.grant_credits = fake_grant_credits  # type: ignore[method-assign]
+    client.internal.finalize = fake_finalize  # type: ignore[method-assign]
+
+    balance = asyncio.run(client.query_balance(scope_business_id="ledger-biz"))
+    grant = asyncio.run(client.grant_credits(scope_business_id="ledger-biz"))
+    decision = asyncio.run(client.finalize())
+
+    assert balance.available_balance == 9
+    assert grant.grant_id == "grant-1"
+    assert decision.success is True
+    assert [entry[0] for entry in calls] == ["public", "admin", "internal"]

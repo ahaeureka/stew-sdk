@@ -6,7 +6,7 @@ from google.protobuf import timestamp_pb2 as _timestamp_pb2
 from google.protobuf import struct_pb2 as _struct_pb2
 from google.protobuf import empty_pb2 as _empty_pb2
 from protobuf_pydantic_gen import pydantic_pb2 as _pydantic_pb2
-import billing_pb2 as _billing_pb2
+import billing_common_pb2 as _billing_common_pb2
 from stew.api.v1 import options_pb2 as _options_pb2
 from stew.api.v1 import web_pb2 as _web_pb2
 from google.protobuf.internal import containers as _containers
@@ -404,12 +404,12 @@ class ServiceMiddlewareConfig(_message.Message):
     ai_guard_enabled: bool
     ai_guard: ServiceAiGuardConfig
     billing_enabled: bool
-    billing: _billing_pb2.ServiceBillingConfig
+    billing: _billing_common_pb2.ServiceBillingConfig
     subscription_enabled: bool
     subscription: ServiceSubscriptionConfig
     rbac_enabled: bool
     rbac: ServiceRbacConfig
-    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ..., rbac_enabled: bool = ..., rbac: _Optional[_Union[ServiceRbacConfig, _Mapping]] = ...) -> None: ...
+    def __init__(self, rate_limit_enabled: bool = ..., rate_limit_rpm: _Optional[int] = ..., rate_limit_user_rpm: _Optional[int] = ..., cors_enabled: bool = ..., cors: _Optional[_Union[ServiceCorsConfig, _Mapping]] = ..., risk_enabled: bool = ..., risk: _Optional[_Union[ServiceRiskConfig, _Mapping]] = ..., turnstile_enabled: bool = ..., turnstile: _Optional[_Union[ServiceTurnstileConfig, _Mapping]] = ..., ai_guard_enabled: bool = ..., ai_guard: _Optional[_Union[ServiceAiGuardConfig, _Mapping]] = ..., billing_enabled: bool = ..., billing: _Optional[_Union[_billing_common_pb2.ServiceBillingConfig, _Mapping]] = ..., subscription_enabled: bool = ..., subscription: _Optional[_Union[ServiceSubscriptionConfig, _Mapping]] = ..., rbac_enabled: bool = ..., rbac: _Optional[_Union[ServiceRbacConfig, _Mapping]] = ...) -> None: ...
 
 class ServiceInstance(_message.Message):
     __slots__ = ("service_name", "instance_id", "lb", "version", "metadata", "health_endpoint", "health_check_config", "registered_at", "status", "weight", "tags", "protocol", "tls_enabled", "protobuf_descriptor", "middleware_config", "business_id")

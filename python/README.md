@@ -4,9 +4,10 @@ Python 客户端 SDK，覆盖服务注册与描述符上传、文件存储、资
 
 最新中文接入入口：
 
+- [../../docs/业务侧接入网关计费系统流程文档.md](../../docs/%E4%B8%9A%E5%8A%A1%E4%BE%A7%E6%8E%A5%E5%85%A5%E7%BD%91%E5%85%B3%E8%AE%A1%E8%B4%B9%E7%B3%BB%E7%BB%9F%E6%B5%81%E7%A8%8B%E6%96%87%E6%A1%A3.md)
 - [../../docs/Python SDK接入指南.md](../../docs/Python%20SDK接入指南.md)
 
-如果你现在是在补业务接入，先读这份接入指南，再回来看本 README 的完整 API 说明。
+如果你现在是在补业务接入，先读流程文档，再读 Python SDK 接入指南，最后回来看本 README 的完整 API 说明。
 
 ---
 
@@ -56,8 +57,8 @@ Python SDK 现在把出站网关调用的 channel 创建、`x-api-key` 注入、
 
 | 场景 | 推荐写法 | 说明 |
 |------|----------|------|
-| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)`、`async with BillingClient(...)`、`async with ApiKeyClient(...)`、`async with PaymentClient(...)`、`async with EntitlementClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
-| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)`、`with SyncBillingClient(...)`、`with SyncApiKeyClient(...)`、`with SyncPaymentClient(...)`、`with SyncEntitlementClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
+| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)`、`async with BillingPublicClient(...)`、`async with BillingAdminClient(...)`、`async with BillingInternalClient(...)`、`async with ApiKeyClient(...)`、`async with PaymentClient(...)`、`async with EntitlementClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
+| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)`、`with SyncBillingPublicClient(...)`、`with SyncBillingAdminClient(...)`、`with SyncBillingInternalClient(...)`、`with SyncApiKeyClient(...)`、`with SyncPaymentClient(...)`、`with SyncEntitlementClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
 | gRPC handler 内做权益校验 | `EntitlementGuard.connect(...)` | SDK 自动创建访问网关的 channel/stub，并为 Entitlement RPC 自动补齐 `x-api-key` |
 
 只有在你必须自己维护自定义 stub 时，才推荐退回 `with_service_auth(...)` 包装裸 stub。
@@ -154,7 +155,7 @@ asyncio.run(main())
 ### 同步（启动脚本 / 非 async 场景）
 
 `SyncDiscoveryClient` 现在与 `SyncFileStorageClient`、`SyncAssetBrowserClient` 走同一套同步 facade，
-`SyncBillingClient`、`SyncApiKeyClient`、`SyncPaymentClient`、`SyncEntitlementClient` 也遵循同一模式，
+`SyncBillingPublicClient`、`SyncBillingAdminClient`、`SyncBillingInternalClient`、`SyncApiKeyClient`、`SyncPaymentClient`、`SyncEntitlementClient` 也遵循同一模式，
 推荐统一使用 `with ...Client(...) as client:` 的上下文管理方式，让 SDK 负责事件循环和关闭清理。
 
 ```python
@@ -196,12 +197,18 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 ### 计费与 OOB 上报
 
-`BillingClient` / `SyncBillingClient` 这一轮已经补齐了 reservation 与异步上报入口，不再只覆盖预授权和同步 finalize：
+Billing Python SDK 现在按服务边界拆成三组主入口：
+
+- `BillingPublicClient` / `SyncBillingPublicClient`：查询余额、grant、交易、snapshot 等业务前台只读能力
+- `BillingAdminClient` / `SyncBillingAdminClient`：授信、reservation 查询、人工补账、policy / artifact / bundle 管理
+- `BillingInternalClient` / `SyncBillingInternalClient`：预估、预授权、finalize、release、refund、异步 report ingress
+
+`BillingClient` / `SyncBillingClient` 仍然保留为兼容 facade，但新接入应优先直接依赖 split client：
 
 - `authorize()`：创建 reservation / authorization
 - `get_reservation()`：按 `business_id + authorization_id` 拉单条 reservation
 - `query_reservations()`：按状态、主体、时间窗筛选 reservation，适合排查 `AwaitingReport` / `PendingReconcile`
-- `submit_billing_report()`：走 `BillingReportIngressService.SubmitBillingReport`，用于 `report_transport=OUT_OF_BAND` 的异步 worker 结算
+- `submit_billing_report()`：走 `BillingReportIngressInternalService.SubmitBillingReport`，用于 `report_transport=OUT_OF_BAND` 的异步 worker 结算
 - `manual_reconcile()`：运营或人工补账入口
 
 几个语义边界需要和网关实现保持一致：
@@ -217,30 +224,30 @@ SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或
 
 - `BillingUsageTotals` / `BillingCostBreakdown` 只承载通用 usage 和成本数据
 - `business_factors` / `provider_usage_facts` / `execution_hints` 是业务自定义的透传字段
-- 具体 factor key、套餐逻辑、功能 key 或配额映射应由业务侧和网关策略配置自行约定，不属于 SDK 内置语义
+- 具体 factor key、套餐逻辑、功能 key 或配额映射应由业务侧和网关 policy context / policy bundle 配置自行约定，不属于 SDK 内置语义
 
 当前推荐的事实上报结构：
 
 - usage 统一放在 `raw_usage_totals.meters`
 - cost 统一放在 `cost_breakdown.line_items` 和 `total_cost_micros`
-- 最终扣点、金额和账务口径由网关 / rustpayment 基于策略快照重算，不由业务 report 直接指定
+- `policy_id`、`factor_schema_version` 只负责选择本次请求的 policy context；最终扣点、金额和账务口径由网关 / rustpayment 的 policy bundle 重算，不由业务 report 直接指定
 
 异步 worker 提交 OOB billing report 的最小示例：
 
 ```python
 import asyncio
 
-from stew import BillingClient
+from stew import BillingAdminClient, BillingInternalClient
 from stew.api.v1 import billing_model
 
 
 async def submit_oob_report() -> None:
-    async with BillingClient(
+    async with BillingAdminClient(
         "127.0.0.1:3012",
         app_secret="ak_worker",
         business_id="example-business",
-    ) as billing:
-        reservation = await billing.get_reservation(
+    ) as billing_admin:
+        reservation = await billing_admin.get_reservation(
             scope_business_id="example-business",
             authorization_id="auth_123",
         )
@@ -248,7 +255,12 @@ async def submit_oob_report() -> None:
         if reservation.status != billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_AWAITING_REPORT:
             return
 
-        response = await billing.submit_billing_report(
+    async with BillingInternalClient(
+        "127.0.0.1:3012",
+        app_secret="ak_worker",
+        business_id="example-business",
+    ) as billing_internal:
+        response = await billing_internal.submit_billing_report(
             report=billing_model.BillingReport(
                 business_id="example-business",
                 authorization_id="auth_123",
@@ -282,19 +294,19 @@ async def submit_oob_report() -> None:
 asyncio.run(submit_oob_report())
 ```
 
-如果你的服务仍然走同步回传，`x-billing-status` + `x-billing-report` 的 header / trailer 模式依旧有效；只有在服务配置把 `report_transport` 切成 `OUT_OF_BAND` 时，才需要额外走 `submit_billing_report()`。
+当前计费上报只保留 `OUT_OF_BAND`。业务服务不应再通过 `x-billing-status` 或 `x-billing-report` 回传结算结果，而应在业务完成后调用 `submit_billing_report()`。OOB 上报不会改变 policy selection 或策略执行位置，它只改变 finalize 的提交时机。
 
 批量排查 late report 时，推荐直接按状态筛 reservation：
 
 ```python
 import asyncio
 
-from stew import BillingClient
+from stew import BillingAdminClient
 from stew.api.v1 import billing_model
 
 
 async def find_stale_reservations() -> None:
-    async with BillingClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
+    async with BillingAdminClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
         result = await billing.query_reservations(
             scope_business_id="example-business",
             status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
