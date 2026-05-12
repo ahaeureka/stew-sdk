@@ -2,7 +2,7 @@ import asyncio
 
 from stew.billing_admin_client import BillingAdminClient
 from stew.billing_internal_client import BillingInternalClient
-from stew.api.v1 import billing_model
+from stew.api.v1 import billing_common_model as billing_model
 
 
 AWAITING_REPORT_STATUS = 2

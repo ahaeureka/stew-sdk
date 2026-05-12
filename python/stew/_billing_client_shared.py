@@ -6,8 +6,8 @@ from typing import Any, Generic, TypeVar
 
 import grpc
 
-from stew.api.v1 import billing_model as _bill_model
-from stew.api.v1 import billing_pb2 as _bill_pb
+from stew.api.v1 import billing_common_model as _bill_model
+from stew.api.v1 import billing_common_pb2 as _bill_pb
 
 from ._discovery.errors import DiscoveryError
 from ._discovery.helpers import AioGatewayClientBase, wrap_rpc_error

@@ -13,8 +13,8 @@ from stew import (
     SyncBillingInternalClient,
     SyncBillingPublicClient,
 )
-from stew.api.v1 import billing_model as billing_model
-from stew.api.v1 import billing_pb2 as billing_pb2
+from stew.api.v1 import billing_common_model as billing_model
+from stew.api.v1 import billing_common_pb2 as billing_pb2
 
 
 def test_billing_clients_are_exported() -> None:
