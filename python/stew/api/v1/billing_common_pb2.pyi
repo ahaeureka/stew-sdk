@@ -840,6 +840,12 @@ class GetBillingPolicyArtifactRequest(_message.Message):
     artifact_id: str
     def __init__(self, artifact_id: _Optional[str] = ...) -> None: ...
 
+class DeleteBillingPolicyArtifactRequest(_message.Message):
+    __slots__ = ("artifact_id",)
+    ARTIFACT_ID_FIELD_NUMBER: _ClassVar[int]
+    artifact_id: str
+    def __init__(self, artifact_id: _Optional[str] = ...) -> None: ...
+
 class ListBillingPolicyArtifactsRequest(_message.Message):
     __slots__ = ("business_id", "artifact_type", "policy_id")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
@@ -907,6 +913,16 @@ class PublishBillingPolicyBundleRequest(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., factor_schema_version: _Optional[str] = ..., provider_rate_card_artifact_id: _Optional[str] = ..., point_policy_artifact_id: _Optional[str] = ..., money_policy_artifact_id: _Optional[str] = ..., estimator_artifact_id: _Optional[str] = ..., bundle_version: _Optional[int] = ...) -> None: ...
 
 class GetBillingPolicyBundleRequest(_message.Message):
+    __slots__ = ("business_id", "policy_id", "bundle_version")
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    BUNDLE_VERSION_FIELD_NUMBER: _ClassVar[int]
+    business_id: str
+    policy_id: str
+    bundle_version: int
+    def __init__(self, business_id: _Optional[str] = ..., policy_id: _Optional[str] = ..., bundle_version: _Optional[int] = ...) -> None: ...
+
+class DeleteBillingPolicyBundleRequest(_message.Message):
     __slots__ = ("business_id", "policy_id", "bundle_version")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     POLICY_ID_FIELD_NUMBER: _ClassVar[int]

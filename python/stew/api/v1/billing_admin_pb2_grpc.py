@@ -97,6 +97,11 @@ class BillingAdminServiceStub(object):
                 request_serializer=billing__common__pb2.GetBillingPolicyArtifactRequest.SerializeToString,
                 response_deserializer=billing__common__pb2.BillingPolicyArtifact.FromString,
                 _registered_method=True)
+        self.DeletePolicyArtifact = channel.unary_unary(
+                '/stew.api.v1.BillingAdminService/DeletePolicyArtifact',
+                request_serializer=billing__common__pb2.DeleteBillingPolicyArtifactRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
         self.ListPolicyArtifacts = channel.unary_unary(
                 '/stew.api.v1.BillingAdminService/ListPolicyArtifacts',
                 request_serializer=billing__common__pb2.ListBillingPolicyArtifactsRequest.SerializeToString,
@@ -111,6 +116,11 @@ class BillingAdminServiceStub(object):
                 '/stew.api.v1.BillingAdminService/GetPolicyBundle',
                 request_serializer=billing__common__pb2.GetBillingPolicyBundleRequest.SerializeToString,
                 response_deserializer=billing__common__pb2.BillingPolicyBundle.FromString,
+                _registered_method=True)
+        self.DeletePolicyBundle = channel.unary_unary(
+                '/stew.api.v1.BillingAdminService/DeletePolicyBundle',
+                request_serializer=billing__common__pb2.DeleteBillingPolicyBundleRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                 _registered_method=True)
         self.ListPolicyBundles = channel.unary_unary(
                 '/stew.api.v1.BillingAdminService/ListPolicyBundles',
@@ -196,6 +206,12 @@ class BillingAdminServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeletePolicyArtifact(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ListPolicyArtifacts(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -209,6 +225,12 @@ class BillingAdminServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetPolicyBundle(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeletePolicyBundle(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -283,6 +305,11 @@ def add_BillingAdminServiceServicer_to_server(servicer, server):
                     request_deserializer=billing__common__pb2.GetBillingPolicyArtifactRequest.FromString,
                     response_serializer=billing__common__pb2.BillingPolicyArtifact.SerializeToString,
             ),
+            'DeletePolicyArtifact': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePolicyArtifact,
+                    request_deserializer=billing__common__pb2.DeleteBillingPolicyArtifactRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            ),
             'ListPolicyArtifacts': grpc.unary_unary_rpc_method_handler(
                     servicer.ListPolicyArtifacts,
                     request_deserializer=billing__common__pb2.ListBillingPolicyArtifactsRequest.FromString,
@@ -297,6 +324,11 @@ def add_BillingAdminServiceServicer_to_server(servicer, server):
                     servicer.GetPolicyBundle,
                     request_deserializer=billing__common__pb2.GetBillingPolicyBundleRequest.FromString,
                     response_serializer=billing__common__pb2.BillingPolicyBundle.SerializeToString,
+            ),
+            'DeletePolicyBundle': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeletePolicyBundle,
+                    request_deserializer=billing__common__pb2.DeleteBillingPolicyBundleRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
             'ListPolicyBundles': grpc.unary_unary_rpc_method_handler(
                     servicer.ListPolicyBundles,
@@ -641,6 +673,33 @@ class BillingAdminService(object):
             _registered_method=True)
 
     @staticmethod
+    def DeletePolicyArtifact(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingAdminService/DeletePolicyArtifact',
+            billing__common__pb2.DeleteBillingPolicyArtifactRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def ListPolicyArtifacts(request,
             target,
             options=(),
@@ -711,6 +770,33 @@ class BillingAdminService(object):
             '/stew.api.v1.BillingAdminService/GetPolicyBundle',
             billing__common__pb2.GetBillingPolicyBundleRequest.SerializeToString,
             billing__common__pb2.BillingPolicyBundle.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeletePolicyBundle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingAdminService/DeletePolicyBundle',
+            billing__common__pb2.DeleteBillingPolicyBundleRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,
