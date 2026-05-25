@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+from . import billing_admin_pb2 as billing__admin__pb2
 from . import billing_common_pb2 as billing__common__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
@@ -42,6 +43,11 @@ class BillingAdminServiceStub(object):
                 request_serializer=billing__common__pb2.GrantCreditsRequest.SerializeToString,
                 response_deserializer=billing__common__pb2.CreditGrant.FromString,
                 _registered_method=True)
+        self.RevokeGrants = channel.unary_unary(
+                '/stew.api.v1.BillingAdminService/RevokeGrants',
+                request_serializer=billing__admin__pb2.RevokeBillingGrantsRequest.SerializeToString,
+                response_deserializer=billing__admin__pb2.RevokeBillingGrantsResponse.FromString,
+                _registered_method=True)
         self.QueryReservations = channel.unary_unary(
                 '/stew.api.v1.BillingAdminService/QueryReservations',
                 request_serializer=billing__common__pb2.QueryBillingReservationsRequest.SerializeToString,
@@ -56,6 +62,11 @@ class BillingAdminServiceStub(object):
                 '/stew.api.v1.BillingAdminService/ManualReconcile',
                 request_serializer=billing__common__pb2.ManualReconcileRequest.SerializeToString,
                 response_deserializer=billing__common__pb2.ManualReconcileResponse.FromString,
+                _registered_method=True)
+        self.AdjustBalance = channel.unary_unary(
+                '/stew.api.v1.BillingAdminService/AdjustBalance',
+                request_serializer=billing__admin__pb2.AdjustBillingBalanceRequest.SerializeToString,
+                response_deserializer=billing__admin__pb2.AdjustBillingBalanceResponse.FromString,
                 _registered_method=True)
         self.CreatePolicy = channel.unary_unary(
                 '/stew.api.v1.BillingAdminService/CreatePolicy',
@@ -140,6 +151,12 @@ class BillingAdminServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RevokeGrants(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def QueryReservations(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -153,6 +170,12 @@ class BillingAdminServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ManualReconcile(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AdjustBalance(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -250,6 +273,11 @@ def add_BillingAdminServiceServicer_to_server(servicer, server):
                     request_deserializer=billing__common__pb2.GrantCreditsRequest.FromString,
                     response_serializer=billing__common__pb2.CreditGrant.SerializeToString,
             ),
+            'RevokeGrants': grpc.unary_unary_rpc_method_handler(
+                    servicer.RevokeGrants,
+                    request_deserializer=billing__admin__pb2.RevokeBillingGrantsRequest.FromString,
+                    response_serializer=billing__admin__pb2.RevokeBillingGrantsResponse.SerializeToString,
+            ),
             'QueryReservations': grpc.unary_unary_rpc_method_handler(
                     servicer.QueryReservations,
                     request_deserializer=billing__common__pb2.QueryBillingReservationsRequest.FromString,
@@ -264,6 +292,11 @@ def add_BillingAdminServiceServicer_to_server(servicer, server):
                     servicer.ManualReconcile,
                     request_deserializer=billing__common__pb2.ManualReconcileRequest.FromString,
                     response_serializer=billing__common__pb2.ManualReconcileResponse.SerializeToString,
+            ),
+            'AdjustBalance': grpc.unary_unary_rpc_method_handler(
+                    servicer.AdjustBalance,
+                    request_deserializer=billing__admin__pb2.AdjustBillingBalanceRequest.FromString,
+                    response_serializer=billing__admin__pb2.AdjustBillingBalanceResponse.SerializeToString,
             ),
             'CreatePolicy': grpc.unary_unary_rpc_method_handler(
                     servicer.CreatePolicy,
@@ -376,6 +409,33 @@ class BillingAdminService(object):
             _registered_method=True)
 
     @staticmethod
+    def RevokeGrants(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingAdminService/RevokeGrants',
+            billing__admin__pb2.RevokeBillingGrantsRequest.SerializeToString,
+            billing__admin__pb2.RevokeBillingGrantsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def QueryReservations(request,
             target,
             options=(),
@@ -446,6 +506,33 @@ class BillingAdminService(object):
             '/stew.api.v1.BillingAdminService/ManualReconcile',
             billing__common__pb2.ManualReconcileRequest.SerializeToString,
             billing__common__pb2.ManualReconcileResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AdjustBalance(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingAdminService/AdjustBalance',
+            billing__admin__pb2.AdjustBillingBalanceRequest.SerializeToString,
+            billing__admin__pb2.AdjustBillingBalanceResponse.FromString,
             options,
             channel_credentials,
             insecure,

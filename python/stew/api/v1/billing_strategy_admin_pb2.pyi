@@ -365,6 +365,36 @@ class ValidateStrategyPackageResponse(_message.Message):
     summary: StrategyImportCounts
     def __init__(self, success: bool = ..., diagnostics: _Optional[_Iterable[_Union[StrategyPackageDiagnostic, _Mapping]]] = ..., plan: _Optional[_Union[StrategyImportPlan, _Mapping]] = ..., summary: _Optional[_Union[StrategyImportCounts, _Mapping]] = ...) -> None: ...
 
+class ValidateSkillforgeStrategyBundleRequest(_message.Message):
+    __slots__ = ("source_bundle", "target_service_name", "allow_partial_sections", "allow_runtime_ref_mismatch", "conflict_policy")
+    SOURCE_BUNDLE_FIELD_NUMBER: _ClassVar[int]
+    TARGET_SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_PARTIAL_SECTIONS_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_RUNTIME_REF_MISMATCH_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_POLICY_FIELD_NUMBER: _ClassVar[int]
+    source_bundle: _struct_pb2.Struct
+    target_service_name: str
+    allow_partial_sections: bool
+    allow_runtime_ref_mismatch: bool
+    conflict_policy: StrategyImportConflictPolicy
+    def __init__(self, source_bundle: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., target_service_name: _Optional[str] = ..., allow_partial_sections: bool = ..., allow_runtime_ref_mismatch: bool = ..., conflict_policy: _Optional[_Union[StrategyImportConflictPolicy, str]] = ...) -> None: ...
+
+class ValidateSkillforgeStrategyBundleResponse(_message.Message):
+    __slots__ = ("success", "generated_package", "notices", "diagnostics", "plan", "summary")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    GENERATED_PACKAGE_FIELD_NUMBER: _ClassVar[int]
+    NOTICES_FIELD_NUMBER: _ClassVar[int]
+    DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    SUMMARY_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    generated_package: BillingStrategyPackage
+    notices: _containers.RepeatedScalarFieldContainer[str]
+    diagnostics: _containers.RepeatedCompositeFieldContainer[StrategyPackageDiagnostic]
+    plan: StrategyImportPlan
+    summary: StrategyImportCounts
+    def __init__(self, success: bool = ..., generated_package: _Optional[_Union[BillingStrategyPackage, _Mapping]] = ..., notices: _Optional[_Iterable[str]] = ..., diagnostics: _Optional[_Iterable[_Union[StrategyPackageDiagnostic, _Mapping]]] = ..., plan: _Optional[_Union[StrategyImportPlan, _Mapping]] = ..., summary: _Optional[_Union[StrategyImportCounts, _Mapping]] = ...) -> None: ...
+
 class ImportStrategyPackageRequest(_message.Message):
     __slots__ = ("package", "mode", "conflict_policy", "dry_run", "allow_partial_sections")
     PACKAGE_FIELD_NUMBER: _ClassVar[int]
@@ -392,6 +422,42 @@ class ImportStrategyPackageResponse(_message.Message):
     plan: StrategyImportPlan
     result: StrategyImportResult
     def __init__(self, success: bool = ..., import_job_id: _Optional[str] = ..., diagnostics: _Optional[_Iterable[_Union[StrategyPackageDiagnostic, _Mapping]]] = ..., plan: _Optional[_Union[StrategyImportPlan, _Mapping]] = ..., result: _Optional[_Union[StrategyImportResult, _Mapping]] = ...) -> None: ...
+
+class ImportSkillforgeStrategyBundleRequest(_message.Message):
+    __slots__ = ("source_bundle", "target_service_name", "mode", "conflict_policy", "dry_run", "allow_partial_sections", "allow_runtime_ref_mismatch")
+    SOURCE_BUNDLE_FIELD_NUMBER: _ClassVar[int]
+    TARGET_SERVICE_NAME_FIELD_NUMBER: _ClassVar[int]
+    MODE_FIELD_NUMBER: _ClassVar[int]
+    CONFLICT_POLICY_FIELD_NUMBER: _ClassVar[int]
+    DRY_RUN_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_PARTIAL_SECTIONS_FIELD_NUMBER: _ClassVar[int]
+    ALLOW_RUNTIME_REF_MISMATCH_FIELD_NUMBER: _ClassVar[int]
+    source_bundle: _struct_pb2.Struct
+    target_service_name: str
+    mode: StrategyImportMode
+    conflict_policy: StrategyImportConflictPolicy
+    dry_run: bool
+    allow_partial_sections: bool
+    allow_runtime_ref_mismatch: bool
+    def __init__(self, source_bundle: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ..., target_service_name: _Optional[str] = ..., mode: _Optional[_Union[StrategyImportMode, str]] = ..., conflict_policy: _Optional[_Union[StrategyImportConflictPolicy, str]] = ..., dry_run: bool = ..., allow_partial_sections: bool = ..., allow_runtime_ref_mismatch: bool = ...) -> None: ...
+
+class ImportSkillforgeStrategyBundleResponse(_message.Message):
+    __slots__ = ("success", "generated_package", "notices", "import_job_id", "diagnostics", "plan", "result")
+    SUCCESS_FIELD_NUMBER: _ClassVar[int]
+    GENERATED_PACKAGE_FIELD_NUMBER: _ClassVar[int]
+    NOTICES_FIELD_NUMBER: _ClassVar[int]
+    IMPORT_JOB_ID_FIELD_NUMBER: _ClassVar[int]
+    DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
+    PLAN_FIELD_NUMBER: _ClassVar[int]
+    RESULT_FIELD_NUMBER: _ClassVar[int]
+    success: bool
+    generated_package: BillingStrategyPackage
+    notices: _containers.RepeatedScalarFieldContainer[str]
+    import_job_id: str
+    diagnostics: _containers.RepeatedCompositeFieldContainer[StrategyPackageDiagnostic]
+    plan: StrategyImportPlan
+    result: StrategyImportResult
+    def __init__(self, success: bool = ..., generated_package: _Optional[_Union[BillingStrategyPackage, _Mapping]] = ..., notices: _Optional[_Iterable[str]] = ..., import_job_id: _Optional[str] = ..., diagnostics: _Optional[_Iterable[_Union[StrategyPackageDiagnostic, _Mapping]]] = ..., plan: _Optional[_Union[StrategyImportPlan, _Mapping]] = ..., result: _Optional[_Union[StrategyImportResult, _Mapping]] = ...) -> None: ...
 
 class ExportStrategyPackageRequest(_message.Message):
     __slots__ = ("business_id", "sections", "strategy_key", "include_archived", "include_inactive_bundles", "include_pricing_views")

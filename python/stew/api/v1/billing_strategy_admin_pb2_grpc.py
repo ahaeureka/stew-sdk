@@ -41,10 +41,20 @@ class BillingStrategyPackageAdminServiceStub(object):
                 request_serializer=billing__strategy__admin__pb2.ValidateStrategyPackageRequest.SerializeToString,
                 response_deserializer=billing__strategy__admin__pb2.ValidateStrategyPackageResponse.FromString,
                 _registered_method=True)
+        self.ValidateSkillforgeStrategyBundle = channel.unary_unary(
+                '/stew.api.v1.BillingStrategyPackageAdminService/ValidateSkillforgeStrategyBundle',
+                request_serializer=billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleRequest.SerializeToString,
+                response_deserializer=billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleResponse.FromString,
+                _registered_method=True)
         self.ImportStrategyPackage = channel.unary_unary(
                 '/stew.api.v1.BillingStrategyPackageAdminService/ImportStrategyPackage',
                 request_serializer=billing__strategy__admin__pb2.ImportStrategyPackageRequest.SerializeToString,
                 response_deserializer=billing__strategy__admin__pb2.ImportStrategyPackageResponse.FromString,
+                _registered_method=True)
+        self.ImportSkillforgeStrategyBundle = channel.unary_unary(
+                '/stew.api.v1.BillingStrategyPackageAdminService/ImportSkillforgeStrategyBundle',
+                request_serializer=billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleRequest.SerializeToString,
+                response_deserializer=billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleResponse.FromString,
                 _registered_method=True)
         self.ExportStrategyPackage = channel.unary_unary(
                 '/stew.api.v1.BillingStrategyPackageAdminService/ExportStrategyPackage',
@@ -69,7 +79,19 @@ class BillingStrategyPackageAdminServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ValidateSkillforgeStrategyBundle(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def ImportStrategyPackage(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ImportSkillforgeStrategyBundle(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -95,10 +117,20 @@ def add_BillingStrategyPackageAdminServiceServicer_to_server(servicer, server):
                     request_deserializer=billing__strategy__admin__pb2.ValidateStrategyPackageRequest.FromString,
                     response_serializer=billing__strategy__admin__pb2.ValidateStrategyPackageResponse.SerializeToString,
             ),
+            'ValidateSkillforgeStrategyBundle': grpc.unary_unary_rpc_method_handler(
+                    servicer.ValidateSkillforgeStrategyBundle,
+                    request_deserializer=billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleRequest.FromString,
+                    response_serializer=billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleResponse.SerializeToString,
+            ),
             'ImportStrategyPackage': grpc.unary_unary_rpc_method_handler(
                     servicer.ImportStrategyPackage,
                     request_deserializer=billing__strategy__admin__pb2.ImportStrategyPackageRequest.FromString,
                     response_serializer=billing__strategy__admin__pb2.ImportStrategyPackageResponse.SerializeToString,
+            ),
+            'ImportSkillforgeStrategyBundle': grpc.unary_unary_rpc_method_handler(
+                    servicer.ImportSkillforgeStrategyBundle,
+                    request_deserializer=billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleRequest.FromString,
+                    response_serializer=billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleResponse.SerializeToString,
             ),
             'ExportStrategyPackage': grpc.unary_unary_rpc_method_handler(
                     servicer.ExportStrategyPackage,
@@ -151,6 +183,33 @@ class BillingStrategyPackageAdminService(object):
             _registered_method=True)
 
     @staticmethod
+    def ValidateSkillforgeStrategyBundle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingStrategyPackageAdminService/ValidateSkillforgeStrategyBundle',
+            billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleRequest.SerializeToString,
+            billing__strategy__admin__pb2.ValidateSkillforgeStrategyBundleResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
     def ImportStrategyPackage(request,
             target,
             options=(),
@@ -167,6 +226,33 @@ class BillingStrategyPackageAdminService(object):
             '/stew.api.v1.BillingStrategyPackageAdminService/ImportStrategyPackage',
             billing__strategy__admin__pb2.ImportStrategyPackageRequest.SerializeToString,
             billing__strategy__admin__pb2.ImportStrategyPackageResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ImportSkillforgeStrategyBundle(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingStrategyPackageAdminService/ImportSkillforgeStrategyBundle',
+            billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleRequest.SerializeToString,
+            billing__strategy__admin__pb2.ImportSkillforgeStrategyBundleResponse.FromString,
             options,
             channel_credentials,
             insecure,
