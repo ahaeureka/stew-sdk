@@ -390,8 +390,48 @@ class PricingVisibilityRules(_message.Message):
     require_metadata_public_true: bool
     def __init__(self, hide_inactive_plans: bool = ..., hide_internal_plans: bool = ..., allowed_plan_ids: _Optional[_Iterable[str]] = ..., blocked_plan_ids: _Optional[_Iterable[str]] = ..., require_metadata_public_true: bool = ...) -> None: ...
 
+class PricingBillingModeVariantConfig(_message.Message):
+    __slots__ = ("billing_mode", "default_locale", "supported_locales", "page_title", "meta_description", "canonical_path", "hero", "billing_toggle", "plan_presentations", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme_overrides", "purchase_behavior", "visibility_rules", "plan_card_config")
+    BILLING_MODE_FIELD_NUMBER: _ClassVar[int]
+    DEFAULT_LOCALE_FIELD_NUMBER: _ClassVar[int]
+    SUPPORTED_LOCALES_FIELD_NUMBER: _ClassVar[int]
+    PAGE_TITLE_FIELD_NUMBER: _ClassVar[int]
+    META_DESCRIPTION_FIELD_NUMBER: _ClassVar[int]
+    CANONICAL_PATH_FIELD_NUMBER: _ClassVar[int]
+    HERO_FIELD_NUMBER: _ClassVar[int]
+    BILLING_TOGGLE_FIELD_NUMBER: _ClassVar[int]
+    PLAN_PRESENTATIONS_FIELD_NUMBER: _ClassVar[int]
+    COMPARISON_TABLE_FIELD_NUMBER: _ClassVar[int]
+    FAQ_FIELD_NUMBER: _ClassVar[int]
+    BOTTOM_CTAS_FIELD_NUMBER: _ClassVar[int]
+    TRUST_SECTION_FIELD_NUMBER: _ClassVar[int]
+    FOOTER_NOTE_FIELD_NUMBER: _ClassVar[int]
+    THEME_OVERRIDES_FIELD_NUMBER: _ClassVar[int]
+    PURCHASE_BEHAVIOR_FIELD_NUMBER: _ClassVar[int]
+    VISIBILITY_RULES_FIELD_NUMBER: _ClassVar[int]
+    PLAN_CARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
+    billing_mode: str
+    default_locale: str
+    supported_locales: _containers.RepeatedScalarFieldContainer[str]
+    page_title: LocalizedText
+    meta_description: LocalizedText
+    canonical_path: str
+    hero: PricingHeroConfig
+    billing_toggle: PricingBillingToggleConfig
+    plan_presentations: _containers.RepeatedCompositeFieldContainer[PricingPlanPresentation]
+    comparison_table: PricingComparisonTableConfig
+    faq: PricingFaqSectionConfig
+    bottom_ctas: _containers.RepeatedCompositeFieldContainer[PricingCtaConfig]
+    trust_section: PricingTrustSectionConfig
+    footer_note: LocalizedText
+    theme_overrides: PricingThemeOverrideConfig
+    purchase_behavior: PricingPurchaseBehaviorConfig
+    visibility_rules: PricingVisibilityRules
+    plan_card_config: PricingPlanCardConfig
+    def __init__(self, billing_mode: _Optional[str] = ..., default_locale: _Optional[str] = ..., supported_locales: _Optional[_Iterable[str]] = ..., page_title: _Optional[_Union[LocalizedText, _Mapping]] = ..., meta_description: _Optional[_Union[LocalizedText, _Mapping]] = ..., canonical_path: _Optional[str] = ..., hero: _Optional[_Union[PricingHeroConfig, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleConfig, _Mapping]] = ..., plan_presentations: _Optional[_Iterable[_Union[PricingPlanPresentation, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableConfig, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionConfig, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaConfig, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionConfig, _Mapping]] = ..., footer_note: _Optional[_Union[LocalizedText, _Mapping]] = ..., theme_overrides: _Optional[_Union[PricingThemeOverrideConfig, _Mapping]] = ..., purchase_behavior: _Optional[_Union[PricingPurchaseBehaviorConfig, _Mapping]] = ..., visibility_rules: _Optional[_Union[PricingVisibilityRules, _Mapping]] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ...) -> None: ...
+
 class PricingConfig(_message.Message):
-    __slots__ = ("schema_version", "business_id", "page_key", "status", "default_locale", "supported_locales", "page_title", "meta_description", "canonical_path", "hero", "billing_toggle", "plan_presentations", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme_overrides", "purchase_behavior", "visibility_rules", "plan_card_config")
+    __slots__ = ("schema_version", "business_id", "page_key", "status", "default_locale", "supported_locales", "page_title", "meta_description", "canonical_path", "hero", "billing_toggle", "plan_presentations", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme_overrides", "purchase_behavior", "visibility_rules", "plan_card_config", "billing_mode_variants")
     SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
@@ -413,6 +453,7 @@ class PricingConfig(_message.Message):
     PURCHASE_BEHAVIOR_FIELD_NUMBER: _ClassVar[int]
     VISIBILITY_RULES_FIELD_NUMBER: _ClassVar[int]
     PLAN_CARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
+    BILLING_MODE_VARIANTS_FIELD_NUMBER: _ClassVar[int]
     schema_version: str
     business_id: str
     page_key: str
@@ -434,19 +475,22 @@ class PricingConfig(_message.Message):
     purchase_behavior: PricingPurchaseBehaviorConfig
     visibility_rules: PricingVisibilityRules
     plan_card_config: PricingPlanCardConfig
-    def __init__(self, schema_version: _Optional[str] = ..., business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., status: _Optional[str] = ..., default_locale: _Optional[str] = ..., supported_locales: _Optional[_Iterable[str]] = ..., page_title: _Optional[_Union[LocalizedText, _Mapping]] = ..., meta_description: _Optional[_Union[LocalizedText, _Mapping]] = ..., canonical_path: _Optional[str] = ..., hero: _Optional[_Union[PricingHeroConfig, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleConfig, _Mapping]] = ..., plan_presentations: _Optional[_Iterable[_Union[PricingPlanPresentation, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableConfig, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionConfig, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaConfig, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionConfig, _Mapping]] = ..., footer_note: _Optional[_Union[LocalizedText, _Mapping]] = ..., theme_overrides: _Optional[_Union[PricingThemeOverrideConfig, _Mapping]] = ..., purchase_behavior: _Optional[_Union[PricingPurchaseBehaviorConfig, _Mapping]] = ..., visibility_rules: _Optional[_Union[PricingVisibilityRules, _Mapping]] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ...) -> None: ...
+    billing_mode_variants: _containers.RepeatedCompositeFieldContainer[PricingBillingModeVariantConfig]
+    def __init__(self, schema_version: _Optional[str] = ..., business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., status: _Optional[str] = ..., default_locale: _Optional[str] = ..., supported_locales: _Optional[_Iterable[str]] = ..., page_title: _Optional[_Union[LocalizedText, _Mapping]] = ..., meta_description: _Optional[_Union[LocalizedText, _Mapping]] = ..., canonical_path: _Optional[str] = ..., hero: _Optional[_Union[PricingHeroConfig, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleConfig, _Mapping]] = ..., plan_presentations: _Optional[_Iterable[_Union[PricingPlanPresentation, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableConfig, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionConfig, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaConfig, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionConfig, _Mapping]] = ..., footer_note: _Optional[_Union[LocalizedText, _Mapping]] = ..., theme_overrides: _Optional[_Union[PricingThemeOverrideConfig, _Mapping]] = ..., purchase_behavior: _Optional[_Union[PricingPurchaseBehaviorConfig, _Mapping]] = ..., visibility_rules: _Optional[_Union[PricingVisibilityRules, _Mapping]] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ..., billing_mode_variants: _Optional[_Iterable[_Union[PricingBillingModeVariantConfig, _Mapping]]] = ...) -> None: ...
 
 class GetPricingPageRequest(_message.Message):
-    __slots__ = ("business_id", "locale", "page_key", "billing_interval")
+    __slots__ = ("business_id", "locale", "page_key", "billing_interval", "billing_mode")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
     BILLING_INTERVAL_FIELD_NUMBER: _ClassVar[int]
+    BILLING_MODE_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     locale: str
     page_key: str
     billing_interval: str
-    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ..., billing_interval: _Optional[str] = ...) -> None: ...
+    billing_mode: str
+    def __init__(self, business_id: _Optional[str] = ..., locale: _Optional[str] = ..., page_key: _Optional[str] = ..., billing_interval: _Optional[str] = ..., billing_mode: _Optional[str] = ...) -> None: ...
 
 class PricingRevisionInfo(_message.Message):
     __slots__ = ("active_version_id", "display_version", "published_at", "etag", "source_mode")
@@ -795,7 +839,7 @@ class PricingThemeResolved(_message.Message):
     def __init__(self, mode: _Optional[str] = ..., accent_color: _Optional[str] = ..., accent_text_color: _Optional[str] = ..., surface_color: _Optional[str] = ..., surface_muted_color: _Optional[str] = ..., border_color: _Optional[str] = ..., hero_background: _Optional[str] = ..., featured_ring_color: _Optional[str] = ..., radius_scale: _Optional[str] = ..., font_family_heading: _Optional[str] = ..., font_family_body: _Optional[str] = ..., compact: bool = ...) -> None: ...
 
 class PricingPageResponse(_message.Message):
-    __slots__ = ("business_id", "page_key", "locale", "default_locale", "revision", "hero", "billing_toggle", "plans", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme", "purchase_mode", "plan_card_config")
+    __slots__ = ("business_id", "page_key", "locale", "default_locale", "revision", "hero", "billing_toggle", "plans", "comparison_table", "faq", "bottom_ctas", "trust_section", "footer_note", "theme", "purchase_mode", "plan_card_config", "billing_mode")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     PAGE_KEY_FIELD_NUMBER: _ClassVar[int]
     LOCALE_FIELD_NUMBER: _ClassVar[int]
@@ -812,6 +856,7 @@ class PricingPageResponse(_message.Message):
     THEME_FIELD_NUMBER: _ClassVar[int]
     PURCHASE_MODE_FIELD_NUMBER: _ClassVar[int]
     PLAN_CARD_CONFIG_FIELD_NUMBER: _ClassVar[int]
+    BILLING_MODE_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     page_key: str
     locale: str
@@ -828,4 +873,5 @@ class PricingPageResponse(_message.Message):
     theme: PricingThemeResolved
     purchase_mode: str
     plan_card_config: PricingPlanCardConfig
-    def __init__(self, business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., locale: _Optional[str] = ..., default_locale: _Optional[str] = ..., revision: _Optional[_Union[PricingRevisionInfo, _Mapping]] = ..., hero: _Optional[_Union[PricingHeroResolved, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleResolved, _Mapping]] = ..., plans: _Optional[_Iterable[_Union[PricingPlanResolved, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableResolved, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionResolved, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaResolved, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionResolved, _Mapping]] = ..., footer_note: _Optional[str] = ..., theme: _Optional[_Union[PricingThemeResolved, _Mapping]] = ..., purchase_mode: _Optional[str] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ...) -> None: ...
+    billing_mode: str
+    def __init__(self, business_id: _Optional[str] = ..., page_key: _Optional[str] = ..., locale: _Optional[str] = ..., default_locale: _Optional[str] = ..., revision: _Optional[_Union[PricingRevisionInfo, _Mapping]] = ..., hero: _Optional[_Union[PricingHeroResolved, _Mapping]] = ..., billing_toggle: _Optional[_Union[PricingBillingToggleResolved, _Mapping]] = ..., plans: _Optional[_Iterable[_Union[PricingPlanResolved, _Mapping]]] = ..., comparison_table: _Optional[_Union[PricingComparisonTableResolved, _Mapping]] = ..., faq: _Optional[_Union[PricingFaqSectionResolved, _Mapping]] = ..., bottom_ctas: _Optional[_Iterable[_Union[PricingCtaResolved, _Mapping]]] = ..., trust_section: _Optional[_Union[PricingTrustSectionResolved, _Mapping]] = ..., footer_note: _Optional[str] = ..., theme: _Optional[_Union[PricingThemeResolved, _Mapping]] = ..., purchase_mode: _Optional[str] = ..., plan_card_config: _Optional[_Union[PricingPlanCardConfig, _Mapping]] = ..., billing_mode: _Optional[str] = ...) -> None: ...

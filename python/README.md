@@ -219,7 +219,7 @@ Billing Python SDK 现在按服务边界拆成三组主入口：
 - 当前服务凭证必须有对应 `source_service` 的 service-scoped 权限；服务端会校验来源服务与业务绑定
 - `BillingReport` 现在只接受事实层数据，不再接受 `billed_points_candidate` 之类的候选结算字段
 - 缺失 report 的后续处理只应配置为 `BILLING_MISSING_REPORT_ACTION_RELEASE` 或 `BILLING_MISSING_REPORT_ACTION_MARK_PENDING`，不要再把 `capture_estimate` 当作主线能力
-- 计费策略当前以规范业务级 `business_billing_configs` 表为唯一来源，网关 BillingMiddleware 按 `business_id` 定位一条配置，并根据请求携带的 `x-plan-id` 从 `policy_id_by_plan` 解析最终 `policy_id`；业务侧 SDK 无需在 OOB 上报时重新传递 plan_id 或重新选策略，最终结算以 authorization 已绑定的 `policy_id` 为准
+- 计费策略当前以规范业务级 `business_billing_configs` 表为唯一来源；业务服务或网关兼容路径会先按 `business_id` 定位配置，再结合请求携带的 `x-plan-id` 从 `policy_id_by_plan` 解析最终 `policy_id`。业务侧 SDK 无需在 OOB 上报时重新传递 plan_id 或重新选策略，最终结算以 authorize 阶段已绑定的 `policy_id` 为准
 - SDK 不提供业务级计费配置的管理接口；如需创建或更新规范配置，使用 admin API：`PUT /_admin/billing/business-config/{business_id}`
 
 SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或计费规则：
