@@ -3,8 +3,6 @@ import asyncio
 import grpc
 import pytest
 
-from stew.apikey_client import ApiKeyClient
-from stew.billing_admin_client import BillingAdminClient
 from stew.billing_internal_client import BillingInternalClient
 from stew.billing_public_client import BillingPublicClient
 from stew.entitlement_client import EntitlementClient
@@ -47,25 +45,10 @@ from stew._discovery.helpers import (
             "stew.entitlement_client._ent_grpc.EntitlementServiceStub",
         ),
         (
-            lambda: ApiKeyClient(
-                "127.0.0.1:3012",
-                app_secret="ak_shared",
-                business_id="skillforge",
-                timeout=5.0,
-            ),
-            "stew.apikey_client._apikey_grpc.ApiKeyServiceStub",
-        ),
-        (
             lambda: BillingPublicClient(
                 "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
             ),
             "stew.billing_public_client._bill_public_grpc.BillingPublicServiceStub",
-        ),
-        (
-            lambda: BillingAdminClient(
-                "127.0.0.1:3012", app_secret="ak_shared", timeout=5.0
-            ),
-            "stew.billing_admin_client._bill_admin_grpc.BillingAdminServiceStub",
         ),
         (
             lambda: BillingInternalClient(

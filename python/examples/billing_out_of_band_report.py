@@ -1,11 +1,7 @@
 import asyncio
 
-from stew.billing_admin_client import BillingAdminClient
 from stew.billing_internal_client import BillingInternalClient
 from stew.api.v1 import billing_common_model as billing_model
-
-
-AWAITING_REPORT_STATUS = 2
 
 
 async def main() -> None:
@@ -22,23 +18,6 @@ async def main() -> None:
         "line_items",
         {"feature_units": 12000, "processing_units": 8000, "overhead_units": 100},
     )
-
-    async with BillingAdminClient(
-        "127.0.0.1:3012",
-        app_secret="ak_worker",
-        business_id="example-business",
-    ) as billing_admin:
-        reservation = await billing_admin.get_reservation(
-            scope_business_id="example-business",
-            authorization_id="auth_123",
-        )
-
-        if (
-            int(getattr(reservation.status, "value", reservation.status))
-            != AWAITING_REPORT_STATUS
-        ):
-            print("reservation is not awaiting report")
-            return
 
     async with BillingInternalClient(
         "127.0.0.1:3012",

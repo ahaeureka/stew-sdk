@@ -63,38 +63,10 @@ def test_create_checkout_separates_scope_business_id_from_header_business_id() -
     assert result.order_id == "order-1"
 
 
-def test_approve_refund_request_returns_record() -> None:
-    captured: dict[str, object] = {}
-
-    class Stub:
-        async def ApproveRefundRequest(self, request, metadata, timeout):
-            captured["request"] = request
-            captured["metadata"] = list(metadata)
-            return payment_pb2.RefundRequestRecord(
-                id=request.refund_request_id,
-                status=payment_pb2.REFUND_REQUEST_STATUS_APPROVED,
-                reviewer_id=request.reviewer_id,
-            )
-
+def test_payment_operator_review_methods_are_not_sdk_surface() -> None:
     client = PaymentClient("127.0.0.1:3012", app_secret="ak_pay")
-    client._stub = Stub()  # type: ignore[assignment]
+    sync_client = SyncPaymentClient("127.0.0.1:3012", app_secret="ak_pay")
 
-    result = asyncio.run(
-        client.approve_refund_request(
-            refund_request_id="refund-1",
-            approved_amount_minor=500,
-            reviewer_id="admin-1",
-            reviewer_display_name="Admin",
-            review_comment="ok",
-            business_id="biz-approve",
-        )
-    )
-
-    assert captured["request"].refund_request_id == "refund-1"
-    assert captured["metadata"] == [
-        ("x-api-key", "ak_pay"),
-        ("x-business-id", "biz-approve"),
-    ]
-    assert isinstance(result, payment_model.RefundRequestRecord)
-    assert result.id == "refund-1"
-    assert result.reviewer_id == "admin-1"
+    for name in ["refund_payment", "approve_refund_request", "reject_refund_request"]:
+        assert not hasattr(client, name)
+        assert not hasattr(sync_client, name)

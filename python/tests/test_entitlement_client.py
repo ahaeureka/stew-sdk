@@ -11,49 +11,9 @@ def test_entitlement_client_is_exported() -> None:
     assert EntitlementError is not None
 
 
-def test_create_plan_supports_nested_feature_and_quota() -> None:
-    captured: dict[str, object] = {}
-
-    class Stub:
-        async def CreatePlan(self, request, metadata, timeout):
-            captured["request"] = request
-            captured["metadata"] = list(metadata)
-            assert timeout == 30.0
-            return ent_pb.EntitlementPlan(
-                business_id=request.business_id,
-                name=request.name,
-                features=request.features,
-                quotas=request.quotas,
-            )
-
-    client = EntitlementClient("127.0.0.1:3012", app_secret="ak_ent")
-    client._stub = Stub()  # type: ignore[assignment]
-
-    result = asyncio.run(
-        client.create_plan(
-            scope_business_id="biz-scope",
-            name="Pro",
-            features=[ent_model.PlanFeature(feature_key="feature.a", enabled=True)],
-            quotas=[ent_model.PlanQuota(quota_key="credits.monthly", quota_limit=1000)],
-            business_id="biz-header",
-            extra_metadata=[("x-request-id", "req-1")],
-        )
-    )
-
-    request = captured["request"]
-    assert request.business_id == "biz-scope"
-    assert request.features[0].feature_key == "feature.a"
-    assert request.quotas[0].quota_key == "credits.monthly"
-    assert captured["metadata"] == [
-        ("x-api-key", "ak_ent"),
-        ("x-business-id", "biz-header"),
-        ("x-request-id", "req-1"),
-    ]
-    assert isinstance(result, ent_model.EntitlementPlan)
-    assert result.name == "Pro"
-
-
-def test_get_my_entitlement_separates_scope_business_id_from_header_business_id() -> None:
+def test_get_my_entitlement_separates_scope_business_id_from_header_business_id() -> (
+    None
+):
     captured: dict[str, object] = {}
 
     class Stub:
@@ -89,41 +49,33 @@ def test_get_my_entitlement_separates_scope_business_id_from_header_business_id(
     assert result.subscription.plan_id == "pro"
 
 
-def test_change_plan_returns_change_record() -> None:
-    captured: dict[str, object] = {}
-
-    class Stub:
-        async def ChangePlan(self, request, metadata, timeout):
-            captured["request"] = request
-            captured["metadata"] = list(metadata)
-            return ent_pb.ChangePlanResponse(
-                subscription=ent_pb.Subscription(
-                    id=request.subscription_id,
-                    business_id=request.business_id,
-                    plan_id=request.new_plan_id,
-                ),
-                change_record=ent_pb.PlanChangeRecord(
-                    subscription_id=request.subscription_id,
-                    new_plan_id=request.new_plan_id,
-                ),
-            )
-
+def test_entitlement_management_methods_are_not_sdk_surface() -> None:
     client = EntitlementClient("127.0.0.1:3012", app_secret="ak_ent")
-    client._stub = Stub()  # type: ignore[assignment]
+    sync_client = SyncEntitlementClient("127.0.0.1:3012", app_secret="ak_ent")
 
-    result = asyncio.run(
-        client.change_plan(
-            scope_business_id="biz-scope",
-            subscription_id="sub-1",
-            subject_id="subject-1",
-            new_plan_id="enterprise",
-            change_mode="immediate",
-        )
-    )
-
-    assert captured["request"].subscription_id == "sub-1"
-    assert captured["request"].new_plan_id == "enterprise"
-    assert captured["metadata"] == [("x-api-key", "ak_ent")]
-    assert isinstance(result, ent_model.ChangePlanResponse)
-    assert result.change_record is not None
-    assert result.change_record.new_plan_id == "enterprise"
+    for name in [
+        "create_plan",
+        "get_plan",
+        "list_plans",
+        "update_plan",
+        "delete_plan",
+        "upsert_plan_feature",
+        "delete_plan_feature",
+        "upsert_plan_quota",
+        "delete_plan_quota",
+        "create_subscription",
+        "get_subscription",
+        "get_subscription_by_subject",
+        "update_subscription",
+        "cancel_subscription",
+        "delete_subscription",
+        "restore_subscription",
+        "list_subscriptions",
+        "admin_renew_subscriptions",
+        "internal_renew_subscriptions",
+        "change_plan",
+        "list_plan_changes",
+        "cancel_plan_change",
+    ]:
+        assert not hasattr(client, name)
+        assert not hasattr(sync_client, name)

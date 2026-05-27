@@ -60,15 +60,21 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
 
     async def create_checkout(
         self,
-        request: _payment_model.CreateCheckoutRequest | _payment_pb.CreateCheckoutRequest | None = None,
+        request: _payment_model.CreateCheckoutRequest
+        | _payment_pb.CreateCheckoutRequest
+        | None = None,
         *,
         scope_business_id: str = "",
         subject_id: str = "",
-        provider: _payment_model.PaymentProviderKind | int = _payment_model.PaymentProviderKind(0),
+        provider: _payment_model.PaymentProviderKind
+        | int = _payment_model.PaymentProviderKind(0),
         customer_email: str = "",
         currency: str = "",
-        line_items: Sequence[_payment_model.CheckoutLineItem | _payment_pb.CheckoutLineItem] = (),
-        billing_interval: _payment_model.PaymentBillingInterval | int = _payment_model.PaymentBillingInterval(0),
+        line_items: Sequence[
+            _payment_model.CheckoutLineItem | _payment_pb.CheckoutLineItem
+        ] = (),
+        billing_interval: _payment_model.PaymentBillingInterval
+        | int = _payment_model.PaymentBillingInterval(0),
         success_url: str = "",
         cancel_url: str = "",
         plan_id: str = "",
@@ -78,7 +84,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         extra_metadata: Sequence[MetadataEntry] = (),
     ) -> _payment_model.CreateCheckoutResponse:
         if request is not None:
-            message = _coerce_protobuf_message(request, _payment_pb.CreateCheckoutRequest)
+            message = _coerce_protobuf_message(
+                request, _payment_pb.CreateCheckoutRequest
+            )
         else:
             message = _payment_pb.CreateCheckoutRequest(
                 business_id=scope_business_id,
@@ -93,12 +101,16 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
                 metadata=metadata or {},
                 idempotency_key=idempotency_key,
             )
-            message.line_items.extend(_coerce_checkout_line_item(item) for item in line_items)
+            message.line_items.extend(
+                _coerce_checkout_line_item(item) for item in line_items
+            )
 
         response = await self._call(
             self._s.CreateCheckout(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -106,7 +118,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
 
     async def get_payment_order(
         self,
-        request: _payment_model.GetPaymentOrderRequest | _payment_pb.GetPaymentOrderRequest | None = None,
+        request: _payment_model.GetPaymentOrderRequest
+        | _payment_pb.GetPaymentOrderRequest
+        | None = None,
         *,
         order_id: str = "",
         business_id: str = "",
@@ -120,7 +134,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         response = await self._call(
             self._s.GetPaymentOrder(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -134,7 +150,8 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         *,
         scope_business_id: str = "",
         subject_id: str = "",
-        status: _payment_model.PaymentOrderStatus | int = _payment_model.PaymentOrderStatus(0),
+        status: _payment_model.PaymentOrderStatus
+        | int = _payment_model.PaymentOrderStatus(0),
         page_size: int = 0,
         page_token: str = "",
         business_id: str = "",
@@ -154,41 +171,13 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         response = await self._call(
             self._s.ListPaymentOrders(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
         return _payment_model.ListPaymentOrdersResponse.from_protobuf(response)
-
-    async def refund_payment(
-        self,
-        request: _payment_model.RefundPaymentRequest | _payment_pb.RefundPaymentRequest | None = None,
-        *,
-        order_id: str = "",
-        amount_minor: int = 0,
-        reason: str = "",
-        idempotency_key: str = "",
-        business_id: str = "",
-        extra_metadata: Sequence[MetadataEntry] = (),
-    ) -> _payment_model.RefundPaymentResponse:
-        message = (
-            _coerce_protobuf_message(request, _payment_pb.RefundPaymentRequest)
-            if request is not None
-            else _payment_pb.RefundPaymentRequest(
-                order_id=order_id,
-                amount_minor=amount_minor,
-                reason=reason,
-                idempotency_key=idempotency_key,
-            )
-        )
-        response = await self._call(
-            self._s.RefundPayment(
-                message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
-                timeout=self._timeout,
-            )
-        )
-        return _payment_model.RefundPaymentResponse.from_protobuf(response)
 
     async def submit_refund_request(
         self,
@@ -224,7 +213,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         response = await self._call(
             self._s.SubmitRefundRequest(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -243,12 +234,16 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         message = (
             _coerce_protobuf_message(request, _payment_pb.GetRefundRequestRequest)
             if request is not None
-            else _payment_pb.GetRefundRequestRequest(refund_request_id=refund_request_id)
+            else _payment_pb.GetRefundRequestRequest(
+                refund_request_id=refund_request_id
+            )
         )
         response = await self._call(
             self._s.GetRefundRequest(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -267,12 +262,16 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         message = (
             _coerce_protobuf_message(request, _payment_pb.ListRefundReviewLogsRequest)
             if request is not None
-            else _payment_pb.ListRefundReviewLogsRequest(refund_request_id=refund_request_id)
+            else _payment_pb.ListRefundReviewLogsRequest(
+                refund_request_id=refund_request_id
+            )
         )
         response = await self._call(
             self._s.ListRefundReviewLogs(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -287,7 +286,8 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         scope_business_id: str = "",
         subject_id: str = "",
         order_id: str = "",
-        status: _payment_model.RefundRequestStatus | int = _payment_model.RefundRequestStatus(0),
+        status: _payment_model.RefundRequestStatus
+        | int = _payment_model.RefundRequestStatus(0),
         page_size: int = 0,
         page_token: str = "",
         business_ids: Sequence[str] = (),
@@ -316,7 +316,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         response = await self._call(
             self._s.ListRefundRequests(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -346,73 +348,9 @@ class PaymentClient(AioGatewayClientBase[_payment_grpc.PaymentGatewayServiceStub
         response = await self._call(
             self._s.CancelRefundRequest(
                 message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
-                timeout=self._timeout,
-            )
-        )
-        return _payment_model.RefundRequestRecord.from_protobuf(response)
-
-    async def approve_refund_request(
-        self,
-        request: _payment_model.ApproveRefundRequestRequest
-        | _payment_pb.ApproveRefundRequestRequest
-        | None = None,
-        *,
-        refund_request_id: str = "",
-        approved_amount_minor: int = 0,
-        reviewer_id: str = "",
-        reviewer_display_name: str = "",
-        review_comment: str = "",
-        business_id: str = "",
-        extra_metadata: Sequence[MetadataEntry] = (),
-    ) -> _payment_model.RefundRequestRecord:
-        message = (
-            _coerce_protobuf_message(request, _payment_pb.ApproveRefundRequestRequest)
-            if request is not None
-            else _payment_pb.ApproveRefundRequestRequest(
-                refund_request_id=refund_request_id,
-                approved_amount_minor=approved_amount_minor,
-                reviewer_id=reviewer_id,
-                reviewer_display_name=reviewer_display_name,
-                review_comment=review_comment,
-            )
-        )
-        response = await self._call(
-            self._s.ApproveRefundRequest(
-                message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
-                timeout=self._timeout,
-            )
-        )
-        return _payment_model.RefundRequestRecord.from_protobuf(response)
-
-    async def reject_refund_request(
-        self,
-        request: _payment_model.RejectRefundRequestRequest
-        | _payment_pb.RejectRefundRequestRequest
-        | None = None,
-        *,
-        refund_request_id: str = "",
-        reviewer_id: str = "",
-        reviewer_display_name: str = "",
-        review_comment: str = "",
-        business_id: str = "",
-        extra_metadata: Sequence[MetadataEntry] = (),
-    ) -> _payment_model.RefundRequestRecord:
-        message = (
-            _coerce_protobuf_message(request, _payment_pb.RejectRefundRequestRequest)
-            if request is not None
-            else _payment_pb.RejectRefundRequestRequest(
-                refund_request_id=refund_request_id,
-                reviewer_id=reviewer_id,
-                reviewer_display_name=reviewer_display_name,
-                review_comment=review_comment,
-            )
-        )
-        response = await self._call(
-            self._s.RejectRefundRequest(
-                message,
-                metadata=self._meta(extra_metadata=extra_metadata, business_id=business_id),
+                metadata=self._meta(
+                    extra_metadata=extra_metadata, business_id=business_id
+                ),
                 timeout=self._timeout,
             )
         )
@@ -425,10 +363,14 @@ class SyncPaymentClient(SyncGatewayClientBase[PaymentClient]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(PaymentClient, *args, **kwargs)
 
-    def create_checkout(self, *args: Any, **kwargs: Any) -> _payment_model.CreateCheckoutResponse:
+    def create_checkout(
+        self, *args: Any, **kwargs: Any
+    ) -> _payment_model.CreateCheckoutResponse:
         return self._run(self._client.create_checkout(*args, **kwargs))
 
-    def get_payment_order(self, *args: Any, **kwargs: Any) -> _payment_model.PaymentOrderResponse:
+    def get_payment_order(
+        self, *args: Any, **kwargs: Any
+    ) -> _payment_model.PaymentOrderResponse:
         return self._run(self._client.get_payment_order(*args, **kwargs))
 
     def list_payment_orders(
@@ -436,15 +378,14 @@ class SyncPaymentClient(SyncGatewayClientBase[PaymentClient]):
     ) -> _payment_model.ListPaymentOrdersResponse:
         return self._run(self._client.list_payment_orders(*args, **kwargs))
 
-    def refund_payment(self, *args: Any, **kwargs: Any) -> _payment_model.RefundPaymentResponse:
-        return self._run(self._client.refund_payment(*args, **kwargs))
-
     def submit_refund_request(
         self, *args: Any, **kwargs: Any
     ) -> _payment_model.RefundRequestRecord:
         return self._run(self._client.submit_refund_request(*args, **kwargs))
 
-    def get_refund_request(self, *args: Any, **kwargs: Any) -> _payment_model.RefundRequestRecord:
+    def get_refund_request(
+        self, *args: Any, **kwargs: Any
+    ) -> _payment_model.RefundRequestRecord:
         return self._run(self._client.get_refund_request(*args, **kwargs))
 
     def list_refund_review_logs(
@@ -461,16 +402,6 @@ class SyncPaymentClient(SyncGatewayClientBase[PaymentClient]):
         self, *args: Any, **kwargs: Any
     ) -> _payment_model.RefundRequestRecord:
         return self._run(self._client.cancel_refund_request(*args, **kwargs))
-
-    def approve_refund_request(
-        self, *args: Any, **kwargs: Any
-    ) -> _payment_model.RefundRequestRecord:
-        return self._run(self._client.approve_refund_request(*args, **kwargs))
-
-    def reject_refund_request(
-        self, *args: Any, **kwargs: Any
-    ) -> _payment_model.RefundRequestRecord:
-        return self._run(self._client.reject_refund_request(*args, **kwargs))
 
 
 __all__ = [

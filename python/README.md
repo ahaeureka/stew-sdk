@@ -1,6 +1,6 @@
 # Stew Gateway — Python SDK
 
-Python 客户端 SDK，覆盖服务注册与描述符上传、文件存储、资产浏览、计费、API Key 管理、支付、权益管理、网关注入身份读取、权益守卫与 generated gRPC stub/model。
+Python 客户端 SDK，覆盖服务注册与描述符上传、文件存储、资产浏览、计费、支付、权益管理、网关注入身份读取、权益守卫与业务运行时 generated gRPC stub/model。
 
 最新中文接入入口：
 
@@ -57,8 +57,8 @@ Python SDK 现在把出站网关调用的 channel 创建、`x-api-key` 注入、
 
 | 场景 | 推荐写法 | 说明 |
 |------|----------|------|
-| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)`、`async with BillingPublicClient(...)`、`async with BillingAdminClient(...)`、`async with BillingInternalClient(...)`、`async with ApiKeyClient(...)`、`async with PaymentClient(...)`、`async with EntitlementClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
-| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)`、`with SyncBillingPublicClient(...)`、`with SyncBillingAdminClient(...)`、`with SyncBillingInternalClient(...)`、`with SyncApiKeyClient(...)`、`with SyncPaymentClient(...)`、`with SyncEntitlementClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
+| asyncio 业务服务 / 后台任务 | `async with DiscoveryClient(...)`、`async with FileStorageClient(...)`、`async with AssetBrowserClient(...)`、`async with BillingPublicClient(...)`、`async with BillingInternalClient(...)`、`async with PaymentClient(...)`、`async with EntitlementClient(...)` | SDK 统一创建异步 channel，并自动把当前服务的 `app_secret` 注入为 `x-api-key` |
+| 启动脚本 / 非 async 运行时 | `with SyncDiscoveryClient(...)`、`with SyncFileStorageClient(...)`、`with SyncAssetBrowserClient(...)`、`with SyncBillingPublicClient(...)`、`with SyncBillingInternalClient(...)`、`with SyncPaymentClient(...)`、`with SyncEntitlementClient(...)` | SDK 统一管理同步 facade 和事件循环，仍然沿用同一套服务凭证注入逻辑 |
 | gRPC handler 内做权益校验 | `EntitlementGuard.connect(...)` | SDK 自动创建访问网关的 channel/stub，并为 Entitlement RPC 自动补齐 `x-api-key` |
 
 只有在你必须自己维护自定义 stub 时，才推荐退回 `with_service_auth(...)` 包装裸 stub。
@@ -78,7 +78,10 @@ async def async_example() -> None:
         await assets.get_collection(asset_space="configs", asset_id="my-app")
 
     async with EntitlementClient("127.0.0.1:3012", app_secret="ak_xxx") as entitlement:
-        await entitlement.list_plans(scope_business_id="skillforge")
+        await entitlement.get_my_entitlement(
+            business_id="skillforge",
+            subject_id="user-1",
+        )
 
 
 def sync_example() -> None:
@@ -155,7 +158,7 @@ asyncio.run(main())
 ### 同步（启动脚本 / 非 async 场景）
 
 `SyncDiscoveryClient` 现在与 `SyncFileStorageClient`、`SyncAssetBrowserClient` 走同一套同步 facade，
-`SyncBillingPublicClient`、`SyncBillingAdminClient`、`SyncBillingInternalClient`、`SyncApiKeyClient`、`SyncPaymentClient`、`SyncEntitlementClient` 也遵循同一模式，
+`SyncBillingPublicClient`、`SyncBillingInternalClient`、`SyncPaymentClient`、`SyncEntitlementClient` 也遵循同一模式，
 推荐统一使用 `with ...Client(...) as client:` 的上下文管理方式，让 SDK 负责事件循环和关闭清理。
 
 ```python
@@ -195,43 +198,38 @@ async with DiscoveryClient(os.environ["GATEWAY_ADDR"]) as client:
 
 优先级：构造函数 `app_secret` > `api_key` > 环境变量 `APP_SECRET` > `SERVICE_API_KEY`
 
+### 管理边界
+
+Python SDK 现在只保留业务运行时调用面，不再提供网关管理面的 SDK 封装。以下能力应继续通过网关管理台或受控 admin API 承载，而不是通过业务侧 Python SDK 直接调用：
+
+- billing reservation 排障、人工补账、计费策略管理
+- API key 生命周期管理
+- entitlement 的 plan / subscription / renew / change 管理
+- payment 的运营退款审批与直接退款操作
+
+这条边界同样落实到发布产物：Python SDK 的 wheel / sdist 不再携带 `apikey`、`billing_admin`、`billing_strategy_admin`、`business_membership_admin`、`pricing_admin` 这些 admin-only proto 生成的 `*_pb2`、`*_pb2_grpc`、`*_model` 模块。
+
+如果你在仓库内重新生成了 `stew/api/v1` 下的 protobuf Python 文件，发布前执行一次：
+
+```bash
+uv run python scripts/prune_publishable_generated_modules.py
+```
+
+打包阶段也会检查这批文件是否残留；如果还在，构建会直接失败，避免把管理面生成物重新带回发布包。
+
 ### 计费与 OOB 上报
 
-Billing Python SDK 现在按服务边界拆成三组主入口：
+Billing Python SDK 面向业务接入仅保留两组主入口：
 
 - `BillingPublicClient` / `SyncBillingPublicClient`：查询余额、grant、交易、snapshot 等业务前台只读能力
-- `BillingAdminClient` / `SyncBillingAdminClient`：授信、reservation 查询、人工补账、policy / artifact / bundle 管理
 - `BillingInternalClient` / `SyncBillingInternalClient`：预估、预授权、finalize、release、refund、异步 report ingress
 
-`BillingClient` / `SyncBillingClient` 仍然保留为兼容 facade，但新接入应优先直接依赖 split client：
+`BillingClient` / `SyncBillingClient` 仍然保留为兼容 facade，但兼容面也只覆盖 `public` 与 `internal` 两类业务调用。网关侧的管理能力，例如 reservation 排障、人工补账、policy / artifact / bundle 管理，应继续放在网关管理台或受控 admin API，不作为 Python SDK 的接入能力对外提供。
+
+业务接入侧常用的计费调用包括：
 
 - `authorize()`：创建 reservation / authorization
-- `get_reservation()`：按 `business_id + authorization_id` 拉单条 reservation
-- `query_reservations()`：按 `request_id`、状态、主体、时间窗筛选 reservation，适合排查 `AwaitingReport` / `PendingReconcile`
 - `submit_billing_report()`：走 `BillingReportIngressInternalService.SubmitBillingReport`，用于 `report_transport=OUT_OF_BAND` 的异步 worker 结算
-- `manual_reconcile()`：运营或人工补账入口
-
-如果业务管理后台需要稳定复用 reservation 排障字段，而不想在每个业务仓重复做 enum 映射和字段裁剪，SDK 现在提供共享 helper：
-
-- `BillingReservationTroubleshooter` / `SyncBillingReservationTroubleshooter`
-- `BillingReservationTroubleshootingRecord`
-- `BillingReservationTroubleshootingPage`
-
-这组 helper 会把 `BillingReservation` 归一成适合后台薄暴露的稳定字段集：
-
-- `business_id`
-- `user_id`
-- `authorization_id`
-- `request_id`
-- `subject_id`
-- `subject_type`
-- `policy_id`
-- `status`
-- `held_points`
-- `captured_points`
-- `awaiting_report_timeout_action`
-- `awaiting_report_deadline`
-- `created_at`
 
 几个语义边界需要和网关实现保持一致：
 
@@ -261,24 +259,11 @@ SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或
 ```python
 import asyncio
 
-from stew import BillingAdminClient, BillingInternalClient
+from stew import BillingInternalClient
 from stew.api.v1 import billing_model
 
 
 async def submit_oob_report() -> None:
-    async with BillingAdminClient(
-        "127.0.0.1:3012",
-        app_secret="ak_worker",
-        business_id="example-business",
-    ) as billing_admin:
-        reservation = await billing_admin.get_reservation(
-            scope_business_id="example-business",
-            authorization_id="auth_123",
-        )
-
-        if reservation.status != billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_AWAITING_REPORT:
-            return
-
     async with BillingInternalClient(
         "127.0.0.1:3012",
         app_secret="ak_worker",
@@ -320,51 +305,7 @@ asyncio.run(submit_oob_report())
 
 当前计费上报只保留 `OUT_OF_BAND`。业务服务不应再通过 `x-billing-status` 或 `x-billing-report` 回传结算结果，而应在业务完成后调用 `submit_billing_report()`。OOB 上报不会改变 policy selection 或策略执行位置，它只改变 finalize 的提交时机。
 
-批量排查 late report 时，推荐直接按状态筛 reservation：
-
-```python
-import asyncio
-
-from stew import BillingAdminClient
-from stew.api.v1 import billing_model
-
-
-async def find_stale_reservations() -> None:
-    async with BillingAdminClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
-        result = await billing.query_reservations(
-            scope_business_id="example-business",
-            status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
-            page_size=50,
-        )
-        for reservation in result.reservations or []:
-            print(reservation.authorization_id, reservation.status)
-
-
-asyncio.run(find_stale_reservations())
-```
-
-如果要把结果薄暴露给业务管理后台，推荐直接复用共享 helper，而不是在业务仓重新拼接 response model：
-
-```python
-import asyncio
-
-from stew import BillingAdminClient, BillingReservationTroubleshooter
-from stew.api.v1 import billing_common_model as billing_model
-
-
-async def list_reservations_for_admin() -> None:
-    async with BillingAdminClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
-        page = await BillingReservationTroubleshooter(billing).query_records(
-            scope_business_id="example-business",
-            request_id="req_123",
-            status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
-            page_size=50,
-        )
-        print([item.model_dump(mode="json") for item in page.items])
-
-
-asyncio.run(list_reservations_for_admin())
-```
+如果业务侧需要 reservation 排障、人工补账或计费策略管理，请走网关管理台或受控 admin API；不要把这些管理流程下沉到业务 SDK 或业务前后端运行时中。
 
 ### 自动透传当前 gRPC Context
 
@@ -1451,10 +1392,15 @@ client = DiscoveryClient(
 ```
 proto/sdk/python/
 ├── pyproject.toml
+├── setup.py                        # 构建期 publish surface 守卫
 ├── README.md                       # 本文件
+├── build_support.py                # publishable generated surface 常量
 ├── examples/
 │   ├── descriptor_submit.py        # 启动时提交描述符（命令行工具）
 │   └── keepalive_demo.py           # 心跳保活示例
+├── scripts/
+│   └── prune_publishable_generated_modules.py
+│                                   # 删除 admin-only 生成模块
 ├── tests/
 │   ├── test_file_storage_client.py  # FileStorageClient 测试
 │   └── test_asset_browser_client.py # AssetBrowserClient 测试
