@@ -85,6 +85,7 @@ class BillingAdminClient(
         | None = None,
         *,
         scope_business_id: str = "",
+        request_id: str = "",
         authorization_id: str = "",
         subject_id: str = "",
         subject_type: _bill_model.BillingSubjectType
@@ -92,6 +93,8 @@ class BillingAdminClient(
         user_id: str = "",
         status: _bill_model.BillingReservationStatus
         | int = _bill_model.BillingReservationStatus(0),
+        start_time_epoch_seconds: int = 0,
+        end_time_epoch_seconds: int = 0,
         page_size: int = 0,
         page_token: str = "",
         business_id: str = "",
@@ -102,11 +105,14 @@ class BillingAdminClient(
             if request is not None
             else _bill_pb.QueryBillingReservationsRequest(
                 business_id=scope_business_id,
+                request_id=request_id,
                 authorization_id=authorization_id,
                 subject_id=subject_id,
                 subject_type=enum_value(subject_type),
                 user_id=user_id,
                 status=enum_value(status),
+                start_time_epoch_seconds=start_time_epoch_seconds,
+                end_time_epoch_seconds=end_time_epoch_seconds,
                 page_size=page_size,
                 page_token=page_token,
             )

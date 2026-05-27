@@ -1,6 +1,7 @@
 import asyncio
 
 from google.protobuf import empty_pb2
+from google.protobuf import timestamp_pb2
 
 from stew import (
     BillingAdminClient,
@@ -8,10 +9,12 @@ from stew import (
     BillingError,
     BillingInternalClient,
     BillingPublicClient,
+    BillingReservationTroubleshooter,
     SyncBillingAdminClient,
     SyncBillingClient,
     SyncBillingInternalClient,
     SyncBillingPublicClient,
+    SyncBillingReservationTroubleshooter,
 )
 from stew.api.v1 import billing_common_model as billing_model
 from stew.api.v1 import billing_common_pb2 as billing_pb2
@@ -21,10 +24,12 @@ def test_billing_clients_are_exported() -> None:
     assert BillingClient is not None
     assert BillingPublicClient is not None
     assert BillingAdminClient is not None
+    assert BillingReservationTroubleshooter is not None
     assert BillingInternalClient is not None
     assert SyncBillingClient is not None
     assert SyncBillingPublicClient is not None
     assert SyncBillingAdminClient is not None
+    assert SyncBillingReservationTroubleshooter is not None
     assert SyncBillingInternalClient is not None
     assert BillingError is not None
 
@@ -251,7 +256,10 @@ def test_admin_query_reservations_supports_status_filter() -> None:
     result = asyncio.run(
         client.query_reservations(
             scope_business_id="ledger-biz",
+            request_id="req-1",
             authorization_id="auth-1",
+            start_time_epoch_seconds=1700000000,
+            end_time_epoch_seconds=1700003600,
             page_size=20,
             status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_AWAITING_REPORT,
             business_id="header-biz",
@@ -259,7 +267,10 @@ def test_admin_query_reservations_supports_status_filter() -> None:
     )
 
     assert captured["request"].business_id == "ledger-biz"
+    assert captured["request"].request_id == "req-1"
     assert captured["request"].authorization_id == "auth-1"
+    assert captured["request"].start_time_epoch_seconds == 1700000000
+    assert captured["request"].end_time_epoch_seconds == 1700003600
     assert (
         captured["request"].status
         == billing_pb2.BILLING_RESERVATION_STATUS_AWAITING_REPORT
@@ -272,6 +283,62 @@ def test_admin_query_reservations_supports_status_filter() -> None:
     assert result.reservations is not None
     assert result.reservations[0].status is not None
     assert result.next_page_token == "next-page"
+
+
+def test_reservation_troubleshooter_normalizes_reservation_payloads() -> None:
+    captured: dict[str, object] = {}
+
+    class Stub:
+        async def QueryReservations(self, request, metadata, timeout):
+            captured["request"] = request
+            captured["metadata"] = list(metadata)
+            assert timeout == 30.0
+            return billing_pb2.QueryBillingReservationsResponse(
+                reservations=[
+                    billing_pb2.BillingReservation(
+                        business_id=request.business_id,
+                        user_id="user-1",
+                        authorization_id="auth-1",
+                        request_id=request.request_id,
+                        subject_id="subject-1",
+                        subject_type=billing_pb2.BILLING_SUBJECT_TYPE_USER,
+                        policy_id="policy-1",
+                        status=billing_pb2.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
+                        held_points=42,
+                        captured_points=11,
+                        awaiting_report_timeout_action="mark_pending",
+                        awaiting_report_deadline=timestamp_pb2.Timestamp(
+                            seconds=1700003600
+                        ),
+                        created_at=timestamp_pb2.Timestamp(seconds=1700000000),
+                    )
+                ],
+                next_page_token="token-2",
+            )
+
+    client = BillingAdminClient("127.0.0.1:3012", app_secret="ak_bill")
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        BillingReservationTroubleshooter(client).query_records(
+            scope_business_id="ledger-biz",
+            request_id="req-1",
+            status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
+            page_size=50,
+        )
+    )
+
+    assert captured["request"].business_id == "ledger-biz"
+    assert captured["request"].request_id == "req-1"
+    assert captured["metadata"] == [("x-api-key", "ak_bill")]
+    assert result.next_page_token == "token-2"
+    assert result.items[0].business_id == "ledger-biz"
+    assert result.items[0].request_id == "req-1"
+    assert result.items[0].subject_type == "BILLING_SUBJECT_TYPE_USER"
+    assert result.items[0].status == "BILLING_RESERVATION_STATUS_PENDING_RECONCILE"
+    assert result.items[0].held_points == 42
+    assert result.items[0].captured_points == 11
+    assert result.items[0].awaiting_report_timeout_action == "mark_pending"
 
 
 def test_internal_submit_billing_report_uses_ingress_stub() -> None:

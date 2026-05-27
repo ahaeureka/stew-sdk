@@ -207,9 +207,31 @@ Billing Python SDK 现在按服务边界拆成三组主入口：
 
 - `authorize()`：创建 reservation / authorization
 - `get_reservation()`：按 `business_id + authorization_id` 拉单条 reservation
-- `query_reservations()`：按状态、主体、时间窗筛选 reservation，适合排查 `AwaitingReport` / `PendingReconcile`
+- `query_reservations()`：按 `request_id`、状态、主体、时间窗筛选 reservation，适合排查 `AwaitingReport` / `PendingReconcile`
 - `submit_billing_report()`：走 `BillingReportIngressInternalService.SubmitBillingReport`，用于 `report_transport=OUT_OF_BAND` 的异步 worker 结算
 - `manual_reconcile()`：运营或人工补账入口
+
+如果业务管理后台需要稳定复用 reservation 排障字段，而不想在每个业务仓重复做 enum 映射和字段裁剪，SDK 现在提供共享 helper：
+
+- `BillingReservationTroubleshooter` / `SyncBillingReservationTroubleshooter`
+- `BillingReservationTroubleshootingRecord`
+- `BillingReservationTroubleshootingPage`
+
+这组 helper 会把 `BillingReservation` 归一成适合后台薄暴露的稳定字段集：
+
+- `business_id`
+- `user_id`
+- `authorization_id`
+- `request_id`
+- `subject_id`
+- `subject_type`
+- `policy_id`
+- `status`
+- `held_points`
+- `captured_points`
+- `awaiting_report_timeout_action`
+- `awaiting_report_deadline`
+- `created_at`
 
 几个语义边界需要和网关实现保持一致：
 
@@ -319,6 +341,29 @@ async def find_stale_reservations() -> None:
 
 
 asyncio.run(find_stale_reservations())
+```
+
+如果要把结果薄暴露给业务管理后台，推荐直接复用共享 helper，而不是在业务仓重新拼接 response model：
+
+```python
+import asyncio
+
+from stew import BillingAdminClient, BillingReservationTroubleshooter
+from stew.api.v1 import billing_common_model as billing_model
+
+
+async def list_reservations_for_admin() -> None:
+    async with BillingAdminClient("127.0.0.1:3012", app_secret="ak_worker") as billing:
+        page = await BillingReservationTroubleshooter(billing).query_records(
+            scope_business_id="example-business",
+            request_id="req_123",
+            status=billing_model.BillingReservationStatus.BILLING_RESERVATION_STATUS_PENDING_RECONCILE,
+            page_size=50,
+        )
+        print([item.model_dump(mode="json") for item in page.items])
+
+
+asyncio.run(list_reservations_for_admin())
 ```
 
 ### 自动透传当前 gRPC Context
