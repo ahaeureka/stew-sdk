@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from typing import Any
+from uuid import uuid4
 
 import grpc
 import grpc.aio
@@ -19,8 +20,67 @@ from ._billing_client_shared import (
     coerce_authorization_context,
     coerce_billing_report,
     coerce_protobuf_message,
+    enum_value,
 )
 from ._discovery.helpers import MetadataEntry, SyncGatewayClientBase
+
+
+def _generated_authorization_id(value: str) -> str:
+    return value or str(uuid4())
+
+
+def _generated_request_id(value: str) -> str:
+    return value or str(uuid4())
+
+
+def _resolved_subject_id(subject_id: str, user_id: str) -> str:
+    return subject_id or user_id
+
+
+def _resolved_subject_type(
+    subject_type: _bill_model.BillingSubjectType | int | None,
+    subject_id: str,
+) -> _bill_model.BillingSubjectType | int:
+    if subject_type is not None:
+        return subject_type
+    if subject_id:
+        return _bill_model.BillingSubjectType.BILLING_SUBJECT_TYPE_USER
+    return _bill_model.BillingSubjectType.BILLING_SUBJECT_TYPE_UNSPECIFIED
+
+
+def _build_minimal_authorization_context(
+    *,
+    scope_business_id: str,
+    user_id: str,
+    subject_id: str,
+    subject_type: _bill_model.BillingSubjectType | int | None,
+    authorization_id: str,
+    request_id: str,
+) -> _bill_pb.AuthorizationContext:
+    resolved_subject_id = _resolved_subject_id(subject_id, user_id)
+    return _bill_pb.AuthorizationContext(
+        business_id=scope_business_id,
+        user_id=user_id,
+        subject_id=resolved_subject_id,
+        subject_type=enum_value(
+            _resolved_subject_type(subject_type, resolved_subject_id)
+        ),
+        authorization_id=_generated_authorization_id(authorization_id),
+        request_id=_generated_request_id(request_id),
+    )
+
+
+def _ensure_context_identifiers(
+    context: _bill_pb.AuthorizationContext,
+    *,
+    authorization_id: str,
+    request_id: str,
+) -> _bill_pb.AuthorizationContext:
+    if not context.authorization_id:
+        context.authorization_id = _generated_authorization_id(authorization_id)
+    if not context.request_id:
+        context.request_id = _generated_request_id(request_id)
+    return context
 
 
 class BillingInternalClient(
@@ -100,6 +160,13 @@ class BillingInternalClient(
         context: _bill_model.AuthorizationContext
         | _bill_pb.AuthorizationContext
         | None = None,
+        scope_business_id: str = "",
+        user_id: str = "",
+        subject_id: str = "",
+        subject_type: _bill_model.BillingSubjectType | int | None = None,
+        authorization_id: str = "",
+        request_id: str = "",
+        plan_id_hint: str = "",
         estimated_points: int = 0,
         business_id: str = "",
         extra_metadata: Sequence[MetadataEntry] = (),
@@ -107,9 +174,29 @@ class BillingInternalClient(
         if request is not None:
             message = coerce_protobuf_message(request, _bill_pb.AuthorizeRequest)
         else:
-            message = _bill_pb.AuthorizeRequest(estimated_points=estimated_points)
+            message = _bill_pb.AuthorizeRequest(
+                estimated_points=estimated_points,
+                plan_id_hint=plan_id_hint,
+            )
             if context is not None:
-                message.context.CopyFrom(coerce_authorization_context(context))
+                message.context.CopyFrom(
+                    _ensure_context_identifiers(
+                        coerce_authorization_context(context),
+                        authorization_id=authorization_id,
+                        request_id=request_id,
+                    )
+                )
+            else:
+                message.context.CopyFrom(
+                    _build_minimal_authorization_context(
+                        scope_business_id=scope_business_id,
+                        user_id=user_id,
+                        subject_id=subject_id,
+                        subject_type=subject_type,
+                        authorization_id=authorization_id,
+                        request_id=request_id,
+                    )
+                )
 
         response = await self._call(
             self._s.Authorize(

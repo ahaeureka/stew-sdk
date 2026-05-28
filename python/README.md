@@ -254,6 +254,49 @@ SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或
 - cost 统一放在 `cost_breakdown.line_items` 和 `total_cost_micros`
 - `policy_id`、`factor_schema_version` 只负责选择本次请求的 policy context；最终扣点、金额和账务口径由网关 / rustpayment 的 policy bundle 重算，不由业务 report 直接指定
 
+最小输入 authorize 示例：
+
+```python
+import asyncio
+
+from stew import BillingInternalClient
+
+
+async def authorize_request() -> None:
+    async with BillingInternalClient(
+        "127.0.0.1:3012",
+        app_secret="ak_backend",
+        business_id="example-business",
+    ) as billing_internal:
+        response = await billing_internal.authorize(
+            scope_business_id="example-business",
+            user_id="user_123",
+            subject_id="user_123",
+            plan_id_hint="plan-pro",
+            estimated_points=12,
+            extra_metadata=[("x-request-id", "req_123")],
+        )
+
+        print("approved:", response.success)
+        print("authorization_id:", response.authorization_id)
+        if response.resolved_context is not None:
+            print("resolved policy:", response.resolved_context.policy_id)
+            print(
+                "resolved factor schema:",
+                response.resolved_context.factor_schema_version,
+            )
+
+
+asyncio.run(authorize_request())
+```
+
+这个调用形态下，业务侧只需要提供业务账本和用户/主体信息：
+
+- `scope_business_id` 是实际计费账本作用域
+- `user_id` / `subject_id` / `subject_type` 描述当前扣费主体；对用户主体可只传 `user_id`，SDK 会默认把 `subject_id` 补成同一个值
+- `plan_id_hint` 只是给网关做 `policy_id_by_plan` 命中提示，SDK 本地不解析 policy
+- 最终选中的 `policy_id` / `factor_schema_version` 以返回的 `resolved_context` 为准，后续 OOB report 应继续复用这组上下文
+
 异步 worker 提交 OOB billing report 的最小示例：
 
 ```python

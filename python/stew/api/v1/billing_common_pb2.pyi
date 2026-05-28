@@ -265,24 +265,28 @@ class EstimateChargeResponse(_message.Message):
     def __init__(self, success: bool = ..., estimated_points: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
 
 class AuthorizeRequest(_message.Message):
-    __slots__ = ("context", "estimated_points")
+    __slots__ = ("context", "estimated_points", "plan_id_hint")
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     ESTIMATED_POINTS_FIELD_NUMBER: _ClassVar[int]
+    PLAN_ID_HINT_FIELD_NUMBER: _ClassVar[int]
     context: AuthorizationContext
     estimated_points: int
-    def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., estimated_points: _Optional[int] = ...) -> None: ...
+    plan_id_hint: str
+    def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., estimated_points: _Optional[int] = ..., plan_id_hint: _Optional[str] = ...) -> None: ...
 
 class BillingAuthorizationResponse(_message.Message):
-    __slots__ = ("success", "authorization_id", "held_points", "message")
+    __slots__ = ("success", "authorization_id", "held_points", "message", "resolved_context")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     HELD_POINTS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
+    RESOLVED_CONTEXT_FIELD_NUMBER: _ClassVar[int]
     success: bool
     authorization_id: str
     held_points: int
     message: str
-    def __init__(self, success: bool = ..., authorization_id: _Optional[str] = ..., held_points: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
+    resolved_context: AuthorizationContext
+    def __init__(self, success: bool = ..., authorization_id: _Optional[str] = ..., held_points: _Optional[int] = ..., message: _Optional[str] = ..., resolved_context: _Optional[_Union[AuthorizationContext, _Mapping]] = ...) -> None: ...
 
 class FinalizeRequest(_message.Message):
     __slots__ = ("context", "report")

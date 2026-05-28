@@ -140,6 +140,75 @@ def test_internal_submit_billing_report_uses_ingress_stub() -> None:
     assert result.decision.points == 42
 
 
+def test_internal_authorize_supports_minimal_input_and_returns_resolved_context() -> (
+    None
+):
+    captured: dict[str, object] = {}
+
+    class Stub:
+        async def Authorize(self, request, metadata, timeout):
+            captured["request"] = request
+            captured["metadata"] = list(metadata)
+            assert timeout == 30.0
+            return billing_pb2.BillingAuthorizationResponse(
+                success=True,
+                authorization_id=request.context.authorization_id,
+                held_points=request.estimated_points,
+                resolved_context=billing_pb2.AuthorizationContext(
+                    business_id=request.context.business_id,
+                    user_id=request.context.user_id,
+                    subject_id=request.context.subject_id,
+                    subject_type=request.context.subject_type,
+                    authorization_id=request.context.authorization_id,
+                    request_id=request.context.request_id,
+                    policy_id="policy-pro",
+                    factor_schema_version="billing.factors.v1",
+                ),
+            )
+
+    client = BillingInternalClient(
+        "127.0.0.1:3012",
+        app_secret="ak_bill",
+        business_id="biz-default",
+    )
+    client._stub = Stub()  # type: ignore[assignment]
+
+    result = asyncio.run(
+        client.authorize(
+            scope_business_id="ledger-biz",
+            user_id="user-1",
+            estimated_points=42,
+            plan_id_hint="plan-pro",
+            business_id="biz-override",
+            extra_metadata=[("x-request-id", "req-1")],
+        )
+    )
+
+    request = captured["request"]
+
+    assert request.context.business_id == "ledger-biz"
+    assert request.context.user_id == "user-1"
+    assert request.context.subject_id == "user-1"
+    assert (
+        request.context.subject_type
+        == billing_model.BillingSubjectType.BILLING_SUBJECT_TYPE_USER.value
+    )
+    assert request.plan_id_hint == "plan-pro"
+    assert request.estimated_points == 42
+    assert request.context.authorization_id != ""
+    assert request.context.request_id != ""
+    assert captured["metadata"] == [
+        ("x-api-key", "ak_bill"),
+        ("x-business-id", "biz-override"),
+        ("x-request-id", "req-1"),
+    ]
+    assert isinstance(result, billing_model.BillingAuthorizationResponse)
+    assert result.authorization_id == request.context.authorization_id
+    assert result.resolved_context is not None
+    assert result.resolved_context.policy_id == "policy-pro"
+    assert result.resolved_context.request_id == request.context.request_id
+
+
 def test_compatibility_billing_client_routes_to_split_clients() -> None:
     client = BillingClient("127.0.0.1:3012", app_secret="ak_bill")
     calls: list[tuple[str, tuple[object, ...], dict[str, object]]] = []
