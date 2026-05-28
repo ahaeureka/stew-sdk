@@ -1,15 +1,31 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 from setuptools import setup
 from setuptools.command.build_py import build_py as _build_py
 from setuptools.command.sdist import sdist as _sdist
 
-from build_support import find_excluded_generated_files
-
-
 ROOT_DIR = Path(__file__).resolve().parent
+BUILD_SUPPORT_PATH = ROOT_DIR / "build_support.py"
+
+
+def load_build_support():
+    spec = importlib.util.spec_from_file_location(
+        "stew_build_support", BUILD_SUPPORT_PATH
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError(
+            f"Unable to load build support module from {BUILD_SUPPORT_PATH}"
+        )
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+find_excluded_generated_files = load_build_support().find_excluded_generated_files
 
 
 def ensure_publishable_generated_surface() -> None:
