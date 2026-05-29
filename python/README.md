@@ -207,6 +207,8 @@ Python SDK 现在只保留业务运行时调用面，不再提供网关管理面
 - entitlement 的 plan / subscription / renew / change 管理
 - payment 的运营退款审批与直接退款操作
 
+这也意味着公共根导出里不再提供 `BillingAdminClient`、`BillingReservationTroubleshooter`、`ApiKeyClient` 这类管理面入口；如果你需要 reservation 排障、策略管理或 API key 生命周期能力，请直接接网关管理台或业务自建的受控 admin API。
+
 这条边界同样落实到发布产物：Python SDK 的 wheel / sdist 不再携带 `apikey`、`billing_admin`、`billing_strategy_admin`、`business_membership_admin`、`pricing_admin` 这些 admin-only proto 生成的 `*_pb2`、`*_pb2_grpc`、`*_model` 模块。
 
 如果你在仓库内重新生成了 `stew/api/v1` 下的 protobuf Python 文件，发布前执行一次：

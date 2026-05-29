@@ -274,30 +274,70 @@ class AuthorizeRequest(_message.Message):
     plan_id_hint: str
     def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., estimated_points: _Optional[int] = ..., plan_id_hint: _Optional[str] = ...) -> None: ...
 
+class BillingCredentialPackage(_message.Message):
+    __slots__ = ("billing_flow_id", "authorization_id", "execution_token", "business_id", "subject_id", "subject_type", "policy_id", "factor_schema_version", "request_id", "issued_at_epoch_seconds", "expires_at_epoch_seconds")
+    BILLING_FLOW_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
+    SUBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
+    POLICY_ID_FIELD_NUMBER: _ClassVar[int]
+    FACTOR_SCHEMA_VERSION_FIELD_NUMBER: _ClassVar[int]
+    REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
+    ISSUED_AT_EPOCH_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    EXPIRES_AT_EPOCH_SECONDS_FIELD_NUMBER: _ClassVar[int]
+    billing_flow_id: str
+    authorization_id: str
+    execution_token: str
+    business_id: str
+    subject_id: str
+    subject_type: BillingSubjectType
+    policy_id: str
+    factor_schema_version: str
+    request_id: str
+    issued_at_epoch_seconds: int
+    expires_at_epoch_seconds: int
+    def __init__(self, billing_flow_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., execution_token: _Optional[str] = ..., business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., policy_id: _Optional[str] = ..., factor_schema_version: _Optional[str] = ..., request_id: _Optional[str] = ..., issued_at_epoch_seconds: _Optional[int] = ..., expires_at_epoch_seconds: _Optional[int] = ...) -> None: ...
+
+class BillingExecutionReference(_message.Message):
+    __slots__ = ("billing_flow_id", "authorization_id", "execution_token")
+    BILLING_FLOW_ID_FIELD_NUMBER: _ClassVar[int]
+    AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_TOKEN_FIELD_NUMBER: _ClassVar[int]
+    billing_flow_id: str
+    authorization_id: str
+    execution_token: str
+    def __init__(self, billing_flow_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., execution_token: _Optional[str] = ...) -> None: ...
+
 class BillingAuthorizationResponse(_message.Message):
-    __slots__ = ("success", "authorization_id", "held_points", "message", "resolved_context")
+    __slots__ = ("success", "authorization_id", "held_points", "message", "resolved_context", "credential_package")
     SUCCESS_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     HELD_POINTS_FIELD_NUMBER: _ClassVar[int]
     MESSAGE_FIELD_NUMBER: _ClassVar[int]
     RESOLVED_CONTEXT_FIELD_NUMBER: _ClassVar[int]
+    CREDENTIAL_PACKAGE_FIELD_NUMBER: _ClassVar[int]
     success: bool
     authorization_id: str
     held_points: int
     message: str
     resolved_context: AuthorizationContext
-    def __init__(self, success: bool = ..., authorization_id: _Optional[str] = ..., held_points: _Optional[int] = ..., message: _Optional[str] = ..., resolved_context: _Optional[_Union[AuthorizationContext, _Mapping]] = ...) -> None: ...
+    credential_package: BillingCredentialPackage
+    def __init__(self, success: bool = ..., authorization_id: _Optional[str] = ..., held_points: _Optional[int] = ..., message: _Optional[str] = ..., resolved_context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., credential_package: _Optional[_Union[BillingCredentialPackage, _Mapping]] = ...) -> None: ...
 
 class FinalizeRequest(_message.Message):
-    __slots__ = ("context", "report")
+    __slots__ = ("context", "report", "execution_ref")
     CONTEXT_FIELD_NUMBER: _ClassVar[int]
     REPORT_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_REF_FIELD_NUMBER: _ClassVar[int]
     context: AuthorizationContext
     report: BillingReport
-    def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., report: _Optional[_Union[BillingReport, _Mapping]] = ...) -> None: ...
+    execution_ref: BillingExecutionReference
+    def __init__(self, context: _Optional[_Union[AuthorizationContext, _Mapping]] = ..., report: _Optional[_Union[BillingReport, _Mapping]] = ..., execution_ref: _Optional[_Union[BillingExecutionReference, _Mapping]] = ...) -> None: ...
 
 class SubmitBillingReportRequest(_message.Message):
-    __slots__ = ("report", "delivery_request_id", "source_service", "labels")
+    __slots__ = ("report", "delivery_request_id", "source_service", "labels", "execution_ref")
     class LabelsEntry(_message.Message):
         __slots__ = ("key", "value")
         KEY_FIELD_NUMBER: _ClassVar[int]
@@ -309,11 +349,13 @@ class SubmitBillingReportRequest(_message.Message):
     DELIVERY_REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     SOURCE_SERVICE_FIELD_NUMBER: _ClassVar[int]
     LABELS_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_REF_FIELD_NUMBER: _ClassVar[int]
     report: BillingReport
     delivery_request_id: str
     source_service: str
     labels: _containers.ScalarMap[str, str]
-    def __init__(self, report: _Optional[_Union[BillingReport, _Mapping]] = ..., delivery_request_id: _Optional[str] = ..., source_service: _Optional[str] = ..., labels: _Optional[_Mapping[str, str]] = ...) -> None: ...
+    execution_ref: BillingExecutionReference
+    def __init__(self, report: _Optional[_Union[BillingReport, _Mapping]] = ..., delivery_request_id: _Optional[str] = ..., source_service: _Optional[str] = ..., labels: _Optional[_Mapping[str, str]] = ..., execution_ref: _Optional[_Union[BillingExecutionReference, _Mapping]] = ...) -> None: ...
 
 class SubmitBillingReportResponse(_message.Message):
     __slots__ = ("business_id", "user_id", "subject_id", "subject_type", "authorization_id", "request_id", "decision", "deduped")
@@ -354,32 +396,36 @@ class SettlementDecision(_message.Message):
     def __init__(self, success: bool = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ..., points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., message: _Optional[str] = ...) -> None: ...
 
 class ReleaseRequest(_message.Message):
-    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason")
+    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason", "execution_ref")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_REF_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     subject_id: str
     authorization_id: str
     request_id: str
     reason: str
-    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    execution_ref: BillingExecutionReference
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ..., execution_ref: _Optional[_Union[BillingExecutionReference, _Mapping]] = ...) -> None: ...
 
 class RefundRequest(_message.Message):
-    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason")
+    __slots__ = ("business_id", "subject_id", "authorization_id", "request_id", "reason", "execution_ref")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     AUTHORIZATION_ID_FIELD_NUMBER: _ClassVar[int]
     REQUEST_ID_FIELD_NUMBER: _ClassVar[int]
     REASON_FIELD_NUMBER: _ClassVar[int]
+    EXECUTION_REF_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     subject_id: str
     authorization_id: str
     request_id: str
     reason: str
-    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ...) -> None: ...
+    execution_ref: BillingExecutionReference
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., reason: _Optional[str] = ..., execution_ref: _Optional[_Union[BillingExecutionReference, _Mapping]] = ...) -> None: ...
 
 class QueryBalanceRequest(_message.Message):
     __slots__ = ("business_id", "subject_id", "subject_type", "user_id")
