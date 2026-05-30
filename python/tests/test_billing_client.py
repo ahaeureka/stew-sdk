@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from stew import (
     BillingClient,
@@ -8,9 +9,11 @@ from stew import (
     SyncBillingClient,
     SyncBillingInternalClient,
     SyncBillingPublicClient,
+    build_submit_billing_report_metadata,
 )
 from stew.api.v1 import billing_common_model as billing_model
 from stew.api.v1 import billing_common_pb2 as billing_pb2
+from stew._discovery.errors import DiscoveryError
 
 
 def test_billing_root_exports_business_surfaces_only() -> None:
@@ -138,6 +141,93 @@ def test_internal_submit_billing_report_uses_ingress_stub() -> None:
     assert result.deduped is True
     assert result.decision is not None
     assert result.decision.points == 42
+
+
+def test_build_submit_billing_report_metadata_sets_minimal_headers() -> None:
+    metadata = build_submit_billing_report_metadata(
+        service_id="skills-app",
+        request_id="req-1",
+        extra_metadata=[("x-request-id", "req-old"), ("x-extra", "ok")],
+    )
+
+    assert metadata == [
+        ("x-request-id", "req-1"),
+        ("x-extra", "ok"),
+        ("x-stew-service-id", "skills-app"),
+    ]
+
+
+def test_submit_billing_report_warns_on_risky_identity_headers(caplog) -> None:
+    captured: dict[str, object] = {}
+
+    class IngressStub:
+        async def SubmitBillingReport(self, request, metadata, timeout):
+            captured["metadata"] = list(metadata)
+            return billing_pb2.SubmitBillingReportResponse(
+                business_id=request.report.business_id,
+                authorization_id=request.report.authorization_id,
+                request_id=request.report.request_id,
+            )
+
+    client = BillingInternalClient("127.0.0.1:3012", app_secret="ak_bill")
+    client._report_ingress_stub = IngressStub()  # type: ignore[assignment]
+
+    with caplog.at_level(logging.WARNING, logger="stew.billing_internal_client"):
+        asyncio.run(
+            client.submit_billing_report(
+                report=billing_model.BillingReport(
+                    business_id="ledger-biz",
+                    authorization_id="auth-1",
+                    request_id="req-1",
+                    user_id="user-1",
+                    final_status=billing_model.BillingFinalStatus.BILLING_FINAL_STATUS_SUCCESS,
+                ),
+                source_service="skills-app",
+                extra_metadata=[("x-user-id", "user-1")],
+            )
+        )
+
+    assert "not report-ingress auth inputs" in caplog.text
+    assert captured["metadata"] == [
+        ("x-api-key", "ak_bill"),
+        ("x-user-id", "user-1"),
+        ("x-request-id", "req-1"),
+    ]
+
+
+def test_submit_billing_report_warns_on_legacy_error_signature(caplog) -> None:
+    client = BillingInternalClient("127.0.0.1:3012", app_secret="ak_bill")
+
+    async def fake_call(_coro):
+        raise DiscoveryError(
+            "[PERMISSION_DENIED] billing report ingress requires admin or report-ingress privileges"
+        )
+
+    class IngressStub:
+        def SubmitBillingReport(self, request, metadata, timeout):
+            return object()
+
+    client._report_ingress_stub = IngressStub()  # type: ignore[assignment]
+    client._call = fake_call  # type: ignore[method-assign]
+
+    import pytest
+
+    with caplog.at_level(logging.WARNING, logger="stew.billing_internal_client"):
+        with pytest.raises(DiscoveryError):
+            asyncio.run(
+                client.submit_billing_report(
+                    report=billing_model.BillingReport(
+                        business_id="ledger-biz",
+                        authorization_id="auth-1",
+                        request_id="req-1",
+                        user_id="user-1",
+                        final_status=billing_model.BillingFinalStatus.BILLING_FINAL_STATUS_SUCCESS,
+                    ),
+                    source_service="skills-app",
+                )
+            )
+
+    assert "legacy report-ingress error signature" in caplog.text
 
 
 def test_internal_authorize_supports_minimal_input_and_returns_resolved_context() -> (

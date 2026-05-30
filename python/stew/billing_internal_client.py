@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Sequence
 from typing import Any
 from uuid import uuid4
@@ -22,7 +23,32 @@ from ._billing_client_shared import (
     coerce_protobuf_message,
     enum_value,
 )
-from ._discovery.helpers import MetadataEntry, SyncGatewayClientBase
+from ._discovery.errors import DiscoveryError
+from ._discovery.helpers import (
+    MetadataEntry,
+    SyncGatewayClientBase,
+    _normalize_extra_metadata,
+)
+
+
+_logger = logging.getLogger(__name__)
+
+_REPORT_INGRESS_RISKY_HEADERS = frozenset(
+    {
+        "authorization",
+        "x-stew-identity-jwt",
+        "x-stew-identity-jwt-signing-secret",
+        "x-stew-oidc-client-secret",
+    }
+)
+_REPORT_INGRESS_RISKY_PREFIXES = (
+    "x-user-",
+    "x-token-",
+)
+_LEGACY_REPORT_INGRESS_ERROR_SIGNATURES = (
+    "billing report ingress requires admin or report-ingress privileges",
+    "billing report ingress requires authenticated identity",
+)
 
 
 def _generated_authorization_id(value: str) -> str:
@@ -46,6 +72,67 @@ def _resolved_subject_type(
     if subject_id:
         return _bill_model.BillingSubjectType.BILLING_SUBJECT_TYPE_USER
     return _bill_model.BillingSubjectType.BILLING_SUBJECT_TYPE_UNSPECIFIED
+
+
+def _upsert_metadata_entry(metadata: list[MetadataEntry], entry: MetadataEntry) -> None:
+    key, value = entry
+    for index, (existing_key, _) in enumerate(metadata):
+        if existing_key == key:
+            metadata[index] = (key, value)
+            return
+    metadata.append((key, value))
+
+
+def build_submit_billing_report_metadata(
+    *,
+    service_id: str = "",
+    request_id: str = "",
+    extra_metadata: Sequence[MetadataEntry] = (),
+) -> list[MetadataEntry]:
+    """Build minimal metadata for submit_billing_report()."""
+
+    metadata = list(_normalize_extra_metadata(extra_metadata))
+    if service_id:
+        _upsert_metadata_entry(metadata, ("x-stew-service-id", service_id))
+    if request_id:
+        _upsert_metadata_entry(metadata, ("x-request-id", request_id))
+    return metadata
+
+
+def _warn_on_report_ingress_metadata(
+    extra_metadata: Sequence[MetadataEntry],
+    *,
+    source_service: str,
+) -> None:
+    risky_headers: list[str] = []
+    for key, _ in _normalize_extra_metadata(extra_metadata):
+        if key in _REPORT_INGRESS_RISKY_HEADERS or any(
+            key.startswith(prefix) for prefix in _REPORT_INGRESS_RISKY_PREFIXES
+        ):
+            risky_headers.append(key)
+
+    if risky_headers:
+        _logger.warning(
+            "submit_billing_report metadata includes headers that are not report-ingress auth inputs: %s source_service=%s",
+            ", ".join(sorted(set(risky_headers))),
+            source_service,
+        )
+
+
+def _warn_if_legacy_report_ingress_error(
+    error: DiscoveryError,
+    *,
+    source_service: str,
+) -> None:
+    message = str(error)
+    for signature in _LEGACY_REPORT_INGRESS_ERROR_SIGNATURES:
+        if signature in message:
+            _logger.warning(
+                "submit_billing_report received a legacy report-ingress error signature; this may indicate a gateway instance still running the old auth model: source_service=%s error=%s",
+                source_service,
+                message,
+            )
+            return
 
 
 def _build_minimal_authorization_context(
@@ -334,15 +421,31 @@ class BillingInternalClient(
             if report is not None:
                 message.report.CopyFrom(coerce_billing_report(report))
 
-        response = await self._call(
-            self._report_s.SubmitBillingReport(
-                message,
-                metadata=self._meta(
-                    extra_metadata=extra_metadata, business_id=business_id
-                ),
-                timeout=self._timeout,
-            )
+        normalized_metadata = build_submit_billing_report_metadata(
+            request_id=message.report.request_id if message.HasField("report") else "",
+            extra_metadata=extra_metadata,
         )
+        _warn_on_report_ingress_metadata(
+            normalized_metadata,
+            source_service=message.source_service,
+        )
+
+        try:
+            response = await self._call(
+                self._report_s.SubmitBillingReport(
+                    message,
+                    metadata=self._meta(
+                        extra_metadata=normalized_metadata, business_id=business_id
+                    ),
+                    timeout=self._timeout,
+                )
+            )
+        except DiscoveryError as exc:
+            _warn_if_legacy_report_ingress_error(
+                exc,
+                source_service=message.source_service,
+            )
+            raise
         return _bill_model.SubmitBillingReportResponse.from_protobuf(response)
 
 
@@ -385,4 +488,5 @@ __all__ = [
     "BillingError",
     "BillingInternalClient",
     "SyncBillingInternalClient",
+    "build_submit_billing_report_metadata",
 ]

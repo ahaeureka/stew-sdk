@@ -56,6 +56,7 @@ from stew.billing_public_client import (
 from stew.billing_internal_client import (
     BillingInternalClient,
     SyncBillingInternalClient,
+    build_submit_billing_report_metadata,
 )
 from stew.payment_client import (
     PaymentClient,
@@ -121,6 +122,7 @@ __all__ = [
     "BillingClient",
     "BillingPublicClient",
     "BillingInternalClient",
+    "build_submit_billing_report_metadata",
     "BillingError",
     "SyncBillingClient",
     "SyncBillingPublicClient",

@@ -304,7 +304,7 @@ asyncio.run(authorize_request())
 ```python
 import asyncio
 
-from stew import BillingInternalClient
+from stew import BillingInternalClient, build_submit_billing_report_metadata
 from stew.api.v1 import billing_model
 
 
@@ -338,7 +338,10 @@ async def submit_oob_report() -> None:
             delivery_request_id="worker-attempt-1",
             source_service="your.service.v1.AsyncWorker",
             labels={"attempt": "1"},
-            extra_metadata=[("x-request-id", "req_123")],
+            extra_metadata=build_submit_billing_report_metadata(
+                service_id="your.service.v1.AsyncWorker",
+                request_id="req_123",
+            ),
         )
 
         print("deduped:", response.deduped)
@@ -349,6 +352,10 @@ asyncio.run(submit_oob_report())
 ```
 
 当前计费上报只保留 `OUT_OF_BAND`。业务服务不应再通过 `x-billing-status` 或 `x-billing-report` 回传结算结果，而应在业务完成后调用 `submit_billing_report()`。OOB 上报不会改变 policy selection 或策略执行位置，它只改变 finalize 的提交时机。
+
+`build_submit_billing_report_metadata()` 会生成 report-ingress 的最小 metadata；如果调用时仍携带 `authorization`、`x-user-*`、`x-token-*` 或 `x-stew-identity-jwt` 这类用户身份 header，SDK 会打印 warning，提示这些 header 不属于 report-ingress 的鉴权输入。
+
+如果 SDK 收到旧网关实例返回的历史错误签名，例如 `billing report ingress requires admin or report-ingress privileges`，也会打印 warning。这个 warning 就是 old-model hit 的观测信号，可以直接按日志关键字 `legacy report-ingress error signature` 聚合排查仍未升级的实例。
 
 如果业务侧需要 reservation 排障、人工补账或计费策略管理，请走网关管理台或受控 admin API；不要把这些管理流程下沉到业务 SDK 或业务前后端运行时中。
 
