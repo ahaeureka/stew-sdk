@@ -58,6 +58,10 @@ from stew.billing_internal_client import (
     SyncBillingInternalClient,
     build_submit_billing_report_metadata,
 )
+from stew.billing_session_client import (
+    BillingSessionClient,
+    BillingSessionQueryClient,
+)
 from stew.payment_client import (
     PaymentClient,
     PaymentError,
