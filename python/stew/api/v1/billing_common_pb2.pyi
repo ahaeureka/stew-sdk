@@ -440,7 +440,7 @@ class QueryBalanceRequest(_message.Message):
     def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ...) -> None: ...
 
 class BalanceSnapshot(_message.Message):
-    __slots__ = ("business_id", "subject_id", "subject_type", "user_id", "available_balance", "held_balance", "total_granted", "total_consumed", "updated_at", "breakdown", "created_at", "deleted_at")
+    __slots__ = ("business_id", "subject_id", "subject_type", "user_id", "available_balance", "held_balance", "total_granted", "total_consumed", "updated_at", "breakdown", "created_at", "deleted_at", "debt_balance")
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_ID_FIELD_NUMBER: _ClassVar[int]
     SUBJECT_TYPE_FIELD_NUMBER: _ClassVar[int]
@@ -453,6 +453,7 @@ class BalanceSnapshot(_message.Message):
     BREAKDOWN_FIELD_NUMBER: _ClassVar[int]
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     DELETED_AT_FIELD_NUMBER: _ClassVar[int]
+    DEBT_BALANCE_FIELD_NUMBER: _ClassVar[int]
     business_id: str
     subject_id: str
     subject_type: BillingSubjectType
@@ -465,7 +466,8 @@ class BalanceSnapshot(_message.Message):
     breakdown: _containers.RepeatedCompositeFieldContainer[CreditTypeBalance]
     created_at: _timestamp_pb2.Timestamp
     deleted_at: _timestamp_pb2.Timestamp
-    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ..., available_balance: _Optional[int] = ..., held_balance: _Optional[int] = ..., total_granted: _Optional[int] = ..., total_consumed: _Optional[int] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., breakdown: _Optional[_Iterable[_Union[CreditTypeBalance, _Mapping]]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
+    debt_balance: int
+    def __init__(self, business_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., user_id: _Optional[str] = ..., available_balance: _Optional[int] = ..., held_balance: _Optional[int] = ..., total_granted: _Optional[int] = ..., total_consumed: _Optional[int] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., breakdown: _Optional[_Iterable[_Union[CreditTypeBalance, _Mapping]]] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., debt_balance: _Optional[int] = ...) -> None: ...
 
 class CreditTypeBalance(_message.Message):
     __slots__ = ("credit_type", "available_balance", "held_balance", "total_granted", "total_consumed", "credit_type_display_name")
@@ -563,7 +565,7 @@ class ListGrantsResponse(_message.Message):
     def __init__(self, grants: _Optional[_Iterable[_Union[CreditGrant, _Mapping]]] = ...) -> None: ...
 
 class BillingTransaction(_message.Message):
-    __slots__ = ("transaction_id", "business_id", "user_id", "authorization_id", "request_id", "subject_id", "subject_type", "transaction_type", "points", "face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "created_at", "updated_at", "deleted_at", "usage_summary")
+    __slots__ = ("transaction_id", "business_id", "user_id", "authorization_id", "request_id", "subject_id", "subject_type", "transaction_type", "points", "face_value_minor", "recognized_revenue_minor", "budget_consumed_minor", "created_at", "updated_at", "deleted_at")
     TRANSACTION_ID_FIELD_NUMBER: _ClassVar[int]
     BUSINESS_ID_FIELD_NUMBER: _ClassVar[int]
     USER_ID_FIELD_NUMBER: _ClassVar[int]
@@ -579,7 +581,6 @@ class BillingTransaction(_message.Message):
     CREATED_AT_FIELD_NUMBER: _ClassVar[int]
     UPDATED_AT_FIELD_NUMBER: _ClassVar[int]
     DELETED_AT_FIELD_NUMBER: _ClassVar[int]
-    USAGE_SUMMARY_FIELD_NUMBER: _ClassVar[int]
     transaction_id: str
     business_id: str
     user_id: str
@@ -595,8 +596,7 @@ class BillingTransaction(_message.Message):
     created_at: _timestamp_pb2.Timestamp
     updated_at: _timestamp_pb2.Timestamp
     deleted_at: _timestamp_pb2.Timestamp
-    usage_summary: _struct_pb2.Struct
-    def __init__(self, transaction_id: _Optional[str] = ..., business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ..., points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., usage_summary: _Optional[_Union[_struct_pb2.Struct, _Mapping]] = ...) -> None: ...
+    def __init__(self, transaction_id: _Optional[str] = ..., business_id: _Optional[str] = ..., user_id: _Optional[str] = ..., authorization_id: _Optional[str] = ..., request_id: _Optional[str] = ..., subject_id: _Optional[str] = ..., subject_type: _Optional[_Union[BillingSubjectType, str]] = ..., transaction_type: _Optional[_Union[BillingTransactionType, str]] = ..., points: _Optional[int] = ..., face_value_minor: _Optional[int] = ..., recognized_revenue_minor: _Optional[int] = ..., budget_consumed_minor: _Optional[int] = ..., created_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., updated_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ..., deleted_at: _Optional[_Union[datetime.datetime, _timestamp_pb2.Timestamp, _Mapping]] = ...) -> None: ...
 
 class GetBillingTransactionRequest(_message.Message):
     __slots__ = ("business_id", "request_id")

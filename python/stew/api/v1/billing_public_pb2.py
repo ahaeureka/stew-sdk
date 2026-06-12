@@ -23,11 +23,13 @@ _sym_db = _symbol_database.Default()
 
 
 from . import billing_common_pb2 as billing__common__pb2
+from . import entitlement_pb2 as entitlement__pb2
 from google.api import annotations_pb2 as google_dot_api_dot_annotations__pb2
+from protobuf_pydantic_gen import pydantic_pb2 as protobuf__pydantic__gen_dot_pydantic__pb2
 from stew.api.v1 import options_pb2 as stew_dot_api_dot_v1_dot_options__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x62illing_public.proto\x12\x0bstew.api.v1\x1a\x14\x62illing_common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19stew/api/v1/options.proto2\xab\x08\n\x14\x42illingPublicService\x12\x85\x01\n\x0e\x45stimateCharge\x12\".stew.api.v1.EstimateChargeRequest\x1a#.stew.api.v1.EstimateChargeResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/api/v1/public/billing/estimate:\x01*\x12\xe3\x01\n\x0cQueryBalance\x12 .stew.api.v1.QueryBalanceRequest\x1a\x1c.stew.api.v1.BalanceSnapshot\"\x92\x01\x82\xd3\xe4\x93\x02\x8b\x01\x12I/api/v1/public/billing/balances/{business_id}/{subject_type}/{subject_id}Z>\x12</api/v1/public/billing/balances/{business_id}/{subject_type}\x12\x9e\x01\n\nListGrants\x12\x1e.stew.api.v1.ListGrantsRequest\x1a\x1f.stew.api.v1.ListGrantsResponse\"O\x82\xd3\xe4\x93\x02I\x12G/api/v1/public/billing/grants/{business_id}/{subject_type}/{subject_id}\x12\xa4\x01\n\x0eGetTransaction\x12).stew.api.v1.GetBillingTransactionRequest\x1a\x1f.stew.api.v1.BillingTransaction\"F\x82\xd3\xe4\x93\x02@\x12>/api/v1/public/billing/transactions/{business_id}/{request_id}\x12\x98\x01\n\x11QueryTransactions\x12%.stew.api.v1.QueryTransactionsRequest\x1a&.stew.api.v1.QueryTransactionsResponse\"4\x82\xd3\xe4\x93\x02.\")/api/v1/public/billing/transactions/query:\x01*\x12\x9f\x01\n\rQuerySnapshot\x12!.stew.api.v1.QuerySnapshotRequest\x1a&.stew.api.v1.BillingSettlementSnapshot\"C\x82\xd3\xe4\x93\x02=\x12;/api/v1/public/billing/snapshots/{business_id}/{request_id}\x1a \x88\xb7\x18\x01\xb2\xb7\x18\x18stew.api.v1.HttpResponseB\"Z github.com/stew/proto/sdk/api/v1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14\x62illing_public.proto\x12\x0bstew.api.v1\x1a\x14\x62illing_common.proto\x1a\x11\x65ntitlement.proto\x1a\x1cgoogle/api/annotations.proto\x1a$protobuf_pydantic_gen/pydantic.proto\x1a\x19stew/api/v1/options.proto\"\x96\x03\n\x17GetAccountStatusRequest\x12;\n\x0b\x62usiness_id\x18\x01 \x01(\tB\x19\xa2\xbb\x18\x15\n\x13\x42usiness identifierR\x0b\x62usiness_id\x12@\n\nsubject_id\x18\x02 \x01(\tB \xa2\xbb\x18\x1c\n\x1a\x42illing subject identifierR\nsubject_id\x12_\n\x0csubject_type\x18\x03 \x01(\x0e\x32\x1f.stew.api.v1.BillingSubjectTypeB\x1a\xa2\xbb\x18\x16\n\x14\x42illing subject typeR\x0csubject_type\x12\x35\n\x07user_id\x18\x04 \x01(\tB\x1b\xa2\xbb\x18\x17\n\x15\x42ound user identifierR\x07user_id\x12\x64\n\x13include_entitlement\x18\x05 \x01(\x08\x42\x32\xa2\xbb\x18.\n,Whether to include resolved entitlement dataR\x13include_entitlement\"\x8e\x03\n\x15\x41\x63\x63ountStatusResponse\x12h\n\x07\x62\x61lance\x18\x01 \x01(\x0b\x32\x1c.stew.api.v1.BalanceSnapshotB0\xa2\xbb\x18,\n*Current balance snapshot with debt_balanceR\x07\x62\x61lance\x12x\n\x1b\x65\x66\x66\x65\x63tive_available_balance\x18\x02 \x01(\x04\x42\x36\xa2\xbb\x18\x32\n0Effective available balance after deducting debtR\x1b\x65\x66\x66\x65\x63tive_available_balance\x12\x90\x01\n\x0b\x65ntitlement\x18\x03 \x01(\x0b\x32(.stew.api.v1.ResolvedEntitlementResponseBD\xa2\xbb\x18@\n>Resolved entitlement (populated when include_entitlement=true)R\x0b\x65ntitlement2\xe3\t\n\x14\x42illingPublicService\x12\x85\x01\n\x0e\x45stimateCharge\x12\".stew.api.v1.EstimateChargeRequest\x1a#.stew.api.v1.EstimateChargeResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/api/v1/public/billing/estimate:\x01*\x12\xe3\x01\n\x0cQueryBalance\x12 .stew.api.v1.QueryBalanceRequest\x1a\x1c.stew.api.v1.BalanceSnapshot\"\x92\x01\x82\xd3\xe4\x93\x02\x8b\x01\x12I/api/v1/public/billing/balances/{business_id}/{subject_type}/{subject_id}Z>\x12</api/v1/public/billing/balances/{business_id}/{subject_type}\x12\x9e\x01\n\nListGrants\x12\x1e.stew.api.v1.ListGrantsRequest\x1a\x1f.stew.api.v1.ListGrantsResponse\"O\x82\xd3\xe4\x93\x02I\x12G/api/v1/public/billing/grants/{business_id}/{subject_type}/{subject_id}\x12\xa4\x01\n\x0eGetTransaction\x12).stew.api.v1.GetBillingTransactionRequest\x1a\x1f.stew.api.v1.BillingTransaction\"F\x82\xd3\xe4\x93\x02@\x12>/api/v1/public/billing/transactions/{business_id}/{request_id}\x12\x98\x01\n\x11QueryTransactions\x12%.stew.api.v1.QueryTransactionsRequest\x1a&.stew.api.v1.QueryTransactionsResponse\"4\x82\xd3\xe4\x93\x02.\")/api/v1/public/billing/transactions/query:\x01*\x12\x9f\x01\n\rQuerySnapshot\x12!.stew.api.v1.QuerySnapshotRequest\x1a&.stew.api.v1.BillingSettlementSnapshot\"C\x82\xd3\xe4\x93\x02=\x12;/api/v1/public/billing/snapshots/{business_id}/{request_id}\x12\xb5\x01\n\x10GetAccountStatus\x12$.stew.api.v1.GetAccountStatusRequest\x1a\".stew.api.v1.AccountStatusResponse\"W\x82\xd3\xe4\x93\x02Q\x12O/api/v1/public/billing/account-status/{business_id}/{subject_type}/{subject_id}\x1a \x88\xb7\x18\x01\xb2\xb7\x18\x18stew.api.v1.HttpResponseB\"Z github.com/stew/proto/sdk/api/v1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,6 +37,22 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'billing_public_pb2', _globa
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'Z github.com/stew/proto/sdk/api/v1'
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['business_id']._loaded_options = None
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['business_id']._serialized_options = b'\242\273\030\025\n\023Business identifier'
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['subject_id']._loaded_options = None
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['subject_id']._serialized_options = b'\242\273\030\034\n\032Billing subject identifier'
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['subject_type']._loaded_options = None
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['subject_type']._serialized_options = b'\242\273\030\026\n\024Billing subject type'
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['user_id']._loaded_options = None
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['user_id']._serialized_options = b'\242\273\030\027\n\025Bound user identifier'
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['include_entitlement']._loaded_options = None
+  _globals['_GETACCOUNTSTATUSREQUEST'].fields_by_name['include_entitlement']._serialized_options = b'\242\273\030.\n,Whether to include resolved entitlement data'
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['balance']._loaded_options = None
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['balance']._serialized_options = b'\242\273\030,\n*Current balance snapshot with debt_balance'
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['effective_available_balance']._loaded_options = None
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['effective_available_balance']._serialized_options = b'\242\273\0302\n0Effective available balance after deducting debt'
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['entitlement']._loaded_options = None
+  _globals['_ACCOUNTSTATUSRESPONSE'].fields_by_name['entitlement']._serialized_options = b'\242\273\030@\n>Resolved entitlement (populated when include_entitlement=true)'
   _globals['_BILLINGPUBLICSERVICE']._loaded_options = None
   _globals['_BILLINGPUBLICSERVICE']._serialized_options = b'\210\267\030\001\262\267\030\030stew.api.v1.HttpResponse'
   _globals['_BILLINGPUBLICSERVICE'].methods_by_name['EstimateCharge']._loaded_options = None
@@ -49,6 +67,12 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_BILLINGPUBLICSERVICE'].methods_by_name['QueryTransactions']._serialized_options = b'\202\323\344\223\002.\")/api/v1/public/billing/transactions/query:\001*'
   _globals['_BILLINGPUBLICSERVICE'].methods_by_name['QuerySnapshot']._loaded_options = None
   _globals['_BILLINGPUBLICSERVICE'].methods_by_name['QuerySnapshot']._serialized_options = b'\202\323\344\223\002=\022;/api/v1/public/billing/snapshots/{business_id}/{request_id}'
-  _globals['_BILLINGPUBLICSERVICE']._serialized_start=117
-  _globals['_BILLINGPUBLICSERVICE']._serialized_end=1184
+  _globals['_BILLINGPUBLICSERVICE'].methods_by_name['GetAccountStatus']._loaded_options = None
+  _globals['_BILLINGPUBLICSERVICE'].methods_by_name['GetAccountStatus']._serialized_options = b'\202\323\344\223\002Q\022O/api/v1/public/billing/account-status/{business_id}/{subject_type}/{subject_id}'
+  _globals['_GETACCOUNTSTATUSREQUEST']._serialized_start=174
+  _globals['_GETACCOUNTSTATUSREQUEST']._serialized_end=580
+  _globals['_ACCOUNTSTATUSRESPONSE']._serialized_start=583
+  _globals['_ACCOUNTSTATUSRESPONSE']._serialized_end=981
+  _globals['_BILLINGPUBLICSERVICE']._serialized_start=984
+  _globals['_BILLINGPUBLICSERVICE']._serialized_end=2235
 # @@protoc_insertion_point(module_scope)

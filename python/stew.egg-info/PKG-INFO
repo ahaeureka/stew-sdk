@@ -218,6 +218,8 @@ Python SDK 现在只保留业务运行时调用面，不再提供网关管理面
 - entitlement 的 plan / subscription / renew / change 管理
 - payment 的运营退款审批与直接退款操作
 
+这也意味着公共根导出里不再提供 `BillingAdminClient`、`BillingReservationTroubleshooter`、`ApiKeyClient` 这类管理面入口；如果你需要 reservation 排障、策略管理或 API key 生命周期能力，请直接接网关管理台或业务自建的受控 admin API。
+
 这条边界同样落实到发布产物：Python SDK 的 wheel / sdist 不再携带 `apikey`、`billing_admin`、`billing_strategy_admin`、`business_membership_admin`、`pricing_admin` 这些 admin-only proto 生成的 `*_pb2`、`*_pb2_grpc`、`*_model` 模块。
 
 如果你在仓库内重新生成了 `stew/api/v1` 下的 protobuf Python 文件，发布前执行一次：
@@ -252,6 +254,9 @@ Billing Python SDK 面向业务接入仅保留两组主入口：
 - 缺失 report 的后续处理只应配置为 `BILLING_MISSING_REPORT_ACTION_RELEASE` 或 `BILLING_MISSING_REPORT_ACTION_MARK_PENDING`，不要再把 `capture_estimate` 当作主线能力
 - 计费策略当前以规范业务级 `business_billing_configs` 表为唯一来源；业务服务或网关兼容路径会先按 `business_id` 定位配置，再结合请求携带的 `x-plan-id` 从 `policy_id_by_plan` 解析最终 `policy_id`。业务侧 SDK 无需在 OOB 上报时重新传递 plan_id 或重新选策略，最终结算以 authorize 阶段已绑定的 `policy_id` 为准
 - SDK 不提供业务级计费配置的管理接口；如需创建或更新规范配置，使用 admin API：`PUT /_admin/billing/business-config/{business_id}`
+- 当前账本允许 **零可用余额时成功放行一次 authorize**。如果该次任务完成后形成欠费，后续 authorize 会直接返回余额不足，直到后续授信、退款或人工调账清偿欠费。
+- 网关内部已显式维护欠费状态；业务侧不要把 `available_balance == 0` 误解为“仍然可以无限继续授权”。
+- 网关已兼容历史 reservation 中缺失的 `actual_deduction` 字段。升级前创建、升级后 finalize/release 的旧 reservation 不需要业务侧补字段，继续沿用原始授权上下文即可。
 
 SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或计费规则：
 
@@ -265,12 +270,56 @@ SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或
 - cost 统一放在 `cost_breakdown.line_items` 和 `total_cost_micros`
 - `policy_id`、`factor_schema_version` 只负责选择本次请求的 policy context；最终扣点、金额和账务口径由网关 / rustpayment 的 policy bundle 重算，不由业务 report 直接指定
 
-异步 worker 提交 OOB billing report 的最小示例：
+最小输入 authorize 示例：
 
 ```python
 import asyncio
 
 from stew import BillingInternalClient
+
+
+async def authorize_request() -> None:
+    async with BillingInternalClient(
+        "127.0.0.1:3012",
+        app_secret="ak_backend",
+        business_id="example-business",
+    ) as billing_internal:
+        response = await billing_internal.authorize(
+            scope_business_id="example-business",
+            user_id="user_123",
+            subject_id="user_123",
+            plan_id_hint="plan-pro",
+            estimated_points=12,
+            extra_metadata=[("x-request-id", "req_123")],
+        )
+
+        print("approved:", response.success)
+        print("authorization_id:", response.authorization_id)
+        if response.resolved_context is not None:
+            print("resolved policy:", response.resolved_context.policy_id)
+            print(
+                "resolved factor schema:",
+                response.resolved_context.factor_schema_version,
+            )
+
+
+asyncio.run(authorize_request())
+```
+
+这个调用形态下，业务侧只需要提供业务账本和用户/主体信息：
+
+- `scope_business_id` 是实际计费账本作用域
+- `user_id` / `subject_id` / `subject_type` 描述当前扣费主体；对用户主体可只传 `user_id`，SDK 会默认把 `subject_id` 补成同一个值
+- `plan_id_hint` 只是给网关做 `policy_id_by_plan` 命中提示，SDK 本地不解析 policy
+- 最终选中的 `policy_id` / `factor_schema_version` 以返回的 `resolved_context` 为准，后续 OOB report 应继续复用这组上下文
+- 如果账户已经存在欠费，本次 `authorize()` 会按余额不足失败；这类失败不应按网络抖动处理，而应进入业务侧的余额恢复或充值流程
+
+异步 worker 提交 OOB billing report 的最小示例：
+
+```python
+import asyncio
+
+from stew import BillingInternalClient, build_submit_billing_report_metadata
 from stew.api.v1 import billing_model
 
 
@@ -304,7 +353,10 @@ async def submit_oob_report() -> None:
             delivery_request_id="worker-attempt-1",
             source_service="your.service.v1.AsyncWorker",
             labels={"attempt": "1"},
-            extra_metadata=[("x-request-id", "req_123")],
+            extra_metadata=build_submit_billing_report_metadata(
+                service_id="your.service.v1.AsyncWorker",
+                request_id="req_123",
+            ),
         )
 
         print("deduped:", response.deduped)
@@ -315,6 +367,10 @@ asyncio.run(submit_oob_report())
 ```
 
 当前计费上报只保留 `OUT_OF_BAND`。业务服务不应再通过 `x-billing-status` 或 `x-billing-report` 回传结算结果，而应在业务完成后调用 `submit_billing_report()`。OOB 上报不会改变 policy selection 或策略执行位置，它只改变 finalize 的提交时机。
+
+`build_submit_billing_report_metadata()` 会生成 report-ingress 的最小 metadata；如果调用时仍携带 `authorization`、`x-user-*`、`x-token-*` 或 `x-stew-identity-jwt` 这类用户身份 header，SDK 会打印 warning，提示这些 header 不属于 report-ingress 的鉴权输入。
+
+如果 SDK 收到旧网关实例返回的历史错误签名，例如 `billing report ingress requires admin or report-ingress privileges`，也会打印 warning。这个 warning 就是 old-model hit 的观测信号，可以直接按日志关键字 `legacy report-ingress error signature` 聚合排查仍未升级的实例。
 
 如果业务侧需要 reservation 排障、人工补账或计费策略管理，请走网关管理台或受控 admin API；不要把这些管理流程下沉到业务 SDK 或业务前后端运行时中。
 

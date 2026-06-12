@@ -9,6 +9,7 @@ stew/asset_browser_client.py
 stew/billing_client.py
 stew/billing_internal_client.py
 stew/billing_public_client.py
+stew/billing_session_client.py
 stew/discovery_client.py
 stew/entitlement_client.py
 stew/entitlement_guard.py
@@ -49,6 +50,14 @@ stew/api/v1/billing_report_ingress_model.py
 stew/api/v1/billing_report_ingress_pb2.py
 stew/api/v1/billing_report_ingress_pb2.pyi
 stew/api/v1/billing_report_ingress_pb2_grpc.py
+stew/api/v1/billing_session_model.py
+stew/api/v1/billing_session_pb2.py
+stew/api/v1/billing_session_pb2.pyi
+stew/api/v1/billing_session_pb2_grpc.py
+stew/api/v1/billing_session_query_model.py
+stew/api/v1/billing_session_query_pb2.py
+stew/api/v1/billing_session_query_pb2.pyi
+stew/api/v1/billing_session_query_pb2_grpc.py
 stew/api/v1/business_asset_browser_model.py
 stew/api/v1/business_asset_browser_pb2.py
 stew/api/v1/business_asset_browser_pb2.pyi
@@ -101,6 +110,7 @@ stew/api/v1/web_pb2_grpc.py
 tests/test_asset_browser_client.py
 tests/test_async_gateway_client_base.py
 tests/test_billing_client.py
+tests/test_billing_session_client.py
 tests/test_entitlement_client.py
 tests/test_entitlement_guard.py
 tests/test_file_storage_client.py

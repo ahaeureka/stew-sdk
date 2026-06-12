@@ -243,6 +243,9 @@ Billing Python SDK 面向业务接入仅保留两组主入口：
 - 缺失 report 的后续处理只应配置为 `BILLING_MISSING_REPORT_ACTION_RELEASE` 或 `BILLING_MISSING_REPORT_ACTION_MARK_PENDING`，不要再把 `capture_estimate` 当作主线能力
 - 计费策略当前以规范业务级 `business_billing_configs` 表为唯一来源；业务服务或网关兼容路径会先按 `business_id` 定位配置，再结合请求携带的 `x-plan-id` 从 `policy_id_by_plan` 解析最终 `policy_id`。业务侧 SDK 无需在 OOB 上报时重新传递 plan_id 或重新选策略，最终结算以 authorize 阶段已绑定的 `policy_id` 为准
 - SDK 不提供业务级计费配置的管理接口；如需创建或更新规范配置，使用 admin API：`PUT /_admin/billing/business-config/{business_id}`
+- 当前账本允许 **零可用余额时成功放行一次 authorize**。如果该次任务完成后形成欠费，后续 authorize 会直接返回余额不足，直到后续授信、退款或人工调账清偿欠费。
+- 网关内部已显式维护欠费状态；业务侧不要把 `available_balance == 0` 误解为“仍然可以无限继续授权”。
+- 网关已兼容历史 reservation 中缺失的 `actual_deduction` 字段。升级前创建、升级后 finalize/release 的旧 reservation 不需要业务侧补字段，继续沿用原始授权上下文即可。
 
 SDK 只提供通用账务模型，不预置任何特定业务的 usage 因子或计费规则：
 
@@ -298,6 +301,7 @@ asyncio.run(authorize_request())
 - `user_id` / `subject_id` / `subject_type` 描述当前扣费主体；对用户主体可只传 `user_id`，SDK 会默认把 `subject_id` 补成同一个值
 - `plan_id_hint` 只是给网关做 `policy_id_by_plan` 命中提示，SDK 本地不解析 policy
 - 最终选中的 `policy_id` / `factor_schema_version` 以返回的 `resolved_context` 为准，后续 OOB report 应继续复用这组上下文
+- 如果账户已经存在欠费，本次 `authorize()` 会按余额不足失败；这类失败不应按网络抖动处理，而应进入业务侧的余额恢复或充值流程
 
 异步 worker 提交 OOB billing report 的最小示例：
 

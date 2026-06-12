@@ -4,6 +4,7 @@ import grpc
 import warnings
 
 from . import billing_common_pb2 as billing__common__pb2
+from . import billing_public_pb2 as billing__public__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -67,6 +68,11 @@ class BillingPublicServiceStub(object):
                 request_serializer=billing__common__pb2.QuerySnapshotRequest.SerializeToString,
                 response_deserializer=billing__common__pb2.BillingSettlementSnapshot.FromString,
                 _registered_method=True)
+        self.GetAccountStatus = channel.unary_unary(
+                '/stew.api.v1.BillingPublicService/GetAccountStatus',
+                request_serializer=billing__public__pb2.GetAccountStatusRequest.SerializeToString,
+                response_deserializer=billing__public__pb2.AccountStatusResponse.FromString,
+                _registered_method=True)
 
 
 class BillingPublicServiceServicer(object):
@@ -111,6 +117,12 @@ class BillingPublicServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetAccountStatus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_BillingPublicServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -143,6 +155,11 @@ def add_BillingPublicServiceServicer_to_server(servicer, server):
                     servicer.QuerySnapshot,
                     request_deserializer=billing__common__pb2.QuerySnapshotRequest.FromString,
                     response_serializer=billing__common__pb2.BillingSettlementSnapshot.SerializeToString,
+            ),
+            'GetAccountStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAccountStatus,
+                    request_deserializer=billing__public__pb2.GetAccountStatusRequest.FromString,
+                    response_serializer=billing__public__pb2.AccountStatusResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -310,6 +327,33 @@ class BillingPublicService(object):
             '/stew.api.v1.BillingPublicService/QuerySnapshot',
             billing__common__pb2.QuerySnapshotRequest.SerializeToString,
             billing__common__pb2.BillingSettlementSnapshot.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetAccountStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/stew.api.v1.BillingPublicService/GetAccountStatus',
+            billing__public__pb2.GetAccountStatusRequest.SerializeToString,
+            billing__public__pb2.AccountStatusResponse.FromString,
             options,
             channel_credentials,
             insecure,
